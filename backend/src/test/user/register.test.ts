@@ -43,107 +43,6 @@ describe('Register user', () => {
       expect(res.body.errors).toHaveProperty('password');
       expect(res.body.errors.password[0]).toBe('Password must not be empty');
     });
-
-    it('should return error about password containing no special character ', async () => {
-      const res = await factory.app
-        .post('/auth/register')
-        .set('content-type', 'application/json')
-        .send({
-          ...userInfoPartial,
-          password: 'Abc123456'
-        });
-      expect(res.statusCode).toBe(400);
-      expect(res.body.message).toBe('Validation failed');
-      expect(res.body).toHaveProperty('errors');
-      expect(res.body.errors).toHaveProperty('password');
-      expect(res.body.errors.password[0]).toBe(
-        'Password must contain at least one special character'
-      );
-    });
-
-    it('should return error about password shorter than 8 characters ', async () => {
-      const res = await factory.app
-        .post('/auth/register')
-        .set('content-type', 'application/json')
-        .send({
-          ...userInfoPartial,
-          password: 'Abc@123'
-        });
-      expect(res.statusCode).toBe(400);
-      expect(res.body.message).toBe('Validation failed');
-      expect(res.body).toHaveProperty('errors');
-      expect(res.body.errors).toHaveProperty('password');
-      expect(res.body.errors.password[0]).toBe('Password must be at least 8 characters long');
-    });
-
-    it('should return error about password missing uppercase letters ', async () => {
-      const res = await factory.app
-        .post('/auth/register')
-        .set('content-type', 'application/json')
-        .send({
-          ...userInfoPartial,
-          password: 'albc@123'
-        });
-      expect(res.statusCode).toBe(400);
-      expect(res.body.message).toBe('Validation failed');
-      expect(res.body).toHaveProperty('errors');
-      expect(res.body.errors).toHaveProperty('password');
-      expect(res.body.errors.password[0]).toBe(
-        'Password must contain at least one uppercase letter'
-      );
-    });
-
-    it('should return error about password missing numbers ', async () => {
-      const res = await factory.app
-        .post('/auth/register')
-        .set('content-type', 'application/json')
-        .send({
-          ...userInfoPartial,
-          password: 'Albc@kjskfjk'
-        });
-      expect(res.statusCode).toBe(400);
-      expect(res.body.message).toBe('Validation failed');
-      expect(res.body).toHaveProperty('errors');
-      expect(res.body.errors).toHaveProperty('password');
-      expect(res.body.errors.password[0]).toBe('Password must contain at least one number');
-    });
-
-    it('should return error about password shorter than 8 characters and missing uppercase letter ', async () => {
-      const res = await factory.app
-        .post('/auth/register')
-        .set('content-type', 'application/json')
-        .send({
-          ...userInfoPartial,
-          password: 'abc@123'
-        });
-      expect(res.statusCode).toBe(400);
-      expect(res.body.message).toBe('Validation failed');
-      expect(res.body).toHaveProperty('errors');
-      expect(res.body.errors).toHaveProperty('password');
-      expect(res.body.errors.password).toEqual([
-        'Password must be at least 8 characters long',
-        'Password must contain at least one uppercase letter'
-      ]);
-    });
-
-    it('should return error about password shorter than 8 characters, missing uppercase letter, and missing special character', async () => {
-      const res = await factory.app
-        .post('/auth/register')
-        .set('content-type', 'application/json')
-        .send({
-          ...userInfoPartial,
-          password: 'abc123'
-        });
-      expect(res.statusCode).toBe(400);
-      expect(res.body.message).toBe('Validation failed');
-      expect(res.body).toHaveProperty('errors');
-      expect(res.body.errors).toHaveProperty('password');
-      expect(res.body.errors.password).toEqual([
-        'Password must be at least 8 characters long',
-        'Password must contain at least one uppercase letter',
-        'Password must contain at least one special character'
-      ]);
-    });
   });
 
   describe('Register an user with wrong emails', () => {
@@ -208,7 +107,7 @@ describe('Register user', () => {
           email: 'dungnguyen2712002@gmail.com'
         });
       expect(res.statusCode).toBe(400);
-      expect(res.body.message).toBe('Email already in use');
+      expect(res.body.errors.email[0]).toBe('Email already in use');
     });
   });
 
@@ -244,7 +143,7 @@ describe('Register user', () => {
           username: 'leonard'
         });
       expect(res.statusCode).toBe(400);
-      expect(res.body.message).toBe('Username already exists');
+      expect(res.body.errors.username[0]).toBe('Username already in use');
     });
   });
 

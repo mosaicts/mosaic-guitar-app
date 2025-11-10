@@ -35,7 +35,7 @@ describe('Login user', () => {
           password: 'Abc@123478'
         });
       expect(res.statusCode).toBe(400);
-      expect(res.body.message).toBe('Wrong password');
+      expect(res.body.message).toBe('Email or password is not correct');
     });
   });
 
@@ -53,7 +53,7 @@ describe('Login user', () => {
           email: 'dungnguyen271200@gmail.com'
         });
       expect(res.statusCode).toBe(400);
-      expect(res.body.message).toBe('User not found');
+      expect(res.body.message).toBe('Email or password is not correct');
     });
   });
 
@@ -67,11 +67,11 @@ describe('Login user', () => {
           password: 'Abc@144444'
         });
       expect(res.statusCode).toBe(400);
-      expect(res.body.message).toBe('User not found');
+      expect(res.body.message).toBe('Email or password is not correct');
     });
   });
 
-  describe('', () => {
+  describe('Login successfully', () => {
     it('should login successfully ', async () => {
       const res = await factory.app
         .post('/auth/login')

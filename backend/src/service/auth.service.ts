@@ -210,14 +210,13 @@ export class AuthService {
       });
   }
 
-  generateRefreshToken(user: User) {
+  #generateRefreshToken(user: User) {
     const refreshToken = uuidv4();
     user.refreshToken = refreshToken;
     user.refreshTokenExpiresAt = new Date(Date.now() + 1000 * 60 * 60 * 1); // 1 hour
     return refreshToken;
   }
 
-  issueJwt(res: Response, user: User) {
   #generateVerificationToken(user: User) {
     const verificationToken = generateJwt({
       expiresIn: '5m',
@@ -230,6 +229,7 @@ export class AuthService {
     return verificationToken;
   }
 
+  #issueJwt(res: Response, user: User) {
     // Generate a random string that will constitute the fingerprint for this user
     const fingerprint = crypto.randomBytes(50).toString('hex');
 

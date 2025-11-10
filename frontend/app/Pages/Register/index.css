@@ -96,10 +96,6 @@
   align-items: center;
 }
 
-#register-form #already-have-account a {
-  color: var(--color-link);
-}
-
 .password-strength#low {
   color: #ebba09;
 }

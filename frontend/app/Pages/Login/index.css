@@ -63,10 +63,6 @@
   text-align: center;
 }
 
-#login-page a {
-  color: var(--color-link);
-}
-
 #login-form #with-google {
   background-color: #1e2d3f;
 }

@@ -7,7 +7,7 @@ export class UserService {
 
   async getAll(res: Response, next: NextFunction) {
     const users = await this.userRepository.find();
-    res.status(200).json({ success: true, users });
+    res.status(200).json({ users });
   }
 
   async getProfile(req: Request, res: Response) {
@@ -15,7 +15,7 @@ export class UserService {
     let user = req.user;
 
     if (user) {
-      return res.status(200).json({ success: true, user });
+      return res.status(200).json({ user });
     }
 
     try {
@@ -23,24 +23,30 @@ export class UserService {
         where: { id }
       });
     } catch (err) {
-      return res.status(400).json({ success: false, message: 'User not found' });
+      return res.status(400).json({ message: 'User not found' });
     }
-    res.status(200).json({ success: true, user });
+    res.status(200).json({ user });
   }
 
   async updateUser(req: Request, res: Response) {
     let user = req.user as User;
     user = { ...user, ...req.body };
     await this.userRepository.save(user);
-    res.status(200).json({ success: true, message: 'updated', user });
+    res.status(200).json({ message: 'updated', user });
   }
 
   async deleteUser(req: Request, res: Response) {
     const { id } = req.params;
-    const user = await this.userRepository.findOne({
-      where: { id }
-    });
-    await this.userRepository.remove(user);
-    res.status(200).json({ success: true, message: 'ok' });
+    try {
+      const user = await this.userRepository.findOne({
+        where: { id }
+      });
+      await this.userRepository.remove(user);
+    } catch (err) {
+      console.log(err);
+      return res.status(400).json({ message: 'An error occurred' });
+    }
+
+    res.status(200).json({ message: 'ok' });
   }
 }

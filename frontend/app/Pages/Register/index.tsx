@@ -46,11 +46,11 @@ export async function clientAction({ request }: Route.ActionArgs) {
   try {
     const response = await requestRegisterApi(data);
     console.log(response);
-    return redirect('/login');
+    return redirect('/check-your-email');
   } catch (err: any) {
     return {
       success: false,
-      response: err.response
+      response: err.response.data
     };
   }
 }
@@ -79,9 +79,13 @@ export default function Register() {
 
   useEffect(() => {
     if (data && !data.success && data.response) {
-      Object.entries(data.response.data.errors).forEach((err: any) => {
-        setError(err[0], { type: 'manual', message: err[1][0] });
-      });
+      if (data.response.errors) {
+        Object.entries(data.response.errors).forEach((err: any) => {
+          setError(err[0], { type: 'manual', message: err[1][0] });
+        });
+      } else {
+        console.log(data.response.message);
+      }
     }
   }, [data]);
 
