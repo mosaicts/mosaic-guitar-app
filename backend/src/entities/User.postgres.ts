@@ -60,4 +60,10 @@ export class User {
 
   @UpdateDateColumn()
   profilePicUpdatedAt: Date;
+
+  @Column({ default: false })
+  verified: boolean;
+
+  @Column({ nullable: true })
+  verificationToken: string;
 }

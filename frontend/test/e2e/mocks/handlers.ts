@@ -103,6 +103,19 @@ export const handlers = [
   // USER/AUTH
   // ========================================
 
+  // Register
+  http.post(`${MOSAIC_BASE_URL}/auth/register`, async ({ request }) => {
+    const body = (await request.json()) as any;
+
+    if (body.email === 'test@example.com') {
+      return HttpResponse.json({
+        message: 'Registration successful, please verify your email'
+      });
+    }
+
+    return new HttpResponse(null, { status: 401 });
+  }),
+
   // Login
   http.post(`${MOSAIC_BASE_URL}/auth/login`, async ({ request }) => {
     const body = (await request.json()) as any;
@@ -120,6 +133,19 @@ export const handlers = [
           email: body.email,
           profilePicUrl: 'http://test.jpg.com'
         }
+      });
+    }
+
+    return new HttpResponse(null, { status: 401 });
+  }),
+
+  // Verification
+  http.post(`${MOSAIC_BASE_URL}/auth/verify`, async ({ request }) => {
+    const body = (await request.json()) as any;
+
+    if (body.email === 'test@example.com') {
+      return HttpResponse.json({
+        message: 'Email verified successfully'
       });
     }
 

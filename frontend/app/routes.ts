@@ -11,5 +11,7 @@ export default [
     ])
   ]),
   route('login', 'Pages/Login/index.tsx'),
-  route('register', 'Pages/Register/index.tsx')
+  route('register', 'Pages/Register/index.tsx'),
+  route('check-your-email', 'Pages/CheckYourEmail/index.tsx'),
+  route('verify-email', 'Pages/VerifyEmail/index.tsx')
 ] satisfies RouteConfig;

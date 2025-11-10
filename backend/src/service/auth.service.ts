@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { Repository } from 'typeorm';
 const crypto = require('crypto');
+import envConfig from '../config/envConfig';
 
 import { checkPassword, hashPassword } from '../lib/password';
 import {
@@ -18,6 +19,7 @@ import {
   getUsernameIPkey
 } from '../config/rateLimiter';
 import { User } from '../entities/User.postgres';
+import { sendVerificationMail } from '../config/emailTransporter';
 
 export class AuthService {
   constructor(private readonly userRepository: Repository<User>) {}
@@ -40,8 +42,20 @@ export class AuthService {
     user.password = await hashPassword(password);
     user.profilePicUrl = '';
 
-    this.generateRefreshToken(user);
+    this.#generateRefreshToken(user);
 
+    // send verification code to email
+    const verificationToken = this.#generateVerificationToken(user);
+    const verificationUrl = `${envConfig.CLIENT_URL}/verify-email?email=${user.email}&token=${verificationToken}`;
+
+    try {
+      await sendVerificationMail(user, verificationUrl);
+    } catch (err) {
+      console.log(err);
+      return res.status(400).json({ message: 'An error occurred' });
+    }
+
+    // save user to db
     try {
       await this.userRepository.save(user);
     } catch (err) {
@@ -50,8 +64,30 @@ export class AuthService {
     }
 
     res.status(200).json({
-      message: 'User registered successfully'
+      message: 'Registration successful, please verify your email'
     });
+  }
+
+  async verify(req: Request, res: Response) {
+    const { token } = req.body;
+    try {
+      let user = await this.userRepository.findOne({ where: { verificationToken: token } });
+      if (!user) {
+        return res.status(400).json({
+          message: 'Token expired'
+        });
+      } else if (user.verified) {
+        return res.status(200).json({ message: 'User already verified' });
+      }
+
+      user = { ...user, verificationToken: null, verified: true };
+      await this.userRepository.save(user);
+      res.status(200).json({ message: 'Email verified successfully' });
+    } catch (err) {
+      res.status(400).json({
+        message: 'An error occurred'
+      });
+    }
   }
 
   async login(req: Request, res: Response) {
@@ -86,14 +122,17 @@ export class AuthService {
           await limiterSlowBruteByIP.consume(ipAddr);
           res.status(400).json({ message: 'Email or password is not correct' });
         } else {
+          // if (!user.verified) {
+          //   return res.status(400).json({ message: 'This email has not been verified' });
+          // }
           const isValid = await checkPassword(password, user.password);
           if (isValid) {
-            const jwt = this.issueJwt(res, user);
-            const refreshToken = this.generateRefreshToken(user);
+            const jwt = this.#issueJwt(res, user);
+            const refreshToken = this.#generateRefreshToken(user);
 
             await this.userRepository.save(user);
 
-            // Reset on successful authorisation
+            // Reset on successful login
             if (resUsernameAndIP !== null && resUsernameAndIP.consumedPoints > 0) {
               await limiterConsecutiveFailsByUsernameAndIP.delete(usernameIPkey);
             }
@@ -155,7 +194,7 @@ export class AuthService {
           res.status(400).json({ message: 'User not found' });
         }
 
-        this.generateRefreshToken(user);
+        this.#generateRefreshToken(user);
         const jwt = generateJwt({
           expiresIn: '5m',
           otherClaims: {
@@ -179,6 +218,18 @@ export class AuthService {
   }
 
   issueJwt(res: Response, user: User) {
+  #generateVerificationToken(user: User) {
+    const verificationToken = generateJwt({
+      expiresIn: '5m',
+      otherClaims: {
+        'X-User-Id': String(user.id),
+        'X-User-Email': user.email
+      }
+    });
+    user.verificationToken = verificationToken;
+    return verificationToken;
+  }
+
     // Generate a random string that will constitute the fingerprint for this user
     const fingerprint = crypto.randomBytes(50).toString('hex');
 

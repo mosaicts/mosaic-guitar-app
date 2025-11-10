@@ -7,6 +7,8 @@ const pathToKey = path.join(__dirname, '..', '..', 'id_rsa_priv.pem');
 type EnvConfig = {
   PORT: number;
   NODE_ENV: string;
+  BACKEND_URL: string;
+  CLIENT_URL: string;
 
   POSTGRES_HOST: string;
   POSTGRES_PORT: number;
@@ -19,6 +21,11 @@ type EnvConfig = {
   REDIS_PASSWORD: string;
 
   JWT_SECRET: string;
+
+  GMAIL_HOST: string;
+  GMAIL_SERVICE: string;
+  GMAIL_USER: string;
+  GMAIL_PASS: string;
 };
 
 type ENV = Partial<EnvConfig> & {
@@ -28,6 +35,8 @@ type ENV = Partial<EnvConfig> & {
 const getConfig = (): ENV => ({
   PORT: Number(process.env.PORT),
   NODE_ENV: process.env.NODE_ENV,
+  BACKEND_URL: process.env.PUBLIC_MOSAIC_BACKEND_URL,
+  CLIENT_URL: process.env.PUBLIC_MOSAIC_CLIENT_URL,
 
   POSTGRES_HOST: process.env.POSTGRES_HOST,
   POSTGRES_PORT: Number(process.env.POSTGRES_PORT),
@@ -39,7 +48,12 @@ const getConfig = (): ENV => ({
   REDIS_PORT: Number(process.env.REDIS_PORT),
   REDIS_PASSWORD: process.env.REDIS_PASSWORD,
 
-  JWT_SECRET: process.env.jwtSecret || fs.readFileSync(pathToKey, 'utf8')
+  JWT_SECRET: process.env.jwtSecret || fs.readFileSync(pathToKey, 'utf8'),
+
+  GMAIL_HOST: process.env.GMAIL_HOST,
+  GMAIL_SERVICE: process.env.GMAIL_SERVICE,
+  GMAIL_USER: process.env.GMAIL_USER,
+  GMAIL_PASS: process.env.GMAIL_PASS
 });
 
 const getSanitizedConfig = (config: ENV): EnvConfig => {

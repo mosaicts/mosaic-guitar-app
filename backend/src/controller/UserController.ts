@@ -10,6 +10,10 @@ export class UserController {
     await authService.register(req, res);
   }
 
+  static async verify(req: Request, res: Response) {
+    await authService.verify(req, res);
+  }
+
   static async login(req: Request, res: Response) {
     await authService.login(req, res);
   }

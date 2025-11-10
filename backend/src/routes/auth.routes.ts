@@ -22,6 +22,7 @@ authRouter.post(
   validate,
   UserController.register
 );
+authRouter.post('/verify', UserController.verify);
 authRouter.post('/login', UserController.login);
 authRouter.post('/refresh-token', UserController.refreshToken);
 authRouter.get(

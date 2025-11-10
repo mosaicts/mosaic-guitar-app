@@ -6,7 +6,8 @@ import {
   getUserURL,
   updateUserURL,
   registerURL,
-  refreshTokenURL
+  refreshTokenURL,
+  verifyEmailUrl
 } from '../Constants/apis';
 import { type Guitar } from './models';
 
@@ -59,6 +60,15 @@ export async function updateUser(data: object) {
 
 export async function register(data: object) {
   const response = await axios.post(registerURL, data, {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+  return response;
+}
+
+export async function verifyEmail(data: object) {
+  const response = await axios.post(verifyEmailUrl, data, {
     headers: {
       'Content-Type': 'application/json'
     }
