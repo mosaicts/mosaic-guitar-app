@@ -10,9 +10,9 @@
     "start": "ts-node src/index.ts",
     "typeorm": "typeorm-ts-node-commonjs",
     "docker:run": "docker compose up -d",
-    "migration": " npm run typeorm migration:run -- -d ./src/data-source.ts",
-    "migration-revert": " npm run typeorm migration:revert -- -d ./src/data-source.ts",
-    "test": "jest"
+    "migration": "npm run typeorm migration:run -- -d ./src/data-source.ts",
+    "migration-revert": "npm run typeorm migration:revert -- -d ./src/data-source.ts",
+    "test": "jest --watchAll"
   },
   "keywords": [],
   "author": "",

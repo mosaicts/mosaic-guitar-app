@@ -1,5 +1,4 @@
 import { Request } from 'express';
-import dataSource from '../data-source';
 import { User } from '../entities/User.postgres';
 import { sha256 } from '../lib/jwt';
 const JwtStrategy = require('passport-jwt').Strategy;

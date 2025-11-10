@@ -1,11 +1,11 @@
-import { MigrationInterface, QueryRunner } from "typeorm";
+import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class Users1758790720562 implements MigrationInterface {
+export class User1762762221156 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
-    (await queryRunner.query(
+    await queryRunner.query(
       ` 
           --Table Definition
-          CREATE TABLE "users"  (
+          CREATE TABLE "user"  (
             "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
             "firstName" character varying NOT NULL,
             "lastName" character varying NOT NULL,
@@ -19,14 +19,13 @@ export class Users1758790720562 implements MigrationInterface {
             "refreshTokenExpiresAt" TIMESTAMP NOT NULL,
 	    "profilePicUrl" character varying NOT NULL,
 	    "profilePicUpdatedAt" TIMESTAMP NOT NULL DEFAULT now(),
-            CONSTRAINT "PK_cace4a159ff9f2512dd42373760" PRIMARY KEY ("id")
+            CONSTRAINT "users_id_pkey" PRIMARY KEY ("id")
           )
-      `,
-    ),
-      undefined);
+      `
+    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`DROP TABLE "users"`, undefined);
+    await queryRunner.query(`DROP TABLE "user"`, undefined);
   }
 }

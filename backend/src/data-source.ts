@@ -1,5 +1,4 @@
 import 'reflect-metadata';
-import { join } from 'path';
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { RedisOptions } from 'ioredis';
 import { Redis } from 'ioredis';
@@ -20,8 +19,7 @@ const postgresDBConfig: DataSourceOptions = {
   synchronize: true,
   logging: false,
   entities,
-  // entities: [User],
-  migrations: syncDatabase ? ['src/migrations/**/*.ts'] : ['dist/migrations/**/*.js'],
+  migrations: syncDatabase ? ['src/migrations/*.ts'] : ['dist/migrations/**/*.js'],
   migrationsTableName: 'ecm-postgres',
   subscribers: []
 };
@@ -38,7 +36,7 @@ export const testPostgresDBConfig: DataSourceOptions = {
   entities
 };
 
-const AppDataSource = new DataSource(postgresDBConfig);
+export const AppDataSource = new DataSource(postgresDBConfig);
 const TestDataSource = new DataSource(testPostgresDBConfig);
 
 // REDIS
