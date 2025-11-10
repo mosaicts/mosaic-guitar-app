@@ -9,7 +9,7 @@ import { Redis } from 'ioredis';
 import dataSource, { testPostgresDBConfig, testRedisConfig } from '../data-source';
 import userRouter from '../routes/user.routes';
 import authRouter from '../routes/auth.routes';
-import guitarRouter from '../routes/guitar.routes';
+import productRouter from '../routes/product.routes';
 
 export class TestFactory {
   private _app: express.Application;
@@ -50,7 +50,7 @@ export class TestFactory {
       this._app.use(express.urlencoded({ extended: true }));
       this._app.use('/auth', authRouter);
       this._app.use('/user', userRouter);
-      this._app.use('/guitar', guitarRouter);
+      this._app.use('/guitar', productRouter);
       this._server = createServer(this._app).listen(3010);
     } catch (error) {
       // eslint-disable-next-line no-console

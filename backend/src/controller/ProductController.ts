@@ -1,24 +1,24 @@
-import { Request, Response } from "express";
-import { guitarService } from "../repository";
+import { Request, Response } from 'express';
+import { productService } from '../repository';
 
-export class GuitarController {
+export class ProductController {
   static async listGuitars(req: Request, res: Response) {
-    const data = await guitarService.listGuitars(req);
+    const data = await productService.listGuitars(req);
     return res.status(200).json(data);
   }
 
   static async getGuitar(req: Request, res: Response) {
-    const data = await guitarService.getGuitar(req);
+    const data = await productService.getGuitar(req);
     return res.status(200).json(data);
   }
 
   static async updateGuitar(req: Request, res: Response) {
-    const data = await guitarService.updateGuitar(req);
+    const data = await productService.updateGuitar(req);
     return res.status(200).json(data);
   }
 
   static async deleteGuitar(req: Request, res: Response) {
-    const data = await guitarService.deleteGuitar(req);
+    const data = await productService.deleteGuitar(req);
     return res.status(200).json(data);
   }
 }

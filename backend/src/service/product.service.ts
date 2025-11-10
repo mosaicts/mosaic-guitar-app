@@ -2,7 +2,7 @@ import { Request } from 'express';
 // import { Repository } from "typeorm";
 import guitars from '../example-guitars';
 
-export class GuitarService {
+export class ProductService {
   // TODO: add guitar repository
   // constructor(private readonly guitarRepository: Repository<Guitar>) {}
 

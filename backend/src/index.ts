@@ -11,7 +11,7 @@ import cookieParser from 'cookie-parser';
 
 import userRouter from './routes/user.routes';
 import authRouter from './routes/auth.routes';
-import guitarRouter from './routes/guitar.routes';
+import productRouter from './routes/product.routes';
 import reportRouter from './routes/reporting.routes';
 import { errorHandler } from './middlewares/errorHandler';
 
@@ -53,7 +53,7 @@ export const main = async () => {
 
     app.use('/auth', authRouter);
     app.use('/user', userRouter);
-    app.use('/guitar', guitarRouter);
+    app.use('/guitar', productRouter);
     app.use('/reporting', reportRouter);
 
     app.get('*', (req: Request, res: Response) => {

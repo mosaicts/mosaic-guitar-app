@@ -1,4 +1,4 @@
-import { TestFactory } from './factory';
+import { TestFactory } from '../factory';
 
 describe('GET /guitar/list', () => {
   const factory: TestFactory = new TestFactory();
@@ -14,6 +14,6 @@ describe('GET /guitar/list', () => {
   it('should return a list of guitars ', async () => {
     const res = await factory.app.get('/guitar/list');
     expect(res.statusCode).toBe(200);
-    expect(res.body.data.length).toBe(6);
+    expect(res.body.products.length).toBe(6);
   });
 });
