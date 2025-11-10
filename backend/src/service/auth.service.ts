@@ -158,8 +158,6 @@ export class AuthService {
         this.generateRefreshToken(user);
         const jwt = generateJwt({
           expiresIn: '5m',
-          allowedRoles: ['user'],
-          defaultRole: 'user',
           otherClaims: {
             'X-User-Id': String(user.id)
             // TODO: why not hashing fingerprint

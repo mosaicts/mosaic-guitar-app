@@ -8,8 +8,6 @@ export function sha256(value: string) {
 }
 
 interface GenerateJWTParams {
-  allowedRoles: string[];
-  defaultRole: string;
   expiresIn?: StringValue;
   otherClaims?: Record<string, string>;
 }
@@ -17,11 +15,11 @@ interface GenerateJWTParams {
 export function generateJwt(params: GenerateJWTParams) {
   const payload = {
     iat: Date.now(),
-    ...params.otherClaims,
+    ...params.otherClaims
   };
 
   return jwt.sign(payload, envConfig.JWT_SECRET, {
     algorithm: 'RS256',
-    expiresIn: params.expiresIn || '1h',
+    expiresIn: params.expiresIn || '1h'
   });
 }

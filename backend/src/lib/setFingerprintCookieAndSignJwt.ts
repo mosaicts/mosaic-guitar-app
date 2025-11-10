@@ -21,8 +21,6 @@ export function setFingerprintCookieAndSignJwt(fingerprint: string, res: Respons
   );
 
   return generateJwt({
-    allowedRoles: ['user'],
-    defaultRole: 'user',
     expiresIn: '5m',
     otherClaims: {
       'X-User-Id': String(user.id),
