@@ -52,5 +52,13 @@ export const testRedisConfig: RedisOptions = {
 };
 
 export const redisClient = new Redis(redisConfig);
+redisClient.on('connect', () => {
+  console.log('Redis connected succesfully');
+  console.log('===============================');
+});
+redisClient.on('error', (err) => {
+  console.log('Redis conncetion error : ', err);
+  console.log('===============================');
+});
 
 export default { AppDataSource, TestDataSource };
