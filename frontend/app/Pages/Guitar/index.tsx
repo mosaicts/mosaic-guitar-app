@@ -56,7 +56,7 @@ function Modal({ isShown }: ModalTypes) {
   return (
     isShown && (
       <div className="modal-bg">
-        <div id="modal">
+        <div className="modal">
           <img src="/app/Images/tick_icon.svg" width="1" height="1" />
           <p>Item added</p>
         </div>

@@ -89,27 +89,22 @@
   align-items: center;
 }
 
-#description-panel #modal {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+#description-panel .modal {
   position: fixed;
   padding: 80px;
   width: 320px;
   height: 150px;
   background-color: var(--color-gray-800-90);
-  /* border-radius: 20px; */
   gap: 20px;
   box-shadow: var(--shadow-2xl);
 }
 
-#description-panel #modal > img {
+#description-panel .modal > img {
   width: 70px;
   height: 70px;
 }
 
-#description-panel #modal > p {
+#description-panel .modal > p {
   font-size: 1rem;
   font-weight: 700;
   color: #fff;

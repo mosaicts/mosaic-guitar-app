@@ -44,8 +44,7 @@ export async function clientAction({ request }: Route.ActionArgs) {
   const formData = await request.formData();
   const data = Object.fromEntries(formData);
   try {
-    const response = await requestRegisterApi(data);
-    console.log(response);
+    await requestRegisterApi(data);
     return redirect('/check-your-email');
   } catch (err: any) {
     return {
@@ -78,15 +77,18 @@ export default function Register() {
   const data = useActionData();
 
   useEffect(() => {
-    if (data && !data.success && data.response) {
-      if (data.response.errors) {
-        Object.entries(data.response.errors).forEach((err: any) => {
-          setError(err[0], { type: 'manual', message: err[1][0] });
-        });
-      } else {
-        console.log(data.response.message);
+    const setErrorsPostSubmit = () => {
+      if (data && !data.success && data.response) {
+        if (data.response.errors) {
+          Object.entries(data.response.errors).forEach((err: any) => {
+            setError(err[0], { type: 'manual', message: err[1][0] });
+          });
+        } else {
+          console.log(data.response.message);
+        }
       }
-    }
+    };
+    setErrorsPostSubmit();
   }, [data]);
 
   const onSubmit = async (data) => {
@@ -112,7 +114,7 @@ export default function Register() {
     <div id="register-page">
       <div id="left"></div>
       <div id="right">
-        <div id="modal">
+        <div className="modal">
           <h1>Create an account</h1>
           <Form id="register-form" method="post" onSubmit={handleSubmit(onSubmit)}>
             <div className="name">

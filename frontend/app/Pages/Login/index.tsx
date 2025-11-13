@@ -76,7 +76,7 @@ export default function Login() {
 
   return (
     <div id="login-page">
-      <div id="modal">
+      <div className="modal">
         <h1>Sign in</h1>
         <Form id="login-form" method="post" onSubmit={handleSubmit(onSubmit)}>
           {!errors.email && !errors.password && errorMsg && <p className="err">{errorMsg}</p>}
