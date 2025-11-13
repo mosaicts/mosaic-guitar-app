@@ -63,7 +63,4 @@ export class User {
 
   @Column({ default: false })
   verified: boolean;
-
-  @Column({ nullable: true })
-  verificationToken: string;
 }

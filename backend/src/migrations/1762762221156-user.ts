@@ -20,7 +20,6 @@ export class User1762762221156 implements MigrationInterface {
 	    "profilePicUrl" character varying NOT NULL,
 	    "profilePicUpdatedAt" TIMESTAMP NOT NULL DEFAULT now(),
 	    "verified" BOOLEAN NOT NULL DEFAULT FALSE,
-	    "verificationToken" character varying,
             CONSTRAINT "users_id_pkey" PRIMARY KEY ("id")
           )
       `
@@ -28,6 +27,6 @@ export class User1762762221156 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`DROP TABLE "user"`, undefined);
+    await queryRunner.query(`DROP TABLE "user"`);
   }
 }
