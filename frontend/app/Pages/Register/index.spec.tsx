@@ -3,8 +3,9 @@ import { expect, describe, it } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { redirect } from 'react-router';
-import Login from '../Login';
 import Register from './index';
+import Login from '../Login';
+import CheckYourEmail from '../CheckYourEmail';
 
 describe('<Register />', () => {
   const user = userEvent.setup();
@@ -323,11 +324,9 @@ describe('<Register />', () => {
           return {
             success: false,
             response: {
-              data: {
-                errors: {
-                  email: [EMAIL_ERROR_MESSAGE],
-                  username: [USERNAME_ERROR_MESSAGE]
-                }
+              errors: {
+                email: [EMAIL_ERROR_MESSAGE],
+                username: [USERNAME_ERROR_MESSAGE]
               }
             }
           };
@@ -364,14 +363,14 @@ describe('<Register />', () => {
   it('should navigate to the login route after registering successfully', async () => {
     const Stub = createRoutesStub([
       {
-        path: '/login',
-        Component: Login
+        path: '/check-your-email',
+        Component: CheckYourEmail
       },
       {
         path: '/register',
         Component: Register,
         action() {
-          return redirect('/login');
+          return redirect('/check-your-email');
         }
       }
     ]);
@@ -397,7 +396,9 @@ describe('<Register />', () => {
     await user.click(screen.getByRole('button', { name: 'Create account' }));
 
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: 'Sign in' })).toBeInTheDocument();
+      expect(
+        screen.getByText('Please check your email for a verification link.')
+      ).toBeInTheDocument();
     });
   });
 });

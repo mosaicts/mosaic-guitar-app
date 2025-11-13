@@ -14,6 +14,10 @@ export class UserController {
     await authService.verify(req, res);
   }
 
+  static async resendVerificationMail(req: Request, res: Response) {
+    await authService.resendVerificationMail(req, res);
+  }
+
   static async login(req: Request, res: Response) {
     await authService.login(req, res);
   }

@@ -4,6 +4,7 @@ export const guitarListURL = baseURL + '/guitar/list';
 
 export const registerURL = baseURL + '/auth/register';
 export const verifyEmailUrl = baseURL + '/auth/verify';
+export const resendVerificationMailURL = baseURL + '/auth/resend-verification/email';
 export const loginURL = baseURL + '/auth/login';
 export const refreshTokenURL = baseURL + '/auth/refresh-token';
 

@@ -8,7 +8,7 @@ import {
   setFingerprintCookieAndSignJwt,
   FINGERPRINT_COOKIE_NAME
 } from '../lib/setFingerprintCookieAndSignJwt';
-import { generateJwt, sha256 } from '../lib/jwt';
+import { generateJwt, sha256, verifyJwt } from '../lib/jwt';
 import { uuidv4 } from '../lib/auth';
 import { parse } from 'cookie';
 import {
@@ -44,49 +44,87 @@ export class AuthService {
 
     this.#generateRefreshToken(user);
 
-    // send verification code to email
-    const verificationToken = this.#generateVerificationToken(user);
-    const verificationUrl = `${envConfig.CLIENT_URL}/verify-email?email=${user.email}&token=${verificationToken}`;
-
-    try {
-      await sendVerificationMail(user, verificationUrl);
-    } catch (err) {
-      console.log(err);
-      return res.status(400).json({ message: 'An error occurred' });
-    }
-
     // save user to db
     try {
       await this.userRepository.save(user);
     } catch (err) {
-      console.log('/auth/register endpoint error', err);
+      console.log('An error occured while saving user to db', err);
       res.status(400).json({ message: 'Error signing up' });
+    }
+
+    // send verification code to email
+    try {
+      await this.#sendVerificationCodeToEmail(user);
+    } catch (err) {
+      return res
+        .status(400)
+        .json({ message: 'An error occurred while sending verification code to email' });
     }
 
     res.status(200).json({
       message: 'Registration successful, please verify your email'
     });
+    // return res.status(200).redirect(`${envConfig.CLIENT_URL}/check-your-email`);
   }
 
   async verify(req: Request, res: Response) {
-    const { token } = req.body;
     try {
-      let user = await this.userRepository.findOne({ where: { verificationToken: token } });
-      if (!user) {
-        return res.status(400).json({
-          message: 'Token expired'
-        });
-      } else if (user.verified) {
-        return res.status(200).json({ message: 'User already verified' });
+      const { id, token } = req.params;
+
+      let user = await this.userRepository.findOne({ where: { id } });
+
+      if (!token || !id)
+        return res
+          .status(400)
+          .redirect(
+            `${envConfig.CLIENT_URL}/verify/email?status=failed&email=${encodeURIComponent(user.email)}`
+          );
+
+      if (user.verified) {
+        return res.status(200).redirect(`${envConfig.CLIENT_URL}/verify/email?status=success`);
       }
 
-      user = { ...user, verificationToken: null, verified: true };
+      const err = verifyJwt(token);
+
+      if (err !== null) {
+        return res
+          .status(400)
+          .redirect(
+            `${envConfig.CLIENT_URL}/verify/email?status=failed&email=${encodeURIComponent(user.email)}`
+          );
+      }
+
+      user = { ...user, verified: true };
       await this.userRepository.save(user);
-      res.status(200).json({ message: 'Email verified successfully' });
+      return res.status(200).redirect(`${envConfig.CLIENT_URL}/verify/email?status=success`);
     } catch (err) {
-      res.status(400).json({
-        message: 'An error occurred'
+      console.log('An error occurred while verifying:', err);
+    }
+  }
+
+  async resendVerificationMail(req: Request, res: Response) {
+    const { email } = req.body;
+    console.log('Email:', email);
+
+    const user = await this.userRepository.findOne({ where: { email } });
+
+    if (!user) {
+      return res.status(400).json({ message: 'Wrong email' });
+    }
+
+    try {
+      await this.#sendVerificationCodeToEmail(user);
+      // return res.status(200).redirect(`${envConfig.CLIENT_URL}/check-your-email`);
+      return res.status(200).json({
+        message: 'Verification code resent successfully'
       });
+    } catch (err) {
+      console.log('An error occurred while sending verification token:', err);
+      return res
+        .status(400)
+        .redirect(
+          `${envConfig.CLIENT_URL}/verify/email?status=failed&email=${encodeURIComponent(user.email)}`
+        );
     }
   }
 
@@ -122,9 +160,11 @@ export class AuthService {
           await limiterSlowBruteByIP.consume(ipAddr);
           res.status(400).json({ message: 'Email or password is not correct' });
         } else {
-          // if (!user.verified) {
-          //   return res.status(400).json({ message: 'This email has not been verified' });
-          // }
+          if (!user.verified) {
+            return res
+              .status(400)
+              .json({ message: 'This email has not been verified. Please verify your email.' });
+          }
           const isValid = await checkPassword(password, user.password);
           if (isValid) {
             const jwt = this.#issueJwt(res, user);
@@ -210,6 +250,17 @@ export class AuthService {
       });
   }
 
+  #sendVerificationCodeToEmail = async (user: User) => {
+    // send verification code to email
+    const verificationToken = this.#generateVerificationToken(user);
+    const verificationUrl = `${envConfig.BACKEND_URL}/auth/verify/email/${user.id}/${verificationToken}`;
+    try {
+      await sendVerificationMail(user, verificationUrl);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   #generateRefreshToken(user: User) {
     const refreshToken = uuidv4();
     user.refreshToken = refreshToken;
@@ -225,7 +276,6 @@ export class AuthService {
         'X-User-Email': user.email
       }
     });
-    user.verificationToken = verificationToken;
     return verificationToken;
   }
 

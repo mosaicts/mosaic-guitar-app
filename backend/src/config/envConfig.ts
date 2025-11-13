@@ -2,7 +2,8 @@ import fs from 'fs';
 import path from 'path';
 import 'dotenv/config';
 
-const pathToKey = path.join(__dirname, '..', '..', 'id_rsa_priv.pem');
+const pathToPrivKey = path.join(__dirname, '..', '..', 'id_rsa_priv.pem');
+const pathToPubKey = path.join(__dirname, '..', '..', 'id_rsa_pub.pem');
 
 type EnvConfig = {
   PORT: number;
@@ -20,7 +21,8 @@ type EnvConfig = {
   REDIS_PORT: number;
   REDIS_PASSWORD: string;
 
-  JWT_SECRET: string;
+  PRIV_KEY: string;
+  PUB_KEY: string;
 
   GMAIL_HOST: string;
   GMAIL_SERVICE: string;
@@ -48,7 +50,8 @@ const getConfig = (): ENV => ({
   REDIS_PORT: Number(process.env.REDIS_PORT),
   REDIS_PASSWORD: process.env.REDIS_PASSWORD,
 
-  JWT_SECRET: process.env.jwtSecret || fs.readFileSync(pathToKey, 'utf8'),
+  PRIV_KEY: fs.readFileSync(pathToPrivKey, 'utf8'),
+  PUB_KEY: fs.readFileSync(pathToPubKey, 'utf8'),
 
   GMAIL_HOST: process.env.GMAIL_HOST,
   GMAIL_SERVICE: process.env.GMAIL_SERVICE,

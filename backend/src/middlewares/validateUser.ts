@@ -21,6 +21,13 @@ export const validatePassword = body('password')
   .isLength({ min: 8 })
   .withMessage('Password must be at least 8 characters long');
 
+export const validateConfirmPassword = body('confirmPassword')
+  .notEmpty()
+  .withMessage('Confirm Password must not be empty')
+  .custom((value, { req }) => {
+    return value === req.body.password;
+  });
+
 export const checkUsernameInUse = body('username').custom((value) =>
   userRepository.findOne({ where: { username: value } }).then((user) => {
     if (user) {
@@ -30,6 +37,14 @@ export const checkUsernameInUse = body('username').custom((value) =>
 );
 
 export const checkEmailInUse = body('email').custom((value) =>
+  userRepository.findOne({ where: { email: value } }).then((user) => {
+    if (user) {
+      throw new Error('Email already in use');
+    }
+  })
+);
+
+export const checkConfirmPassword = body('confirmPassword').custom((value) =>
   userRepository.findOne({ where: { email: value } }).then((user) => {
     if (user) {
       throw new Error('Email already in use');

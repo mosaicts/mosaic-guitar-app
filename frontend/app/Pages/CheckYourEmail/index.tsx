@@ -1,5 +1,11 @@
 import './index.css';
 
 export default function CheckYourEmail() {
-  return <div id="check-your-email">Please check your email for a verification link.</div>;
+  return (
+    <div id="check-email" className="modal-bg">
+      <div className="modal">
+        <h2>Please check your email for a verification link.</h2>
+      </div>
+    </div>
+  );
 }

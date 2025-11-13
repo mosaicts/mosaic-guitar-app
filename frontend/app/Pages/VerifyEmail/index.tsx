@@ -1,69 +1,82 @@
-import type { Route } from '../VerifyEmail/+types';
-import { useNavigate } from 'react-router';
+import type { Route } from './+types';
+import { redirect, useNavigate, useNavigation, useSearchParams, useSubmit } from 'react-router';
 import { useEffect, useRef } from 'react';
-import { verifyEmail } from '@/utils/apis';
+import { resendVerificationMail } from '@/utils/apis';
 import './index.css';
-import { useLoaderData, useNavigation } from 'react-router';
 
-export async function clientLoader({ request }: Route.ClientLoaderArgs) {
-  const url = new URL(request.url);
-  const data = { email: url.searchParams.get('email'), token: url.searchParams.get('token') };
-  try {
-    const response = await verifyEmail(data);
-    return {
-      success: true,
-      response: response.data.message
-    };
-  } catch (err: any) {
-    return {
-      success: true,
-      response: err.response.data.message
-    };
-  }
+export async function clientAction({ request }: Route.ClientActionArgs) {
+  let formData = await request.formData();
+  console.log(formData.get('email'));
+  await resendVerificationMail({ email: formData.get('email') });
+  return redirect('/check-your-email');
 }
 
 export default function VerifyEmail() {
   const ref = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const data = useLoaderData();
+  const [searchParams] = useSearchParams();
+
+  let submit = useSubmit();
   const navigate = useNavigate();
   const navigation = useNavigation();
+  const success = searchParams.get('status') === 'success';
+  const verificationStatus = success ? 'Verification Success' : 'Verification Failed';
+  const isSubmitting = navigation.state !== 'idle';
+  const isDisabled = isSubmitting; // Prevents double-submit
+
+  const handleBtnClick = () => {
+    submit(
+      { email: searchParams.get('email') },
+      {
+        action: '/verify/email',
+        method: 'post'
+      }
+    );
+  };
 
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      navigate('/login');
-    }, 10000);
-    ref.current = timeoutId;
+    if (success) {
+      const timeoutId = setTimeout(() => {
+        navigate('/login');
+      }, 1000 * 10);
+      ref.current = timeoutId;
 
-    return () => {
-      clearTimeout(timeoutId);
-      ref.current = null;
-    };
-  }, [data]);
+      return () => {
+        clearTimeout(timeoutId);
+        ref.current = null;
+      };
+    }
+  });
 
   return (
-    <div className="modal-bg">
-      {navigation.state === 'loading' ? (
-        <p>Verify...</p>
-      ) : (
-        <div>
-          <h2>{data.response}</h2>
+    <div id="verify-email" className="modal-bg">
+      <div className="modal">
+        <h2>{verificationStatus}</h2>
+        {success ? (
           <p>
             Click{' '}
             <a
               href="/login"
               onClick={() => {
-                navigate('/login');
                 if (ref.current) {
                   clearTimeout(ref.current);
                 }
+                return true;
               }}
             >
               here
             </a>{' '}
             to redirect to login page or redirect automatically within 10 seconds
           </p>
-        </div>
-      )}
+        ) : (
+          <button
+            className={'submit-btn' + (isSubmitting ? ' progress' : '')}
+            disabled={isDisabled}
+            onClick={handleBtnClick}
+          >
+            {isSubmitting ? 'Resend verification code...' : 'Resend verification code'}
+          </button>
+        )}
+      </div>
     </div>
   );
 }

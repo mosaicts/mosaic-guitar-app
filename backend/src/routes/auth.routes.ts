@@ -7,7 +7,8 @@ import {
   validateEmail,
   validatePassword,
   checkEmailInUse,
-  checkUsernameInUse
+  checkUsernameInUse,
+  validateConfirmPassword
 } from '../middlewares/validateUser';
 
 const authRouter = Router();
@@ -17,12 +18,14 @@ authRouter.post(
   validateUsername,
   validateEmail,
   validatePassword,
+  validateConfirmPassword,
   checkEmailInUse,
   checkUsernameInUse,
   validate,
   UserController.register
 );
-authRouter.post('/verify', UserController.verify);
+authRouter.get('/verify/email/:id/:token', UserController.verify);
+authRouter.post('/resend-verification/email', UserController.resendVerificationMail);
 authRouter.post('/login', UserController.login);
 authRouter.post('/refresh-token', UserController.refreshToken);
 authRouter.get(

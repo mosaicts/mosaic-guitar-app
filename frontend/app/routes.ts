@@ -1,4 +1,4 @@
-import { type RouteConfig, layout, route, index } from '@react-router/dev/routes';
+import { type RouteConfig, layout, route, index, prefix } from '@react-router/dev/routes';
 
 // index: initial route
 export default [
@@ -13,5 +13,5 @@ export default [
   route('login', 'Pages/Login/index.tsx'),
   route('register', 'Pages/Register/index.tsx'),
   route('check-your-email', 'Pages/CheckYourEmail/index.tsx'),
-  route('verify-email', 'Pages/VerifyEmail/index.tsx')
+  ...prefix('verify', [route('email', 'Pages/VerifyEmail/index.tsx')])
 ] satisfies RouteConfig;

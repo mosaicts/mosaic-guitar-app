@@ -4,8 +4,13 @@
  */
 
 import { http, HttpResponse } from 'msw';
+import 'dotenv/config';
 
-const MOSAIC_BASE_URL = process.env.VITE_PUBLIC_MOSAIC_BACKEND_URL || 'http://127.0.0.1:3000';
+export const MOSAIC_BASE_URL =
+  process.env.VITE_PUBLIC_MOSAIC_BACKEND_URL || 'http://localhost:3000';
+export const MOSAIC_APP_URL = process.env.VITE_PUBLIC_MOSAIC_APP_URL || 'http://localhost:5173';
+
+console.log(MOSAIC_BASE_URL, MOSAIC_APP_URL);
 
 /**
  * Mock Products
@@ -140,12 +145,27 @@ export const handlers = [
   }),
 
   // Verification
-  http.post(`${MOSAIC_BASE_URL}/auth/verify`, async ({ request }) => {
+  http.get<{ id: string; token: string }>(
+    `${MOSAIC_BASE_URL}/auth/verify/email/:id/:token`,
+    async ({ params }) => {
+      const { id, token } = params;
+
+      if (id === 'testid' && token === 'easytokenpass') {
+        return HttpResponse.redirect(`${MOSAIC_APP_URL}/verify/email?status=success`);
+      } else {
+        return HttpResponse.redirect(
+          `${MOSAIC_APP_URL}/verify/email?status=failed&email=test@example.com`
+        );
+      }
+    }
+  ),
+
+  http.post(`${MOSAIC_BASE_URL}/auth/resend-verification/email`, async ({ request }) => {
     const body = (await request.json()) as any;
 
     if (body.email === 'test@example.com') {
       return HttpResponse.json({
-        message: 'Email verified successfully'
+        message: 'Verification code resent successfully'
       });
     }
 
