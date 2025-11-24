@@ -1,13 +1,12 @@
 import type { Route } from './+types';
 import { redirect, useNavigate, useNavigation, useSearchParams, useSubmit } from 'react-router';
 import { useEffect, useRef } from 'react';
-import { resendVerificationMail } from '@/utils/apis';
+import { sendVerificationLink } from '@/utils/apis';
 import './index.css';
 
 export async function clientAction({ request }: Route.ClientActionArgs) {
   let formData = await request.formData();
-  console.log(formData.get('email'));
-  await resendVerificationMail({ email: formData.get('email') });
+  await sendVerificationLink({ email: formData.get('email') });
   return redirect('/check-your-email');
 }
 
@@ -15,7 +14,7 @@ export default function VerifyEmail() {
   const ref = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [searchParams] = useSearchParams();
 
-  let submit = useSubmit();
+  const submit = useSubmit();
   const navigate = useNavigate();
   const navigation = useNavigation();
   const success = searchParams.get('status') === 'success';

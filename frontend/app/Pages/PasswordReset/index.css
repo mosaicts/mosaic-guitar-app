@@ -1,0 +1,41 @@
+#verify-email.modal {
+  width: 500px;
+  text-align: justify;
+}
+
+#verify-email-form {
+  display: flex;
+  flex-direction: column;
+  justify-self: start;
+  gap: 1rem;
+}
+
+#verify-email-form > div:not(.separation) {
+  display: flex;
+  flex-direction: column;
+}
+
+#verify-email-form > div:not(.separation) {
+  display: flex;
+  flex-direction: column;
+}
+
+#verify-email-form div label {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+#verify-email-form div > input {
+  font-size: 1rem;
+  padding-left: 0.5rem;
+  width: 400px;
+}
+
+#verify-email-form div > input,
+#verify-email-form .submit-btn {
+  height: 40px;
+}
+
+#verify-email-form input {
+  background-color: transparent;
+}

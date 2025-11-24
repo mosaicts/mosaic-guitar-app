@@ -16,6 +16,13 @@ export class UserController {
 
   static async resendVerificationMail(req: Request, res: Response) {
     await authService.resendVerificationMail(req, res);
+  static async sendVerificationLink(req: Request, res: Response) {
+    await authService.sendVerificationLink(req, res);
+  }
+
+  static async sendVerificationOTP(req: Request, res: Response) {
+    await authService.sendVerificationOTP(req, res);
+  }
   }
 
   static async login(req: Request, res: Response) {

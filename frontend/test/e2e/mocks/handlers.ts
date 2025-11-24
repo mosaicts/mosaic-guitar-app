@@ -170,5 +170,19 @@ export const handlers = [
     }
 
     return new HttpResponse(null, { status: 401 });
+  }),
+
+  http.post(`${MOSAIC_BASE_URL}/auth/send-verification/email/otp`, async ({ request }) => {
+    const body = (await request.json()) as any;
+
+    if (body.email === 'test@example.com') {
+      return HttpResponse.json({
+        message: 'Verification code sent successfully'
+      });
+    }
+
+    return new HttpResponse(null, { status: 401 });
+  }),
+    return new HttpResponse(null, { status: 401 });
   })
 ];

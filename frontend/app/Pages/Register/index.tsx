@@ -1,4 +1,4 @@
-import type { Route } from './+types/index';
+import type { Route } from './+types';
 import { useEffect } from 'react';
 import { Form, Link, useSubmit, useActionData, useNavigation, redirect } from 'react-router';
 import { useForm, useWatch } from 'react-hook-form';
@@ -8,6 +8,7 @@ import { z } from 'zod';
 import { register as requestRegisterApi } from '@/utils/apis';
 import PasswordInput from '@/Components/PasswordInput';
 import Separation from '@/Components/Separation';
+import { passwordValidationPatterns } from '@/lib/password';
 import './index.css';
 
 const RegisterUserSchema = z
@@ -31,14 +32,6 @@ const RegisterUserSchema = z
   });
 
 type RegisterUserSchemaType = z.infer<typeof RegisterUserSchema>;
-
-// Password validation patterns
-const passwordValidationPatterns = {
-  atLeastOneUppercase: /[A-Z]/,
-  atLeastOneLowercase: /[a-z]/,
-  atLeastOneNumeric: /[0-9]/,
-  atLeastOneSpecialChar: /[!@#\$%\^\&*\)\(+=._-]/
-};
 
 export async function clientAction({ request }: Route.ActionArgs) {
   const formData = await request.formData();
@@ -153,7 +146,6 @@ export default function Register() {
               </label>
               <PasswordInput
                 {...register('password', {
-                  required: true,
                   onBlur: (e: React.ChangeEvent<HTMLInputElement>) => {
                     e.target.reportValidity();
                   },

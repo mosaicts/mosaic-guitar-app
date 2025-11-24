@@ -1,22 +1,11 @@
-import { redisClient } from '../data-source';
-import { generateJwt, sha256 } from '../lib/jwt';
-import { User } from '../entities/User.postgres';
+import { redisClient } from '../utils/handleGetRepository';
 
-export const generateAndStoreToken = async (user: User) => {
+export const storeToken = async (userId: string, token: string | number, expireIn: number) => {
   try {
-    const token = generateJwt({
-      expiresIn: '5m',
-      otherClaims: {
-        'X-User-Id': String(user.id),
-        'X-User-Email': user.email
-      }
-    });
     // store the token in Redis and will expires in 10-mins
-    await redisClient.setex(`verifyToken:${user.id}`, 60 * 10, token);
-
-    return token;
+    await redisClient.setex(`verifyToken:${userId}`, expireIn, token);
   } catch (err) {
-    console.log('Something went wrong while generating token:', err);
+    console.log('Something went wrong while storing token:', err);
   }
 };
 

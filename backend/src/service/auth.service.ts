@@ -9,7 +9,7 @@ import {
   FINGERPRINT_COOKIE_NAME
 } from '../lib/setFingerprintCookieAndSignJwt';
 import { generateJwt, sha256, verifyJwt } from '../lib/jwt';
-import { uuidv4 } from '../lib/auth';
+import { generateOTP, uuidv4 } from '../lib/auth';
 import { parse } from 'cookie';
 import {
   maxWrongAttemptsByIPperDay,
@@ -19,7 +19,8 @@ import {
   getUsernameIPkey
 } from '../config/rateLimiter';
 import { User } from '../entities/User.postgres';
-import { sendVerificationMail } from '../config/emailTransporter';
+import { sendVerificationLinkToMail, sendVerificationCodeToMail } from '../config/emailTransporter';
+import { searchAndFindToken, storeToken } from '../utils/tokenService';
 
 export class AuthService {
   constructor(private readonly userRepository: Repository<User>) {}
@@ -52,9 +53,9 @@ export class AuthService {
       res.status(400).json({ message: 'Error signing up' });
     }
 
-    // send verification code to email
+    // send verification link to email
     try {
-      await this.#sendVerificationCodeToEmail(user);
+      await this.#sendVerificationLinkToEmail(user);
     } catch (err) {
       return res
         .status(400)
@@ -67,7 +68,7 @@ export class AuthService {
     // return res.status(200).redirect(`${envConfig.CLIENT_URL}/check-your-email`);
   }
 
-  async verify(req: Request, res: Response) {
+  async verifyEmail(req: Request, res: Response) {
     try {
       const { id, token } = req.params;
 
@@ -102,9 +103,6 @@ export class AuthService {
     }
   }
 
-  async resendVerificationMail(req: Request, res: Response) {
-    const { email } = req.body;
-    console.log('Email:', email);
 
     const user = await this.userRepository.findOne({ where: { email } });
 
@@ -211,6 +209,46 @@ export class AuthService {
     }
   }
 
+  async sendVerificationLink(req: Request, res: Response) {
+    const { email } = req.body;
+
+    const user = await this.userRepository.findOne({ where: { email } });
+
+    if (!user) {
+      return res.status(400).json({ message: 'Wrong email' });
+    }
+
+    try {
+      await this.#sendVerificationLinkToEmail(user);
+      // return res.status(200).redirect(`${envConfig.CLIENT_URL}/check-your-email`);
+      return res.status(200).json({
+        message: 'Verification link resent successfully'
+      });
+    } catch (err) {
+      console.log('An error occurred while sending verification token:', err);
+      return res
+        .status(400)
+        .redirect(
+          `${envConfig.CLIENT_URL}/verify/email?status=failed&email=${encodeURIComponent(user.email)}`
+        );
+    }
+  }
+
+  async sendVerificationOTP(req: Request, res: Response) {
+    const { email } = req.body;
+
+    const user = await this.userRepository.findOne({ where: { email } });
+
+    try {
+      await this.#sendVerificationOTPToEmail(user, email);
+      // return res.status(200).redirect(`${envConfig.CLIENT_URL}/check-your-email`);
+      return res.status(200).json({
+        message: 'Verification code resent successfully'
+      });
+    } catch (err) {
+      console.log('An error occurred while sending verification token:', err);
+    }
+  }
   async refreshJwt(req: Request, res: Response) {
     const { refreshToken, fingerprintHash } = req.params;
 
@@ -250,12 +288,23 @@ export class AuthService {
       });
   }
 
-  #sendVerificationCodeToEmail = async (user: User) => {
+  #sendVerificationLinkToEmail = async (user: User) => {
     // send verification code to email
     const verificationToken = this.#generateVerificationToken(user);
     const verificationUrl = `${envConfig.BACKEND_URL}/auth/verify/email/${user.id}/${verificationToken}`;
     try {
-      await sendVerificationMail(user, verificationUrl);
+      await sendVerificationLinkToMail(user, verificationUrl);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  #sendVerificationOTPToEmail = async (user: User, email: string) => {
+    // send verification code to email
+    const verificationOTP = generateOTP();
+    await storeToken(email, verificationOTP, 60);
+    try {
+      await sendVerificationCodeToMail(user, email, verificationOTP);
     } catch (err) {
       console.log(err);
     }

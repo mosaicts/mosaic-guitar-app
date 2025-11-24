@@ -71,7 +71,6 @@ export default function Login() {
 
   const isSubmitting = navigation.state === 'submitting';
   // TODO: add pending UI for this state
-  const isLoading = navigation.state === 'loading';
   const isDisabled = isSubmitting; // Prevents double-submit
 
   return (
@@ -88,7 +87,7 @@ export default function Login() {
           <div id="password">
             <div>
               <label htmlFor="password-input">Password</label>
-              <Link to="/signup">Forgot password?</Link>
+              <Link to="/password-reset">Forgot password?</Link>
             </div>
             <PasswordInput required {...register('password')} />
             {errors.password && <span className="err">{errors.password.message}</span>}

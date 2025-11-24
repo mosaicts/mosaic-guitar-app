@@ -8,7 +8,10 @@ import {
   registerURL,
   refreshTokenURL,
   verifyEmailUrl,
-  resendVerificationMailURL
+  verifyOTPURL,
+  sendVerificationLinkURL,
+  sendVerificationOTPURL,
+  resetPasswordURL
 } from '../Constants/apis';
 import { type Guitar } from './models';
 
@@ -30,16 +33,6 @@ export async function fetchSingleGuitar(id: number) {
   return response.data.product as Guitar;
 }
 
-export async function login(data: object) {
-  const response = await axios.post(loginURL, data, {
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    withCredentials: true
-  });
-  return response;
-}
-
 export async function getUser(data: object) {
   const response = await axios.post(getUserURL, data, {
     headers: {
@@ -55,6 +48,16 @@ export async function updateUser(data: object) {
     headers: {
       'Content-Type': 'application/json'
     }
+  });
+  return response;
+}
+
+export async function login(data: object) {
+  const response = await axios.post(loginURL, data, {
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    withCredentials: true
   });
   return response;
 }
@@ -77,8 +80,24 @@ export async function verifyEmail(data: object) {
   return response;
 }
 
-export async function resendVerificationMail(data: object) {
-  const response = await axios.post(resendVerificationMailURL, data, {
+export async function sendVerificationLink(data: object) {
+  const response = await axios.post(sendVerificationLinkURL, data, {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+  return response;
+}
+
+export async function sendVerificationOTP(data: object) {
+  const response = await axios.post(sendVerificationOTPURL, data, {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+  return response;
+}
+
     headers: {
       'Content-Type': 'application/json'
     }

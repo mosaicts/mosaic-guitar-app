@@ -10,8 +10,16 @@ export default [
       route('guitars/:guitarId', 'Pages/Guitar/index.tsx')
     ])
   ]),
+
   route('login', 'Pages/Login/index.tsx'),
   route('register', 'Pages/Register/index.tsx'),
   route('check-your-email', 'Pages/CheckYourEmail/index.tsx'),
-  ...prefix('verify', [route('email', 'Pages/VerifyEmail/index.tsx')])
+
+  ...prefix('verify', [route('email', 'Pages/VerifyEmail/index.tsx')]),
+
+  ...prefix('password-reset', [
+    index('Pages/PasswordReset/index.tsx'),
+    route('verify-otp', 'Pages/PasswordReset/VerifyOTP/index.tsx'),
+    route('new-password', 'Pages/PasswordReset/NewPass/index.tsx')
+  ])
 ] satisfies RouteConfig;

@@ -13,6 +13,7 @@ import {
 
 const authRouter = Router();
 
+authRouter.post('/login', UserController.login);
 authRouter.post(
   '/register',
   validateUsername,
@@ -24,9 +25,9 @@ authRouter.post(
   validate,
   UserController.register
 );
-authRouter.get('/verify/email/:id/:token', UserController.verify);
-authRouter.post('/resend-verification/email', UserController.resendVerificationMail);
-authRouter.post('/login', UserController.login);
+authRouter.get('/verify/email/:id/:token', UserController.verifyEmail);
+authRouter.post('/send-verification/email/link', UserController.sendVerificationLink);
+authRouter.post('/send-verification/email/otp', UserController.sendVerificationOTP);
 authRouter.post('/refresh-token', UserController.refreshToken);
 authRouter.get(
   '/protected',
