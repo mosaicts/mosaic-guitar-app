@@ -14,6 +14,7 @@ import productRouter from '../routes/product.routes';
 export class TestFactory {
   private _app: express.Application;
   private _connection: DataSource;
+  private _redisClient: Redis;
   private _server: Server;
 
   public get app(): supertest.SuperTest<supertest.Test> {
@@ -26,6 +27,7 @@ export class TestFactory {
 
   public async close(): Promise<void> {
     this._server.close();
+    this._redisClient.quit();
     await this._connection.destroy();
   }
 
@@ -36,7 +38,7 @@ export class TestFactory {
         ...testPostgresDBConfig
       }
     });
-    const client = new Redis(testRedisConfig);
+    this._redisClient = new Redis(testRedisConfig);
   }
 
   private async startup(): Promise<void> {

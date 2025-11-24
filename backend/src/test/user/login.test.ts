@@ -13,20 +13,21 @@ describe('Login user', () => {
 
   beforeEach(() => {
     return factory.app.post('/auth/register').set('content-type', 'application/json').send({
-      firstName: 'dung',
-      lastName: 'nguyen',
-      username: 'leonard',
-      email: 'dungnguyen2712002@gmail.com',
-      password: 'Abc@123456'
+      firstName: 'test',
+      lastName: 'example',
+      username: 'testexample',
+      email: 'test@example.com',
+      password: 'Abc@123456',
+      confirmPassword: 'Abc@123456'
     });
   });
 
   describe('Login an user with wrong passwords', () => {
     const userInfoPartial = {
-      email: 'dungnguyen2712002@gmail.com'
+      email: 'test@example.com'
     };
 
-    it('should return wrong password error ', async () => {
+    it('should return error of unverified email ', async () => {
       const res = await factory.app
         .post('/auth/login')
         .set('content-type', 'application/json')
@@ -35,7 +36,9 @@ describe('Login user', () => {
           password: 'Abc@123478'
         });
       expect(res.statusCode).toBe(400);
-      expect(res.body.message).toBe('Email or password is not correct');
+      expect(res.body.message).toBe(
+        'This email has not been verified. Please check your email for a verification link.'
+      );
     });
   });
 
@@ -44,13 +47,13 @@ describe('Login user', () => {
       password: 'Abc@123456'
     };
 
-    it('should return user not found ', async () => {
+    it('should return error ', async () => {
       const res = await factory.app
         .post('/auth/login')
         .set('content-type', 'application/json')
         .send({
           ...userInfoPartial,
-          email: 'dungnguyen271200@gmail.com'
+          email: 'test1@example.con'
         });
       expect(res.statusCode).toBe(400);
       expect(res.body.message).toBe('Email or password is not correct');
@@ -58,12 +61,12 @@ describe('Login user', () => {
   });
 
   describe('Login an user with both wrong email and password', () => {
-    it('should return user not found ', async () => {
+    it('should return error', async () => {
       const res = await factory.app
         .post('/auth/login')
         .set('content-type', 'application/json')
         .send({
-          email: 'dungnguyen271200@gmail.com',
+          email: 'test1@example.con',
           password: 'Abc@144444'
         });
       expect(res.statusCode).toBe(400);
@@ -77,13 +80,13 @@ describe('Login user', () => {
         .post('/auth/login')
         .set('content-type', 'application/json')
         .send({
-          email: 'dungnguyen2712002@gmail.com',
+          email: 'test@example.com',
           password: 'Abc@123456'
         });
-      expect(res.statusCode).toBe(200);
-      expect(res.body.message).toBe('User login successfully');
-      expect(res.body).toHaveProperty('jwt');
-      expect(res.body).toHaveProperty('refreshToken');
+      expect(res.statusCode).toBe(400);
+      expect(res.body.message).toBe(
+        'This email has not been verified. Please check your email for a verification link.'
+      );
     });
   });
 });

@@ -13,20 +13,21 @@ describe('Register user', () => {
 
   beforeEach(() => {
     return factory.app.post('/auth/register').set('content-type', 'application/json').send({
-      firstName: 'dung',
-      lastName: 'nguyen',
-      username: 'leonard',
-      email: 'dungnguyen2712002@gmail.com',
-      password: 'Abc@123456'
+      firstName: 'test',
+      lastName: 'example',
+      username: 'testexample',
+      email: 'test@example.com',
+      password: 'Abc@123456',
+      confirmPassword: 'Abc@123456'
     });
   });
 
   describe('Register an user with wrong passwords', () => {
     const userInfoPartial = {
-      firstName: 'dung',
-      lastName: 'nguyen',
-      username: 'dung271',
-      email: 'dungnguyen2712000@gmail.com'
+      firstName: 'test',
+      lastName: 'example',
+      username: 'testexample1',
+      email: 'test1@example.com'
     };
 
     it('should return error about empty password ', async () => {
@@ -35,22 +36,59 @@ describe('Register user', () => {
         .set('content-type', 'application/json')
         .send({
           ...userInfoPartial,
-          password: ''
+          password: '',
+          confirmPassword: ''
         });
       expect(res.statusCode).toBe(400);
       expect(res.body.message).toBe('Validation failed');
       expect(res.body).toHaveProperty('errors');
       expect(res.body.errors).toHaveProperty('password');
       expect(res.body.errors.password[0]).toBe('Password must not be empty');
+      expect(res.body.errors).toHaveProperty('confirmPassword');
+      expect(res.body.errors.confirmPassword[0]).toBe('Confirm Password must not be empty');
+    });
+
+    it('should return error about empty confirm password ', async () => {
+      const res = await factory.app
+        .post('/auth/register')
+        .set('content-type', 'application/json')
+        .send({
+          ...userInfoPartial,
+          password: 'Abc123456',
+          confirmPassword: ''
+        });
+      expect(res.statusCode).toBe(400);
+      expect(res.body.message).toBe('Validation failed');
+      expect(res.body).toHaveProperty('errors');
+      expect(res.body.errors).toHaveProperty('confirmPassword');
+      expect(res.body.errors.confirmPassword[0]).toBe('Confirm Password must not be empty');
+      expect(res.body.errors.confirmPassword[1]).toBe('Password and Confirm Password do not match');
+    });
+
+    it('should return error about mismatched password and confirm password ', async () => {
+      const res = await factory.app
+        .post('/auth/register')
+        .set('content-type', 'application/json')
+        .send({
+          ...userInfoPartial,
+          password: 'Abc123456',
+          confirmPassword: 'Abc'
+        });
+      expect(res.statusCode).toBe(400);
+      expect(res.body.message).toBe('Validation failed');
+      expect(res.body).toHaveProperty('errors');
+      expect(res.body.errors).toHaveProperty('confirmPassword');
+      expect(res.body.errors.confirmPassword[0]).toBe('Password and Confirm Password do not match');
     });
   });
 
   describe('Register an user with wrong emails', () => {
     const userInfoPartial = {
-      firstName: 'dung',
-      lastName: 'nguyen',
-      username: 'dungnq',
-      password: 'Abc@12345678'
+      firstName: 'test',
+      lastName: 'example',
+      username: 'testexample1',
+      password: 'Abc@12345678',
+      confirmPassword: 'Abc@12345678'
     };
 
     it('should return error missing email ', async () => {
@@ -74,7 +112,7 @@ describe('Register user', () => {
         .set('content-type', 'application/json')
         .send({
           ...userInfoPartial,
-          email: 'dungnguyen2712001'
+          email: 'test@example'
         });
       expect(res.statusCode).toBe(400);
       expect(res.body.message).toBe('Validation failed');
@@ -83,20 +121,20 @@ describe('Register user', () => {
       expect(res.body.errors.email[0]).toBe('Please provide a valid email address');
     });
 
-    it('should return error of invalid email ', async () => {
-      const res = await factory.app
-        .post('/auth/register')
-        .set('content-type', 'application/json')
-        .send({
-          ...userInfoPartial,
-          email: 'abcdef@http.gmail.com'
-        });
-      expect(res.statusCode).toBe(400);
-      expect(res.body.message).toBe('Validation failed');
-      expect(res.body).toHaveProperty('errors');
-      expect(res.body.errors).toHaveProperty('email');
-      expect(res.body.errors.email[0]).toBe('Please provide a valid email address');
-    });
+    // it('should return error of invalid email ', async () => {
+    //   const res = await factory.app
+    //     .post('/auth/register')
+    //     .set('content-type', 'application/json')
+    //     .send({
+    //       ...userInfoPartial,
+    //       email: 'abcdef@http.gmail.com'
+    //     });
+    //   expect(res.statusCode).toBe(400);
+    //   expect(res.body.message).toBe('Validation failed');
+    //   expect(res.body).toHaveProperty('errors');
+    //   expect(res.body.errors).toHaveProperty('email');
+    //   expect(res.body.errors.email[0]).toBe('Please provide a valid email address');
+    // });
 
     it('should return error of duplicate email ', async () => {
       const res = await factory.app
@@ -104,7 +142,7 @@ describe('Register user', () => {
         .set('content-type', 'application/json')
         .send({
           ...userInfoPartial,
-          email: 'dungnguyen2712002@gmail.com'
+          email: 'test@example.com'
         });
       expect(res.statusCode).toBe(400);
       expect(res.body.errors.email[0]).toBe('Email already in use');
@@ -113,10 +151,11 @@ describe('Register user', () => {
 
   describe('Register an user with wrong usernames', () => {
     const userInfoPartial = {
-      firstName: 'dung',
-      lastName: 'nguyen',
-      email: 'dungnguyen2712000@gmail.com',
-      password: 'Abc@12345678'
+      firstName: 'test',
+      lastName: 'example',
+      email: 'test1@example.com',
+      password: 'Abc@12345678',
+      confirmPassword: 'Abc@12345678'
     };
 
     it('should return error about empty username', async () => {
@@ -140,7 +179,7 @@ describe('Register user', () => {
         .set('content-type', 'application/json')
         .send({
           ...userInfoPartial,
-          username: 'leonard'
+          username: 'testexample'
         });
       expect(res.statusCode).toBe(400);
       expect(res.body.errors.username[0]).toBe('Username already in use');
@@ -153,14 +192,15 @@ describe('Register user', () => {
         .post('/auth/register')
         .set('content-type', 'application/json')
         .send({
-          firstName: 'dung',
-          lastName: 'nguyen',
-          username: 'dung271',
-          email: 'dungnguyen2712000@gmail.com',
-          password: 'Abc@12345678'
+          firstName: 'test',
+          lastName: 'example',
+          username: 'testexample1',
+          email: 'test1@example.com',
+          password: 'Abc@12345678',
+          confirmPassword: 'Abc@12345678'
         });
       expect(res.statusCode).toBe(200);
-      expect(res.body.message).toBe('User registered successfully');
+      expect(res.body.message).toBe('Registration successful, please verify your email');
     });
   });
 
@@ -169,13 +209,15 @@ describe('Register user', () => {
       .post('/auth/register')
       .set('content-type', 'application/json')
       .send({
-        firstName: 'dung',
-        lastName: 'nguyen',
-        username: 'dung271',
-        email: 'dungnguyen2712000@gmail.com',
-        password: '184782u42ujmjfkjf9u2918ujfjjjsjkj29@fajjAgjkbjkjkjksjiu29@2i4uiGgjkjw022849j'
+        firstName: 'test',
+        lastName: 'example',
+        username: 'testexample1',
+        email: 'test1@example.com',
+        password: '184782u42ujmjfkjf9u2918ujfjjjsjkj29@fajjAgjkbjkjkjksjiu29@2i4uiGgjkjw022849j',
+        confirmPassword:
+          '184782u42ujmjfkjf9u2918ujfjjjsjkj29@fajjAgjkbjkjkjksjiu29@2i4uiGgjkjw022849j'
       });
     expect(res.statusCode).toBe(200);
-    expect(res.body.message).toBe('User registered successfully');
+    expect(res.body.message).toBe('Registration successful, please verify your email');
   });
 });

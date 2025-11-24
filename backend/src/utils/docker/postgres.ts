@@ -10,7 +10,7 @@ const CONTAINER_NAME = 'typeorm-test';
 export const removePostgresContainer = async (): Promise<void> => {
   const docker = new Docker();
   try {
-    const container = await docker.getContainer(CONTAINER_NAME);
+    const container = docker.getContainer(CONTAINER_NAME);
     try {
       await container.stop();
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

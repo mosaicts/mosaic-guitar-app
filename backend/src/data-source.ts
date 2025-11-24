@@ -1,7 +1,6 @@
 import 'reflect-metadata';
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { RedisOptions } from 'ioredis';
-import { Redis } from 'ioredis';
 import envConfig from './config/envConfig';
 
 // Make sure to set this to false in production
@@ -40,25 +39,17 @@ export const AppDataSource = new DataSource(postgresDBConfig);
 const TestDataSource = new DataSource(testPostgresDBConfig);
 
 // REDIS
-const redisConfig: RedisOptions = {
+export const redisConfig: RedisOptions = {
   port: envConfig.REDIS_PORT,
   host: envConfig.REDIS_HOST,
-  password: envConfig.REDIS_PASSWORD
+  password: envConfig.REDIS_PASSWORD,
+  enableOfflineQueue: false
 };
 
 export const testRedisConfig: RedisOptions = {
   port: 6380,
-  host: 'localhost'
+  host: 'localhost',
+  enableOfflineQueue: false
 };
-
-export const redisClient = new Redis(redisConfig);
-redisClient.on('connect', () => {
-  console.log('Redis connected succesfully');
-  console.log('===============================');
-});
-redisClient.on('error', (err) => {
-  console.log('Redis conncetion error : ', err);
-  console.log('===============================');
-});
 
 export default { AppDataSource, TestDataSource };
