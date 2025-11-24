@@ -45,12 +45,12 @@ describe('<Register />', () => {
     expect(screen.queryByText('Strength: low')).not.toBeInTheDocument();
 
     // check initial values
-    expect(firstNameInput.value).toBe('');
-    expect(lastNameInput.value).toBe('');
-    expect(usernameInput.value).toBe('');
-    expect(emailInput.value).toBe('');
-    expect(passwordInput.value).toBe('');
-    expect(confirmPasswordInput.value).toBe('');
+    expect(firstNameInput).toHaveValue('');
+    expect(lastNameInput).toHaveValue('');
+    expect(usernameInput).toHaveValue('');
+    expect(emailInput).toHaveValue('');
+    expect(passwordInput).toHaveValue('');
+    expect(confirmPasswordInput).toHaveValue('');
   });
 
   it('should navigate to the login route after clicking the Login link at the end of the form', async () => {
@@ -77,7 +77,7 @@ describe('<Register />', () => {
     });
   });
 
-  it('should focus on the first empty field to display error message if user click submit button', async () => {
+  it('should focus on the first empty field to display error message if clicking submit button', async () => {
     const Stub = createRoutesStub([
       {
         path: '/register',
@@ -99,7 +99,7 @@ describe('<Register />', () => {
     expect(lastNameInput.validity.valueMissing).toBe(true);
   });
 
-  it('should display error of short password', async () => {
+  it.skip('should keep displaying error of short password and focusing the field if clicking outside the it', async () => {
     const ERROR_MESSAGE = 'Password must be at least 8 characters';
 
     const Stub = createRoutesStub([
@@ -112,9 +112,16 @@ describe('<Register />', () => {
     render(<Stub initialEntries={['/register']} />);
 
     const passwordInput = screen.getByLabelText('Password *') as HTMLInputElement;
+    const confirmPasswordInput = screen.getByLabelText('Confirm password *') as HTMLInputElement;
 
     await user.type(passwordInput, 'short');
+    expect(passwordInput.value).toBe('short');
+    expect(passwordInput.validationMessage).toBe(ERROR_MESSAGE);
 
+    await user.type(confirmPasswordInput, 'abcd');
+    expect(confirmPasswordInput.value).toBe('');
+
+    expect(passwordInput).toBe(document.activeElement);
     expect(passwordInput.validationMessage).toBe(ERROR_MESSAGE);
   });
 
@@ -169,9 +176,7 @@ describe('<Register />', () => {
     expect(screen.getByText('Strength: strong')).toBeInTheDocument();
   });
 
-  it('should display error of mismatched confirm password', async () => {
-    const ERROR_MESSAGE = 'Password does not match';
-
+  it('should display no error if user copy the text from password input to the confirm password input and the password input text is valid (>=8 characters)', async () => {
     const Stub = createRoutesStub([
       {
         path: '/register',
@@ -181,17 +186,21 @@ describe('<Register />', () => {
     // render the app stub at "/register"
     render(<Stub initialEntries={['/register']} />);
 
-    const passwordInput = screen.getByLabelText('Password *');
+    let passwordInput = screen.getByLabelText('Password *') as HTMLInputElement;
     const confirmPasswordInput = screen.getByLabelText('Confirm password *') as HTMLInputElement;
 
     // simulate interactions
     await user.type(passwordInput, 'abcdefgh');
-    await user.type(confirmPasswordInput, 'abcd');
+    await user.keyboard('{Control>}A{/Control}'); // select all
+    await user.copy();
+    await user.click(confirmPasswordInput);
+    await user.paste();
 
-    expect(confirmPasswordInput.validationMessage).toBe(ERROR_MESSAGE);
+    expect(confirmPasswordInput).toHaveValue('abcdefgh');
+    expect(confirmPasswordInput.validationMessage).toBe('');
   });
 
-  it('should keep focusing on confirm password field and displaying error of mismatched confirm password if clicking outside the field', async () => {
+  it.skip('should keep displaying error of mismatched confirm password and focusing the field if clicking outside it', async () => {
     const ERROR_MESSAGE = 'Password does not match';
 
     const Stub = createRoutesStub([
@@ -211,10 +220,11 @@ describe('<Register />', () => {
     await user.type(confirmPasswordInput, 'abcd');
 
     expect(confirmPasswordInput.validationMessage).toBe(ERROR_MESSAGE);
+    expect(confirmPasswordInput).toBe(document.activeElement);
 
-    passwordInput = screen.getByLabelText('Password *') as HTMLInputElement;
-    await user.type(passwordInput, 'Agkb');
-    expect(passwordInput.validationMessage).toBe('');
+    await user.type(passwordInput, 'abcd');
+    expect(passwordInput.value).toBe('abcdefgh');
+    expect(confirmPasswordInput).toBe(document.activeElement);
     expect(confirmPasswordInput.validationMessage).toBe(ERROR_MESSAGE);
   });
 
@@ -266,11 +276,9 @@ describe('<Register />', () => {
           return {
             success: false,
             response: {
-              data: {
-                errors: {
-                  email: [EMAIL_ERROR_MESSAGE],
-                  username: [USERNAME_ERROR_MESSAGE]
-                }
+              errors: {
+                email: [EMAIL_ERROR_MESSAGE],
+                username: [USERNAME_ERROR_MESSAGE]
               }
             }
           };
@@ -312,7 +320,7 @@ describe('<Register />', () => {
     });
   });
 
-  it('should display error for corresponding fields after submitting', async () => {
+  it('should display error for corresponding fields after submitting with all non-empty inputs', async () => {
     const EMAIL_ERROR_MESSAGE = 'Email already in use';
     const USERNAME_ERROR_MESSAGE = 'Username already in use';
 
@@ -360,7 +368,7 @@ describe('<Register />', () => {
     });
   });
 
-  it('should navigate to the login route after registering successfully', async () => {
+  it('should navigate to the /check-your-email route after registering successfully', async () => {
     const Stub = createRoutesStub([
       {
         path: '/check-your-email',

@@ -10,12 +10,14 @@ export class UserController {
     await authService.register(req, res);
   }
 
-  static async verify(req: Request, res: Response) {
-    await authService.verify(req, res);
+  static async verifyEmail(req: Request, res: Response) {
+    await authService.verifyEmail(req, res);
   }
 
-  static async resendVerificationMail(req: Request, res: Response) {
-    await authService.resendVerificationMail(req, res);
+  static async verifyOTP(req: Request, res: Response) {
+    await authService.verifyOTP(req, res);
+  }
+
   static async sendVerificationLink(req: Request, res: Response) {
     await authService.sendVerificationLink(req, res);
   }
@@ -23,6 +25,9 @@ export class UserController {
   static async sendVerificationOTP(req: Request, res: Response) {
     await authService.sendVerificationOTP(req, res);
   }
+
+  static async resetPassword(req: Request, res: Response) {
+    await authService.resetPassword(req, res);
   }
 
   static async login(req: Request, res: Response) {

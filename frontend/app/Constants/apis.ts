@@ -7,6 +7,8 @@ export const registerURL = baseURL + '/auth/register';
 export const verifyEmailUrl = baseURL + '/auth/verify/link';
 export const sendVerificationLinkURL = baseURL + '/auth/send-verification/email/link';
 export const sendVerificationOTPURL = baseURL + '/auth/send-verification/email/otp';
+export const verifyOTPURL = baseURL + '/auth/verify/otp';
+export const resetPasswordURL = baseURL + '/auth/reset/password';
 export const refreshTokenURL = baseURL + '/auth/refresh-token';
 
 export const getUserURL = baseURL + `/user`;

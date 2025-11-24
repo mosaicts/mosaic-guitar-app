@@ -1,0 +1,58 @@
+#verify-otp {
+  max-width: 500px;
+  height: 500px;
+  text-align: center;
+  gap: 2rem;
+}
+
+#verify-otp #header {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+#verify-otp span:not(.err) {
+  font-weight: bold;
+}
+
+.otp-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.resend-btn {
+  background-color: transparent;
+  border: none;
+  color: var(--color-foreground);
+  font-size: 1rem;
+  align-self: end;
+}
+
+.resend-btn.enabled {
+  color: var(--color-link);
+}
+
+.resend-btn.enabled:hover {
+  cursor: pointer;
+}
+
+#verify-otp .resend-btn .timer {
+  font-family: 'Consolas', 'Menlo', monospace;
+  font-size: 1rem;
+  letter-spacing: 0; /* Ensure no extra spacing */
+  font-weight: normal;
+}
+
+#verify-otp #submit-btns {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 1rem;
+  align-items: center;
+}
+
+#verify-otp #submit-btns > * {
+  height: 40px;
+  width: 80%;
+}

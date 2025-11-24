@@ -26,7 +26,8 @@ export const validateConfirmPassword = body('confirmPassword')
   .withMessage('Confirm Password must not be empty')
   .custom((value, { req }) => {
     return value === req.body.password;
-  });
+  })
+  .withMessage('Password and Confirm Password do not match');
 
 export const checkUsernameInUse = body('username').custom((value) =>
   userRepository.findOne({ where: { username: value } }).then((user) => {
@@ -37,14 +38,6 @@ export const checkUsernameInUse = body('username').custom((value) =>
 );
 
 export const checkEmailInUse = body('email').custom((value) =>
-  userRepository.findOne({ where: { email: value } }).then((user) => {
-    if (user) {
-      throw new Error('Email already in use');
-    }
-  })
-);
-
-export const checkConfirmPassword = body('confirmPassword').custom((value) =>
   userRepository.findOne({ where: { email: value } }).then((user) => {
     if (user) {
       throw new Error('Email already in use');

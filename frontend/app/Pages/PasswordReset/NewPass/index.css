@@ -1,0 +1,44 @@
+#new-password {
+  width: 550px;
+  gap: 2rem;
+}
+
+#new-password-page .modal {
+  width: 550px;
+}
+
+#new-password-form {
+  display: flex;
+  flex-direction: column;
+  justify-self: start;
+  gap: 1rem;
+}
+
+#new-password-form > div {
+  display: flex;
+  flex-direction: column;
+}
+
+#new-password-form div label {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+#new-password-form div > input {
+  font-size: 1rem;
+  padding-left: 0.5rem;
+}
+
+#new-password-form div > input,
+#new-password-form .submit-btn {
+  width: 400px;
+  height: 40px;
+}
+
+#new-password-form > .err {
+  text-align: center;
+}
+
+#new-password-form input {
+  background-color: transparent;
+}

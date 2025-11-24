@@ -1,0 +1,13 @@
+.otp-block {
+  display: grid;
+}
+
+.otp-block .otp-input {
+  border: 1px solid;
+  outline: none;
+  width: 45px;
+  height: 45px;
+  border-radius: 0.5rem;
+  text-align: center;
+  overflow: hidden;
+}

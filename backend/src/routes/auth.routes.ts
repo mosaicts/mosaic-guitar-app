@@ -26,8 +26,16 @@ authRouter.post(
   UserController.register
 );
 authRouter.get('/verify/email/:id/:token', UserController.verifyEmail);
+authRouter.post('/verify/otp', UserController.verifyOTP);
 authRouter.post('/send-verification/email/link', UserController.sendVerificationLink);
 authRouter.post('/send-verification/email/otp', UserController.sendVerificationOTP);
+authRouter.post(
+  '/reset/password',
+  validatePassword,
+  validateConfirmPassword,
+  validate,
+  UserController.resetPassword
+);
 authRouter.post('/refresh-token', UserController.refreshToken);
 authRouter.get(
   '/protected',

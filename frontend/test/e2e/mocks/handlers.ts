@@ -3,7 +3,7 @@
  * Mock responses for E2E tests
  */
 
-import { http, HttpResponse } from 'msw';
+import { http, HttpResponse, delay } from 'msw';
 import 'dotenv/config';
 
 export const MOSAIC_BASE_URL =
@@ -77,6 +77,8 @@ const mockProducts = [
     price: 499
   }
 ];
+
+let numberOfOTPTries = 5;
 
 /**
  * Handlers
@@ -183,6 +185,37 @@ export const handlers = [
 
     return new HttpResponse(null, { status: 401 });
   }),
+
+  http.post(`${MOSAIC_BASE_URL}/auth/verify/otp`, async ({ request }) => {
+    const body = (await request.json()) as any;
+
+    if (body.email === 'test@example.com') {
+      await delay(50);
+      if (body.pin === '789012') {
+        return HttpResponse.json({
+          message: 'success'
+        });
+      } else {
+        numberOfOTPTries -= 1;
+        return HttpResponse.json(
+          {
+            message: `Wrong OTP. You have ${numberOfOTPTries} more tries.`
+          },
+          { status: 400 }
+        );
+      }
+    }
+    return new HttpResponse(null, { status: 401 });
+  }),
+
+  http.post(`${MOSAIC_BASE_URL}/auth/reset/password`, async ({ request }) => {
+    const body = (await request.json()) as any;
+
+    if (body.email === 'test@example.com') {
+      return HttpResponse.json({
+        message: 'success'
+      });
+    }
     return new HttpResponse(null, { status: 401 });
   })
 ];

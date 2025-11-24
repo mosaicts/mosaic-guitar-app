@@ -98,6 +98,17 @@ export async function sendVerificationOTP(data: object) {
   return response;
 }
 
+export async function verifyOTP(data: object) {
+  const response = await axios.post(verifyOTPURL, data, {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+  return response;
+}
+
+export async function resetPassword(data: object) {
+  const response = await axios.post(resetPasswordURL, data, {
     headers: {
       'Content-Type': 'application/json'
     }

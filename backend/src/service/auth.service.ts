@@ -12,11 +12,16 @@ import { generateJwt, sha256, verifyJwt } from '../lib/jwt';
 import { generateOTP, uuidv4 } from '../lib/auth';
 import { parse } from 'cookie';
 import {
+  maxConsecutiveLoginFailsByEmailAndIP,
   maxWrongAttemptsByIPperDay,
-  maxConsecutiveFailsByUsernameAndIP,
-  limiterConsecutiveFailsByUsernameAndIP,
+  maxWrongAttemptsByEmailPerDay,
+  maxWrongOTPVerifyAttemptsByEmailPerDay,
+  limiterConsecutiveLoginFailsByEmailAndIP,
   limiterSlowBruteByIP,
-  getUsernameIPkey
+  limiterSlowBruteByEmail,
+  limiterSlowBruteOTPVerifyByEmail,
+  getEmailIPkey,
+  checkDeviceWasUsedPreviously
 } from '../config/rateLimiter';
 import { User } from '../entities/User.postgres';
 import { sendVerificationLinkToMail, sendVerificationCodeToMail } from '../config/emailTransporter';
@@ -103,49 +108,83 @@ export class AuthService {
     }
   }
 
+  async verifyOTP(req: Request, res: Response) {
+    const { email, pin } = req.body;
 
-    const user = await this.userRepository.findOne({ where: { email } });
+    const resSlowEmail = await limiterSlowBruteOTPVerifyByEmail.get(email);
 
-    if (!user) {
-      return res.status(400).json({ message: 'Wrong email' });
+    let retrySecs = 0;
+
+    if (
+      resSlowEmail !== null &&
+      resSlowEmail.consumedPoints > maxWrongOTPVerifyAttemptsByEmailPerDay
+    ) {
+      retrySecs = Math.round(resSlowEmail.msBeforeNext / 1000) || 1;
     }
 
-    try {
-      await this.#sendVerificationCodeToEmail(user);
-      // return res.status(200).redirect(`${envConfig.CLIENT_URL}/check-your-email`);
-      return res.status(200).json({
-        message: 'Verification code resent successfully'
-      });
-    } catch (err) {
-      console.log('An error occurred while sending verification token:', err);
-      return res
-        .status(400)
-        .redirect(
-          `${envConfig.CLIENT_URL}/verify/email?status=failed&email=${encodeURIComponent(user.email)}`
-        );
+    if (retrySecs > 0) {
+      res.set('Retry-After', String(retrySecs));
+      res.status(429).send('Too Many Requests');
+    } else {
+      try {
+        if (!email || email === 'null' || !pin)
+          return res.status(400).json({ message: 'Missing credentials' });
+
+        const otp = await searchAndFindToken(email);
+
+        if (otp === pin) {
+          return res.status(200).json({ message: 'success' });
+        } else {
+          await limiterSlowBruteOTPVerifyByEmail.consume(email);
+          return res.status(400).json({
+            message: `Wrong OTP. You have ${maxWrongOTPVerifyAttemptsByEmailPerDay - (resSlowEmail?.consumedPoints || 0) - 1} more tries.`
+          });
+        }
+      } catch (err) {
+        if (err instanceof Error) {
+          console.log('An error occurred while verifying:', err);
+          res.status(400).json({ message: 'Error logging in' });
+        } else {
+          res.set('Retry-After', String(Math.round(err.msBeforeNext / 1000)) || '1');
+          res.status(429).send('Too Many Requests');
+        }
+      }
     }
   }
 
   async login(req: Request, res: Response) {
     const { email, password } = req.body;
     const ipAddr = req.ip;
-    const usernameIPkey = getUsernameIPkey(email, ipAddr);
+    const emailIPkey = getEmailIPkey(email, ipAddr);
 
-    const [resUsernameAndIP, resSlowByIP] = await Promise.all([
-      limiterConsecutiveFailsByUsernameAndIP.get(usernameIPkey),
-      limiterSlowBruteByIP.get(ipAddr)
+    const isDeviceTrusted = checkDeviceWasUsedPreviously(email, req.cookies?.deviceId);
+
+    const [resEmailAndIP, resSlowByIP, resSlowEmail] = await Promise.all([
+      limiterConsecutiveLoginFailsByEmailAndIP.get(emailIPkey),
+      limiterSlowBruteByIP.get(ipAddr),
+      limiterSlowBruteByEmail.get(email)
     ]);
 
     let retrySecs = 0;
 
-    // Check if IP or Username + IP is already blocked
-    if (resSlowByIP !== null && resSlowByIP.consumedPoints > maxWrongAttemptsByIPperDay) {
+    // Check if IP, Username + IP or Username is already blocked
+    if (
+      !isDeviceTrusted &&
+      resSlowByIP !== null &&
+      resSlowByIP.consumedPoints > maxWrongAttemptsByIPperDay
+    ) {
       retrySecs = Math.round(resSlowByIP.msBeforeNext / 1000) || 1;
     } else if (
-      resUsernameAndIP !== null &&
-      resUsernameAndIP.consumedPoints > maxConsecutiveFailsByUsernameAndIP
+      resEmailAndIP !== null &&
+      resEmailAndIP.consumedPoints > maxConsecutiveLoginFailsByEmailAndIP
     ) {
-      retrySecs = Math.round(resUsernameAndIP.msBeforeNext / 1000) || 1;
+      retrySecs = Math.round(resEmailAndIP.msBeforeNext / 1000) || 1;
+    } else if (
+      !isDeviceTrusted &&
+      resSlowEmail !== null &&
+      resSlowEmail.consumedPoints > maxWrongAttemptsByEmailPerDay
+    ) {
+      retrySecs = Math.round(resSlowEmail.msBeforeNext / 1000) || 1;
     }
 
     if (retrySecs > 0) {
@@ -155,15 +194,20 @@ export class AuthService {
       try {
         const user = await this.userRepository.findOne({ where: { email } });
         if (!user) {
-          await limiterSlowBruteByIP.consume(ipAddr);
+          if (!isDeviceTrusted) {
+            await limiterSlowBruteByIP.consume(ipAddr);
+          }
           res.status(400).json({ message: 'Email or password is not correct' });
         } else {
           if (!user.verified) {
-            return res
-              .status(400)
-              .json({ message: 'This email has not been verified. Please verify your email.' });
+            return res.status(400).json({
+              message:
+                'This email has not been verified. Please check your email for a verification link.'
+            });
           }
+
           const isValid = await checkPassword(password, user.password);
+
           if (isValid) {
             const jwt = this.#issueJwt(res, user);
             const refreshToken = this.#generateRefreshToken(user);
@@ -171,8 +215,8 @@ export class AuthService {
             await this.userRepository.save(user);
 
             // Reset on successful login
-            if (resUsernameAndIP !== null && resUsernameAndIP.consumedPoints > 0) {
-              await limiterConsecutiveFailsByUsernameAndIP.delete(usernameIPkey);
+            if (resEmailAndIP !== null && resEmailAndIP.consumedPoints > 0) {
+              await limiterConsecutiveLoginFailsByEmailAndIP.delete(emailIPkey);
             }
 
             res.status(200).json({
@@ -189,11 +233,12 @@ export class AuthService {
               }
             });
           } else {
-            // username exists but not logged in
-            await Promise.all([
-              limiterSlowBruteByIP.consume(ipAddr),
-              limiterConsecutiveFailsByUsernameAndIP.consume(usernameIPkey)
-            ]);
+            // Count failed attempts only for registered users
+            const limiterPromises = [limiterConsecutiveLoginFailsByEmailAndIP.consume(emailIPkey)];
+            if (!isDeviceTrusted) {
+              limiterPromises.push(limiterSlowBruteByEmail.consume(email));
+            }
+            await Promise.all(limiterPromises);
             res.status(400).json({ message: 'Email or password is not correct' });
           }
         }
@@ -249,6 +294,25 @@ export class AuthService {
       console.log('An error occurred while sending verification token:', err);
     }
   }
+
+  async resetPassword(req: Request, res: Response) {
+    const { email, password } = req.body;
+    console.log('Email:', email);
+
+    const user = await this.userRepository.findOne({ where: { email } });
+
+    user.password = await hashPassword(password);
+
+    // save user to db
+    try {
+      await this.userRepository.save(user);
+      res.status(200).json({ message: 'success' });
+    } catch (err) {
+      console.log('An error occured while saving user to db', err);
+      res.status(400).json({ message: 'Error updating password' });
+    }
+  }
+
   async refreshJwt(req: Request, res: Response) {
     const { refreshToken, fingerprintHash } = req.params;
 
