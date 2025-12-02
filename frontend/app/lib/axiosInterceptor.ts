@@ -1,40 +1,33 @@
-import axios from "axios";
-import { type AxiosResponse } from "axios";
-import { getJwt, getRefreshToken } from "./auth";
-import { refreshJwt } from "~/utils/apis";
-// import { jwtDecode, type JwtPayload } from "jwt-decode";
-import { parseJwt } from "./auth";
+import axios, { type AxiosError, type AxiosResponse } from 'axios';
+import { getJwt, storeJwt, parseJwt } from './auth';
+import { refreshTokenApi } from '@/utils/apis';
 
 export const axiosInstance = axios.create();
 
 axiosInstance.interceptors.response.use(
-  async (response: AxiosResponse) => {
-    console.log(response.status);
-    if (response.status === 401) {
+  async (response: AxiosResponse) => response,
+  async (error: AxiosError) => {
+    if (error.response?.status === 401) {
+      console.log('refresh token');
+
       try {
-        const jwt = getJwt();
+        const response = await refreshTokenApi();
+        const jwt = response.data.jwt;
+        storeJwt(jwt);
 
-        if (!jwt) {
-          console.log("no jwt");
-          return axiosInstance(response.config);
-        }
+        const parsedJwt = parseJwt(jwt as string);
+        const fingerprintHash = parsedJwt?.['X-User-Fingerprint'];
 
-        const claims = parseJwt(jwt);
-        console.log("Jwt payload: ", claims);
+        error.response.config.headers['Authorization'] = 'Bearer ' + jwt;
+        const data = JSON.parse(error.response.config.data);
+        error.response.config.data = { ...data, fingerprintHash };
 
-        const refreshToken = getRefreshToken() || "";
-        const fingerprintHash = claims?.["X-User-Fingerprint"];
-        await refreshJwt(refreshToken, fingerprintHash);
-
-        return axiosInstance(response.config);
+        return axiosInstance(error.response.config);
       } catch (error) {
         console.log(error);
       }
     }
 
-    return response;
-  },
-  async (error) => {
     return Promise.reject(error);
-  },
+  }
 );

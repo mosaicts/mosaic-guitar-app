@@ -34,10 +34,10 @@ export class UserController {
     await authService.resetPassword(req, res);
   }
 
+  static async refreshToken(req: Request, res: Response) {
+    await authService.refreshToken(req, res);
   }
 
-  static async refreshToken(req: Request, res: Response) {
-    await authService.refreshJwt(req, res);
   }
 
   static async getAll(req: Request, res: Response, next: NextFunction) {

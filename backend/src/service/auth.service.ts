@@ -5,12 +5,13 @@ import envConfig from '../config/envConfig';
 
 import { checkPassword, hashPassword } from '../lib/password';
 import {
-  setFingerprintCookieAndSignJwt,
-  FINGERPRINT_COOKIE_NAME
-} from '../lib/setFingerprintCookieAndSignJwt';
+  setCookie,
+  FINGERPRINT_COOKIE_NAME,
+  REFRESH_TOKEN_COOKIE_MAX_AGE,
+  REFRESH_TOKEN_COOKIE_NAME
+} from '../lib/cookie';
 import { generateJwt, sha256, verifyJwt } from '../lib/jwt';
 import { generateOTP, uuidv4 } from '../lib/auth';
-import { parse } from 'cookie';
 import {
   maxConsecutiveLoginFailsByEmailAndIP,
   maxWrongAttemptsByIPperDay,
@@ -25,7 +26,6 @@ import {
 } from '../config/rateLimiter';
 import { User } from '../entities/User.postgres';
 import { sendVerificationLinkToMail, sendVerificationCodeToMail } from '../config/emailTransporter';
-import { searchAndFindToken, storeToken } from '../utils/tokenService';
 
 export class AuthService {
   constructor(private readonly userRepository: Repository<User>) {}
@@ -93,9 +93,24 @@ export class AuthService {
           const isValid = await checkPassword(password, user.password);
 
           if (isValid) {
-            const jwt = this.#issueJwt(res, user);
-            const refreshToken = this.#generateRefreshToken(user);
+            // Generate a random string that will constitute the fingerprint for this user
+            const fingerprint = crypto.randomBytes(50).toString('hex');
 
+            // Add the fingerprint in a hardened cookie to prevent Token Sidejacking
+            // https://cheatsheetseries.owasp.org/cheatsheets/JSON_Web_Token_for_Java_Cheat_Sheet.html#token-sidejacking
+            const jwt = generateJwt({
+              otherClaims: {
+                'X-User-Id': String(user.id),
+                'X-User-Fingerprint': sha256(fingerprint)
+              }
+            });
+
+            // Generate refresh token
+            const refreshToken = uuidv4();
+            user.refreshToken = sha256(refreshToken);
+            user.refreshTokenExpiresAt = new Date(Date.now() + REFRESH_TOKEN_COOKIE_MAX_AGE);
+
+            setCookie(fingerprint, refreshToken, res);
             await this.userRepository.save(user);
 
             // Reset on successful login
@@ -105,16 +120,7 @@ export class AuthService {
 
             res.status(200).json({
               message: 'User login successfully',
-              jwt,
-              refreshToken,
-              user: {
-                id: user.id,
-                firstName: user.firstName,
-                lastName: user.lastName,
-                username: user.username,
-                email: user.email,
-                profilePicUrl: user.profilePicUrl
-              }
+              jwt
             });
           } else {
             // Count failed attempts only for registered users
@@ -329,42 +335,50 @@ export class AuthService {
     }
   }
 
-  async refreshJwt(req: Request, res: Response) {
-    const { refreshToken, fingerprintHash } = req.params;
+  async refreshToken(req: Request, res: Response) {
+    const refreshToken = req.cookies[REFRESH_TOKEN_COOKIE_NAME];
+    const fingerprintCookie = req.cookies[FINGERPRINT_COOKIE_NAME];
 
-    const fingerprintCookie = parse(req.headers.cookie)[FINGERPRINT_COOKIE_NAME];
-    console.log({ fingerprintCookie });
-    if (!fingerprintCookie) res.status(400).json({ message: 'Unable to refresh JWT token' });
+    console.log({ refreshToken, fingerprintCookie });
 
-    // Compute a SHA256 hash of the received fingerprint in cookie in order to compare
-    // it to the fingerprint hash stored in the token
-    const fingerprintCookieHash = sha256(fingerprintCookie);
-    console.log({ fingerprintCookie, fingerprintCookieHash, fingerprintHash });
-
-    if (fingerprintHash != fingerprintCookieHash) {
-      res.status(400).json({ message: 'Unable to refresh JWT token' });
+    if (!fingerprintCookie || !refreshToken) {
+      console.log('Unable to refresh JWT token');
+      return res.status(400).json({ message: 'Unable to refresh JWT token' });
     }
 
     return this.userRepository
-      .findOne({ where: { refreshToken } })
+      .findOne({ where: { refreshToken: sha256(refreshToken) } })
       .then((user) => {
         if (!user) {
-          res.status(400).json({ message: 'User not found' });
+          return res.status(400).json({ message: 'User not found' });
         }
 
-        this.#generateRefreshToken(user);
+        // Generate a random string that will constitute the fingerprint for this user
+        const fingerprint = crypto.randomBytes(50).toString('hex');
+
+        // Generate refresh token
+        const refreshToken = uuidv4();
+        user.refreshToken = sha256(refreshToken);
+        user.refreshTokenExpiresAt = new Date(Date.now() + REFRESH_TOKEN_COOKIE_MAX_AGE);
+
+        setCookie(fingerprint, refreshToken, res);
+
         const jwt = generateJwt({
-          expiresIn: '5m',
           otherClaims: {
-            'X-User-Id': String(user.id)
-            // TODO: why not hashing fingerprint
+            'X-User-Id': String(user.id),
+            'X-User-Fingerprint': sha256(fingerprint)
           }
         });
-        res.status(200).json({ jwt });
+
+        console.log({ jwt });
+
+        return this.userRepository.save(user).then(() => {
+          return res.status(200).json({ jwt });
+        });
       })
       .catch((err) => {
         console.log(err);
-        res.status(400).json({ message: 'Error issuing jwt token refresh' });
+        return res.status(400).json({ message: 'Error issuing jwt token refresh' });
       });
   }
 

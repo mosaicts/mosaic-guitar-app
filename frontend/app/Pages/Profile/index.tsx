@@ -1,46 +1,49 @@
-import { Form, useNavigate } from 'react-router';
-import { useState, type FormEvent } from 'react';
+import type { Route } from './+types';
+import { Form, useActionData, useNavigate } from 'react-router';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../../Providers/authProvider';
 import { updateUser } from '../../utils/apis';
-import { getJwt, parseJwt } from '../../lib/auth';
+import { getJwt, getFingerprintHash } from '../../lib/auth';
 import './index.css';
+
+export async function clientAction({ request }: Route.ActionArgs) {
+  const formData = await request.formData();
+  let data = Object.fromEntries(formData);
+  const fingerprintHash = getFingerprintHash(getJwt());
+  data = { fingerprintHash, ...data };
+
+  try {
+    const response = await updateUser(data);
+    return {
+      success: true,
+      response
+    };
+  } catch (err: any) {
+    return {
+      success: false,
+      response: err.response
+    };
+  }
+}
 
 export default function Profile() {
   const { user, setUser } = useAuth();
   const [isEdit, setIsEdit] = useState<boolean>(false);
-  const navigate = useNavigate();
+  const data = useActionData();
 
-  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-
-    const form = new FormData(e.target as HTMLFormElement);
-    let parsedData = Object.fromEntries(form.entries());
-
-    if (user) {
-      try {
-        const jwt = parseJwt(getJwt());
-        const fingerprintHash = jwt?.['X-User-Fingerprint'];
-        parsedData = { fingerprintHash, ...parsedData };
-        const response = await updateUser(parsedData);
-        if (!response.data.success) {
-          console.log(response.data.message);
-        } else {
-          setUser(response.data.user);
-          setIsEdit(false);
-        }
-      } catch (err) {
-        console.log(err);
-      }
-    } else {
-      navigate('/login');
+  useEffect(() => {
+    if (data && data.success && data.response) {
+      const response = data.response;
+      setUser(response.data.user);
+      setIsEdit(false);
     }
-  }
+  }, [data]);
 
   return (
     <div id="profile">
       {isEdit ? (
         <>
-          <Form method="post" onSubmit={handleSubmit}>
+          <Form method="post">
             <div id="username">
               <label>Username:</label>
               <input name="username" defaultValue={user?.username} />

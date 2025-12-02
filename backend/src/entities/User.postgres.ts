@@ -6,10 +6,6 @@ import {
   UpdateDateColumn
 } from 'typeorm';
 
-// export enum UserRole {
-//   ADMIN = 'admin',
-//   USER = 'user'
-// }
 const UserRole = {
   ADMIN: 'admin',
   USER: 'user'
@@ -49,10 +45,10 @@ export class User {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   refreshToken: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   refreshTokenExpiresAt: Date;
 
   @Column()

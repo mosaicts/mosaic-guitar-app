@@ -1,0 +1,16 @@
+#inner-layout {
+  grid-area: 'alias-inner-grid';
+  background-color: var(--color-main);
+  height: 100%;
+  overflow: hidden;
+  border-top-left-radius: 1em;
+  border-top-right-radius: 1em;
+}
+
+@media (min-width: 768px) {
+  #inner-layout {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    grid-template-areas: 'alias-nav alias-main';
+  }
+}

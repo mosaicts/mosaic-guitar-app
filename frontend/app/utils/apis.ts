@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { axiosInstance as axios } from '@/lib/axiosInterceptor';
 import {
   baseURL,
   getProfileURL,
@@ -117,18 +117,15 @@ export async function resetPassword(data: object) {
   return response;
 }
 
-export async function refreshJwt(refreshToken: string, fingerprintHash: string) {
-  const response = await axios.post(
-    refreshTokenURL,
-    {
-      fingerprintHash,
-      refreshToken
+export async function refreshTokenApi(data: object = {}) {
+  const response = await axios.post(refreshTokenURL, data, {
+    headers: {
+      'Content-Type': 'application/json'
     },
-    {
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    }
-  );
+    withCredentials: true
+  });
+  return response;
+}
+
   return response;
 }

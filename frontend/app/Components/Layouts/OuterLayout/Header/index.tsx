@@ -10,13 +10,7 @@ interface HeaderTypes {
 }
 
 export default function Header({ menuRef, isMobile, toggleNavMenu }: HeaderTypes) {
-  const { user, jwt, setJwt, setRefreshToken } = useAuth();
-
-  function handleSignOut() {
-    setJwt('');
-    setRefreshToken('');
-    // TODO: Hit the signout endpoint to clear the fingerprint cookie
-  }
+  const { user } = useAuth();
 
   return (
     <div id="header">
@@ -36,22 +30,19 @@ export default function Header({ menuRef, isMobile, toggleNavMenu }: HeaderTypes
           // <div id="search-bar"></div>
         }
         <div id="right-header">
-          {jwt ? (
-            <ProfileDropdown
-              userFirstName={user.firstName}
-              userLastName={user.lastName}
-              handleSignout={handleSignOut}
-            />
-          ) : (
-            <div id="auth-nav">
-              <NavLink id="login-navlink" to="/login">
-                <p>Sign in</p>
-              </NavLink>
-              <NavLink id="register-navlink" to="/register">
-                <p>Sign up</p>
-              </NavLink>
-            </div>
-          )}
+          <ProfileDropdown userFirstName={user.firstName} userLastName={user.lastName} />
+          {
+            // (
+            // <div id="auth-nav">
+            //   <NavLink id="login-navlink" to="/login">
+            //     <p>Sign in</p>
+            //   </NavLink>
+            //   <NavLink id="register-navlink" to="/register">
+            //     <p>Sign up</p>
+            //   </NavLink>
+            // </div>
+            // )
+          }
         </div>
       </header>
     </div>

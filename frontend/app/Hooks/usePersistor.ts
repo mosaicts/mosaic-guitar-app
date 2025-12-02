@@ -32,7 +32,7 @@ export function useDriver() {
   return [driver, userDriver];
 }
 
-export function usePersistor<T>(
+export default function usePersistor<T>(
   key: string,
   initialData: T,
   driver: LocalStorageManager<T>
@@ -57,11 +57,11 @@ export function usePersistor<T>(
     function _listener(e: MessageEvent) {
       switch (e.data.message) {
         case 'NEW_TAB':
-          // console.log("send to new tab", storedData);
+          // console.log('send to new tab', storedData);
           _channel.postMessage({ message: key, data: storedData });
           break;
         case key:
-          // console.log("receive data:", e.data);
+          // console.log('receive data:', e.data);
           _setStoredData(e.data.data);
           break;
       }

@@ -20,7 +20,7 @@ export const generateJwt = (params: GenerateJWTParams) => {
 
   return jwt.sign(payload, envConfig.PRIV_KEY, {
     algorithm: 'RS256',
-    expiresIn: params.expiresIn || '1h'
+    expiresIn: params.expiresIn || '5m'
   });
 };
 

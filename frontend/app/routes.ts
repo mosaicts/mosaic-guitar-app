@@ -2,12 +2,14 @@ import { type RouteConfig, layout, route, index, prefix } from '@react-router/de
 
 // index: initial route
 export default [
-  route('/', 'Components/ProtectedRoute/index.tsx', [
-    layout('Components/Layouts/index.tsx', [
-      index('Pages/Home/index.tsx'),
-      route('profile', 'Pages/Profile/index.tsx'),
-      route('orders', 'Pages/Orders/index.tsx'),
-      route('guitars/:guitarId', 'Pages/Guitar/index.tsx')
+  route('/', 'Pages/ProtectedRoute/index.tsx', [
+    layout('Components/Layouts/OuterLayout/index.tsx', [
+      layout('Components/Layouts/InnerLayout/index.tsx', [
+        index('Pages/Home/index.tsx'),
+        route('guitars/:guitarId', 'Pages/Guitar/index.tsx'),
+        route('orders', 'Pages/Orders/index.tsx')
+      ]),
+      route('profile', 'Pages/Profile/index.tsx')
     ])
   ]),
 

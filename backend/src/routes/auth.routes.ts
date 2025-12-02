@@ -39,6 +39,7 @@ authRouter.post(
 );
 authRouter.post('/reset/verify', UserController.resetVerify);
 
+authRouter.post('/token', UserController.refreshToken);
 authRouter.get(
   '/protected',
   passport.authenticate('jwt', { session: false }),
