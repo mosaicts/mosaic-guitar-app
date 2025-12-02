@@ -79,5 +79,6 @@
     "rate-limiter-flexible": "^8.1.0",
     "reflect-metadata": "^0.2.2",
     "supertest": "^7.1.4"
+    "xss": "^1.0.15"
   }
 }

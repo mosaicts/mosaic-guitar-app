@@ -8,18 +8,14 @@ import {
 } from 'react-router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import type { Route } from './+types/root';
-import AuthProvider from './Providers/authProvider';
+import AuthProvider from '@/Providers/authProvider';
+import Spinner from '@/Components/Spinner';
 import './app.css';
 
 const queryClient = new QueryClient();
 
 export function HydrateFallback() {
-  return (
-    <div id="loading-splash">
-      <div id="loading-splash-spinner" />
-      <p>Loading, please wait...</p>
-    </div>
-  );
+  return <Spinner />;
 }
 
 export const links: Route.LinksFunction = () => [

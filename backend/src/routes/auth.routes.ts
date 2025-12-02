@@ -45,5 +45,6 @@ authRouter.get(
   passport.authenticate('jwt', { session: false }),
   UserController.protected
 );
+authRouter.post('/signout', UserController.signout);
 
 export default authRouter;

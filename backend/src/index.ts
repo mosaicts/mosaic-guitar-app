@@ -14,6 +14,8 @@ import authRouter from './routes/auth.routes';
 import productRouter from './routes/product.routes';
 import reportRouter from './routes/reporting.routes';
 import { errorHandler } from './middlewares/errorHandler';
+import { requestLogger } from './middlewares/requestLogger';
+import { requestSanitizer } from './middlewares/requestSanitizer';
 
 const { PORT } = envConfig;
 require('./config/passport')(passport);
@@ -49,6 +51,8 @@ export const main = async () => {
     app.use(express.urlencoded({ extended: true }));
     app.use(cookieParser());
     app.use(errorHandler);
+    app.use(requestSanitizer);
+    app.use(requestLogger);
     app.use(express.static(path.join(__dirname, '..', 'src', '/images'))); // Serve images in directory images/
 
     app.use('/auth', authRouter);

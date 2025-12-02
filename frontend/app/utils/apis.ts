@@ -11,6 +11,7 @@ import {
   resetVerifyURL,
   resetPasswordURL,
   refreshTokenURL,
+  signoutURL,
   guitarListURL
 } from '../Constants/apis';
 import { type Guitar } from './models';
@@ -127,5 +128,12 @@ export async function refreshTokenApi(data: object = {}) {
   return response;
 }
 
+export async function signoutApi(data: object = {}) {
+  const response = await axios.post(signoutURL, data, {
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    withCredentials: true
+  });
   return response;
 }

@@ -3,6 +3,7 @@ import { createContext, useContext, useEffect, useRef } from 'react';
 import { signoutApi } from '@/utils/apis';
 import { Role, type User } from '@/utils/models';
 import usePersistor, { useDriver, LocalStorageManager } from '@/Hooks/usePersistor';
+import useGlobalSignout from '@/Hooks/useGlobalSignout';
 import { getFingerprintHash } from '@/lib/auth';
 import { getProfile } from '@/utils/apis';
 
@@ -13,6 +14,7 @@ interface AuthContextType {
   setJwt: (data: string) => void;
   isLoggedIn: boolean;
   onLogin: (jwt: string) => void;
+  onSignout: () => void;
 }
 
 const initialContextValues = {
@@ -30,6 +32,7 @@ const initialContextValues = {
   setJwt: () => null,
   isLoggedIn: false,
   onLogin: (jwt: string) => null,
+  onSignout: () => null
 };
 
 const AuthContext = createContext<AuthContextType>(initialContextValues);
@@ -47,6 +50,11 @@ const AuthProvider = ({ children }: Props) => {
   const [jwt, setJwt] = usePersistor<string>('jwt', initialContextValues.jwt, driver);
   const isLoggedIn = jwt !== initialContextValues.jwt;
 
+  const onSignout = useGlobalSignout(() => {
+    setJwt(initialContextValues.jwt);
+    setUser(initialContextValues.user);
+    driver.remove('jwt');
+  });
 
   const onLogin = (token: string) => {
     setJwt(token);

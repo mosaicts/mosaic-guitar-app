@@ -14,6 +14,7 @@ export default [
   ]),
 
   route('login', 'Pages/Login/index.tsx'),
+  route('signout', 'Pages/Signout/index.tsx'),
 
   ...prefix('signup', [
     index('Pages/Signup/index.tsx'),

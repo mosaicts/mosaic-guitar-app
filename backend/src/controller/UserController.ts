@@ -38,6 +38,8 @@ export class UserController {
     await authService.refreshToken(req, res);
   }
 
+  static async signout(req: Request, res: Response) {
+    await authService.signout(req, res);
   }
 
   static async getAll(req: Request, res: Response, next: NextFunction) {

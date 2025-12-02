@@ -8,10 +8,9 @@ import './index.css';
 interface ProfileDropdownTypes {
   userFirstName: string;
   userLastName: string;
-  handleSignout: () => void;
 }
 
-const ProfileDropdown = ({ userFirstName, userLastName, handleSignout }: ProfileDropdownTypes) => {
+const ProfileDropdown = ({ userFirstName, userLastName }: ProfileDropdownTypes) => {
   const ref = useRef<HTMLDivElement | null>(null);
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const profileImageStyle = {
@@ -37,9 +36,7 @@ const ProfileDropdown = ({ userFirstName, userLastName, handleSignout }: Profile
         <div id="dropdown-menu" role="menu">
           <NavLink to="/profile">My profile</NavLink>
           <hr></hr>
-          <NavLink to="/" onClick={handleSignout}>
-            Sign out
-          </NavLink>
+          <NavLink to="/signout">Sign out</NavLink>
         </div>
       )}
     </div>

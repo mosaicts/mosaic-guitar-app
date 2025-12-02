@@ -382,6 +382,10 @@ export class AuthService {
       });
   }
 
+  async signout(req: Request, res: Response) {
+    res.clearCookie(FINGERPRINT_COOKIE_NAME, { path: '/' });
+    res.clearCookie(REFRESH_TOKEN_COOKIE_NAME, { path: '/' });
+    return res.status(200).json({ message: 'success' });
   }
 
   #generateVerificationToken(user: User) {
