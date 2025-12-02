@@ -1,9 +1,9 @@
-#verify-email .modal {
+#signup-verify .modal {
   width: 50%;
   text-align: center;
 }
 
-#verify-email .submit-btn {
+#signup-verify .submit-btn {
   height: 40px;
   padding: 0 1rem;
 }

@@ -2,9 +2,9 @@ import { useState, useEffect, useRef } from 'react';
 import { Outlet } from 'react-router';
 import useWindowWidth from '@/Hooks/useWindowWidth';
 import Header from './Header';
-import Navbar from './Navbar';
+import './index.css';
 
-export default function Layout() {
+export default function OuterLayout() {
   const menuRef = useRef<HTMLButtonElement | null>(null);
   const [isNavOpen, setNavOpen] = useState(false);
   const [isNavCollapsed, setNavCollapsed] = useState(true); // collapse nav by default in mobile view (ie, removing the nav from the DOM)
@@ -34,26 +34,7 @@ export default function Layout() {
         }}
       />
       <div id="inner-layout">
-        {
-          // if nav is not collapsed in mobile view then show the nav
-          (!isMobile || !isNavCollapsed) && (
-            <Navbar
-              navState={navState}
-              onClickOutside={(event?: MouseEvent) => {
-                if (
-                  isMobile &&
-                  // click in the menu will not run this
-                  menuRef.current &&
-                  !menuRef.current.contains(event?.target as HTMLElement)
-                ) {
-                  setNavOpen(false);
-                }
-              }}
-            />
-          )
-        }
-        {isMobile && isNavOpen && <div className="modal-bg"></div>}
-        <Outlet />
+        <Outlet context={{ menuRef, isMobile, navState, isNavCollapsed, isNavOpen, setNavOpen }} />
       </div>
     </div>
   );

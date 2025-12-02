@@ -1,16 +1,16 @@
 import type { Route } from './+types';
 import { redirect, useNavigate, useNavigation, useSearchParams, useSubmit } from 'react-router';
 import { useEffect, useRef } from 'react';
-import { sendVerificationLink } from '@/utils/apis';
+import { signupResend } from '@/utils/apis';
 import './index.css';
 
 export async function clientAction({ request }: Route.ClientActionArgs) {
   let formData = await request.formData();
-  await sendVerificationLink({ email: formData.get('email') });
-  return redirect('/check-your-email');
+  await signupResend({ email: formData.get('email') });
+  return redirect('/signup/check-email');
 }
 
-export default function VerifyEmail() {
+export default function SignupVerify() {
   const ref = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [searchParams] = useSearchParams();
 
@@ -26,7 +26,7 @@ export default function VerifyEmail() {
     submit(
       { email: searchParams.get('email') },
       {
-        action: '/verify/email',
+        action: '/signup/verify',
         method: 'post'
       }
     );
@@ -47,7 +47,7 @@ export default function VerifyEmail() {
   });
 
   return (
-    <div id="verify-email" className="modal-bg">
+    <div id="signup-verify" className="modal-bg">
       <div className="modal">
         <h2>{verificationStatus}</h2>
         {success ? (

@@ -2,18 +2,18 @@ import type { Route } from './+types';
 import { redirect, useSearchParams, useSubmit, useActionData } from 'react-router';
 import { useState, useEffect } from 'react';
 import OTPInput from '@/Components/OTPInput';
-import { verifyOTP, sendVerificationOTP } from '@/utils/apis';
+import { postForgot, resetVerify } from '@/utils/apis';
 import './index.css';
 
 export async function clientAction({ request }: Route.ClientActionArgs) {
   let formData = await request.formData();
   try {
     switch (formData.get('type')) {
-      case 'resend-otp':
-        await sendVerificationOTP(formData);
-      case 'submit-otp':
-        await verifyOTP(formData);
-        return redirect(`/password-reset/new-password?email=${formData.get('email')}`);
+      case 'resend':
+        await postForgot(formData);
+      case 'submit':
+        await resetVerify(formData);
+        return redirect(`/forgot/reset?id=${formData.get('email')}`);
     }
   } catch (err: any) {
     return {
@@ -23,13 +23,13 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
   }
 }
 
-export default function VerifyCode() {
+export default function ResetVerify() {
   const submit = useSubmit();
-  const [remainingSecs, setRemainingSecs] = useState(60);
+  const [remainingSecs, setRemainingSecs] = useState(30);
   const [searchParams] = useSearchParams();
   const [error, setError] = useState(null);
   const data = useActionData();
-  const email = searchParams.get('email');
+  const id = searchParams.get('id');
   const isResetEnabled = remainingSecs < 0;
 
   useEffect(() => {
@@ -54,20 +54,20 @@ export default function VerifyCode() {
 
   const handleResend = () => {
     submit(
-      { type: 'resend-otp', email },
+      { type: 'resend', id },
       {
-        action: `/password-reset/verify-otp?email=${email}`,
+        action: `/reset/verify?id=${id}`,
         method: 'post'
       }
     );
-    setRemainingSecs(60);
+    setRemainingSecs(30);
   };
 
   const handleComplete = (pin: string) => {
     submit(
-      { type: 'submit-otp', pin, email },
+      { type: 'submit', pin, id },
       {
-        action: `/password-reset/verify-otp?email=${email}`,
+        action: `/reset/verify?id=${id}`,
         method: 'post'
       }
     );
@@ -85,11 +85,12 @@ export default function VerifyCode() {
 
   return (
     <div className="modal-bg">
-      <div id="verify-otp" className="modal">
+      <div id="reset-verify" className="modal">
         <div id="header">
           <h2>OTP Verification</h2>
           <p>
-            One Time Password (OTP) has been sent via email to <span>{email}</span>
+            One Time Password (OTP) has been sent via email to{' '}
+            <span>{searchParams.get('email')}</span>
           </p>
           <p>Enter the OTP below to verify it.</p>
         </div>

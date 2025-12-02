@@ -1,11 +1,11 @@
-import type { Route } from './+types/index';
+import type { Route } from './+types';
 import { useEffect } from 'react';
 import { Form, Link, useNavigate, useSubmit, useActionData, useNavigation } from 'react-router';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 
-import { login } from '@/utils/apis';
+import { loginApi } from '@/utils/apis';
 import { useAuth } from '@/Providers/authProvider';
 import PasswordInput from '@/Components/PasswordInput';
 import Separation from '@/Components/Separation';
@@ -22,7 +22,7 @@ export async function clientAction({ request }: Route.ActionArgs) {
   const formData = await request.formData();
   const data = Object.fromEntries(formData);
   try {
-    const response = await login(data);
+    const response = await loginApi(data);
     return {
       success: true,
       response
@@ -48,7 +48,7 @@ export default function Login() {
     }
   });
 
-  const { setUser, setJwt, setRefreshToken } = useAuth();
+  const { onLogin } = useAuth();
   const submit = useSubmit();
   const navigate = useNavigate();
   const navigation = useNavigation();
@@ -58,9 +58,7 @@ export default function Login() {
   useEffect(() => {
     if (data && data.success && data.response) {
       const response = data.response;
-      setUser(response.data.user);
-      setJwt(response.data.jwt);
-      setRefreshToken(response.data.refreshToken);
+      onLogin(response.data.jwt);
       navigate('/');
     }
   }, [data]);
@@ -87,7 +85,7 @@ export default function Login() {
           <div id="password">
             <div>
               <label htmlFor="password-input">Password</label>
-              <Link to="/password-reset">Forgot password?</Link>
+              <Link to="/forgot">Forgot password?</Link>
             </div>
             <PasswordInput required {...register('password')} />
             {errors.password && <span className="err">{errors.password.message}</span>}
@@ -107,7 +105,7 @@ export default function Login() {
         <div id="create-account">
           <p>
             New?{' '}
-            <Link id="to_register" to="/register">
+            <Link id="to_signup" to="/signup">
               Create an account
             </Link>
           </p>

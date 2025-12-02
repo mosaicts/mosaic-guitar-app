@@ -5,13 +5,13 @@ import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 
-import { register as requestRegisterApi } from '@/utils/apis';
+import { signup } from '@/utils/apis';
 import PasswordInput from '@/Components/PasswordInput';
 import Separation from '@/Components/Separation';
 import { passwordValidationPatterns } from '@/lib/password';
 import './index.css';
 
-const RegisterUserSchema = z
+const SignupUserSchema = z
   .object({
     firstName: z.string().min(1, { message: 'Please enter first name' }),
     lastName: z.string().min(1, { message: 'Please enter first name' }),
@@ -31,14 +31,14 @@ const RegisterUserSchema = z
     path: ['confirmPassword']
   });
 
-type RegisterUserSchemaType = z.infer<typeof RegisterUserSchema>;
+type SignupUserSchemaType = z.infer<typeof SignupUserSchema>;
 
 export async function clientAction({ request }: Route.ActionArgs) {
   const formData = await request.formData();
   const data = Object.fromEntries(formData);
   try {
-    await requestRegisterApi(data);
-    return redirect('/check-your-email');
+    await signup(data);
+    return redirect('/signup/check-email');
   } catch (err: any) {
     return {
       success: false,
@@ -47,15 +47,15 @@ export async function clientAction({ request }: Route.ActionArgs) {
   }
 }
 
-export default function Register() {
+export default function Signup() {
   const {
     control,
     register,
     handleSubmit,
     setError,
     formState: { errors }
-  } = useForm<RegisterUserSchemaType>({
-    resolver: zodResolver(RegisterUserSchema),
+  } = useForm<SignupUserSchemaType>({
+    resolver: zodResolver(SignupUserSchema),
     defaultValues: {
       firstName: '',
       lastName: '',
@@ -104,12 +104,12 @@ export default function Register() {
   const isDisabled = isSubmitting; // Prevents double-submit
 
   return (
-    <div id="register-page">
+    <div id="signup-page">
       <div id="left"></div>
       <div id="right">
         <div className="modal">
           <h1>Create an account</h1>
-          <Form id="register-form" method="post" onSubmit={handleSubmit(onSubmit)}>
+          <Form id="signup-form" method="post" onSubmit={handleSubmit(onSubmit)}>
             <div className="name">
               <div id="first-name">
                 <label htmlFor="first-name-input">
@@ -198,7 +198,7 @@ export default function Register() {
               )}
             </div>
             <button
-              id="register"
+              id="signup"
               type="submit"
               disabled={isDisabled}
               className={'submit-btn' + (isSubmitting ? ' progress' : '')}

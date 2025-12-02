@@ -2,21 +2,21 @@ import { createRoutesStub } from 'react-router';
 import { expect, describe, it } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import NewPassword from '.';
+import Reset from '.';
 
-describe('<NewPassword />', () => {
+describe('<Reset />', () => {
   const user = userEvent.setup();
   const fn = vi.fn();
 
   it('should render successfully and find all the elements', async () => {
     const Stub = createRoutesStub([
       {
-        path: '/password-reset/new-password',
-        Component: NewPassword
+        path: '/reset',
+        Component: Reset
       }
     ]);
-    // render the app stub at "/password-reset/new-password"
-    render(<Stub initialEntries={['/password-reset/new-password']} />);
+    // render the app stub at "reset"
+    render(<Stub initialEntries={['/reset']} />);
 
     const passwordInput = screen.getByLabelText('New password *') as HTMLInputElement;
     const confirmPasswordInput = screen.getByLabelText('Confirm password *') as HTMLInputElement;
@@ -35,12 +35,12 @@ describe('<NewPassword />', () => {
   it('should focus on the first empty field to display error message if clicking submit button', async () => {
     const Stub = createRoutesStub([
       {
-        path: '/password-reset/new-password',
-        Component: NewPassword
+        path: '/reset',
+        Component: Reset
       }
     ]);
-    // render the app stub at "/password-reset/new-password"
-    render(<Stub initialEntries={['/password-reset/new-password']} />);
+    // render the app stub at "reset"
+    render(<Stub initialEntries={['/reset']} />);
 
     const passwordInput = screen.getByLabelText('New password *') as HTMLInputElement;
     const confirmPasswordInput = screen.getByLabelText('Confirm password *') as HTMLInputElement;
@@ -60,12 +60,12 @@ describe('<NewPassword />', () => {
 
     const Stub = createRoutesStub([
       {
-        path: '/password-reset/new-password',
-        Component: NewPassword
+        path: '/reset',
+        Component: Reset
       }
     ]);
-    // render the app stub at "/password-reset/new-password"
-    render(<Stub initialEntries={['/password-reset/new-password']} />);
+    // render the app stub at "reset"
+    render(<Stub initialEntries={['/reset']} />);
 
     const passwordInput = screen.getByLabelText('New password *') as HTMLInputElement;
     const confirmPasswordInput = screen.getByLabelText('Confirm password *') as HTMLInputElement;
@@ -84,12 +84,12 @@ describe('<NewPassword />', () => {
   it("should display password's strength: low", async () => {
     const Stub = createRoutesStub([
       {
-        path: '/password-reset/new-password',
-        Component: NewPassword
+        path: '/reset',
+        Component: Reset
       }
     ]);
-    // render the app stub at "/password-reset/new-password"
-    render(<Stub initialEntries={['/password-reset/new-password']} />);
+    // render the app stub at "reset"
+    render(<Stub initialEntries={['/reset']} />);
 
     const passwordInput = screen.getByLabelText('New password *') as HTMLInputElement;
 
@@ -101,12 +101,12 @@ describe('<NewPassword />', () => {
   it("should display password's strength: medium", async () => {
     const Stub = createRoutesStub([
       {
-        path: '/password-reset/new-password',
-        Component: NewPassword
+        path: '/reset',
+        Component: Reset
       }
     ]);
-    // render the app stub at "/password-reset/new-password"
-    render(<Stub initialEntries={['/password-reset/new-password']} />);
+    // render the app stub at "reset"
+    render(<Stub initialEntries={['/reset']} />);
 
     const passwordInput = screen.getByLabelText('New password *') as HTMLInputElement;
 
@@ -118,12 +118,12 @@ describe('<NewPassword />', () => {
   it("should display password's strength: strong", async () => {
     const Stub = createRoutesStub([
       {
-        path: '/password-reset/new-password',
-        Component: NewPassword
+        path: '/reset',
+        Component: Reset
       }
     ]);
-    // render the app stub at "/password-reset/new-password"
-    render(<Stub initialEntries={['/password-reset/new-password']} />);
+    // render the app stub at "reset"
+    render(<Stub initialEntries={['/reset']} />);
 
     const passwordInput = screen.getByLabelText('New password *') as HTMLInputElement;
 
@@ -135,12 +135,12 @@ describe('<NewPassword />', () => {
   it('should display no error if user copy the text from password input to the confirm password input and the password input text is valid (>=8 characters)', async () => {
     const Stub = createRoutesStub([
       {
-        path: '/password-reset/new-password',
-        Component: NewPassword
+        path: '/reset',
+        Component: Reset
       }
     ]);
-    // render the app stub at "/password-reset/new-password"
-    render(<Stub initialEntries={['/password-reset/new-password']} />);
+    // render the app stub at "reset"
+    render(<Stub initialEntries={['/reset']} />);
 
     let passwordInput = screen.getByLabelText('New password *') as HTMLInputElement;
     const confirmPasswordInput = screen.getByLabelText('Confirm password *') as HTMLInputElement;
@@ -161,12 +161,12 @@ describe('<NewPassword />', () => {
 
     const Stub = createRoutesStub([
       {
-        path: '/password-reset/new-password',
-        Component: NewPassword
+        path: '/reset',
+        Component: Reset
       }
     ]);
-    // render the app stub at "/password-reset/new-password"
-    render(<Stub initialEntries={['/password-reset/new-password']} />);
+    // render the app stub at "reset"
+    render(<Stub initialEntries={['/reset']} />);
 
     let passwordInput = screen.getByLabelText('New password *') as HTMLInputElement;
     const confirmPasswordInput = screen.getByLabelText('Confirm password *') as HTMLInputElement;
@@ -189,8 +189,8 @@ describe('<NewPassword />', () => {
 
     const Stub = createRoutesStub([
       {
-        path: '/password-reset/new-password',
-        Component: NewPassword,
+        path: '/reset',
+        Component: Reset,
         action: async () => {
           await new Promise((resolve) => setTimeout(resolve, 50));
           return {
@@ -204,8 +204,8 @@ describe('<NewPassword />', () => {
         }
       }
     ]);
-    // render the app stub at "/password-reset/new-password"
-    render(<Stub initialEntries={['/password-reset/new-password']} />);
+    // render the app stub at "reset"
+    render(<Stub initialEntries={['/reset']} />);
 
     // find the elements
     let passwordInput = screen.getByLabelText('New password *') as HTMLInputElement;
@@ -236,15 +236,15 @@ describe('<NewPassword />', () => {
 
     const Stub = createRoutesStub([
       {
-        path: '/password-reset/new-password',
-        Component: NewPassword,
+        path: '/reset',
+        Component: Reset,
         action() {
           fn();
         }
       }
     ]);
     // render the app stub at "/login"
-    render(<Stub initialEntries={['/password-reset/new-password']} />);
+    render(<Stub initialEntries={['/reset']} />);
 
     // find the elements
     const passwordInput = screen.getByLabelText('New password *') as HTMLInputElement;

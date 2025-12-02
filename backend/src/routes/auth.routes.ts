@@ -14,8 +14,9 @@ import {
 const authRouter = Router();
 
 authRouter.post('/login', UserController.login);
+
 authRouter.post(
-  '/register',
+  '/signup',
   validateUsername,
   validateEmail,
   validatePassword,
@@ -23,20 +24,21 @@ authRouter.post(
   checkEmailInUse,
   checkUsernameInUse,
   validate,
-  UserController.register
+  UserController.signup
 );
-authRouter.get('/verify/email/:id/:token', UserController.verifyEmail);
-authRouter.post('/verify/otp', UserController.verifyOTP);
-authRouter.post('/send-verification/email/link', UserController.sendVerificationLink);
-authRouter.post('/send-verification/email/otp', UserController.sendVerificationOTP);
+authRouter.get('/signup/verify/:id/:token', UserController.signupVerify);
+authRouter.post('/signup/resend', UserController.signupResend);
+
+authRouter.post('/forgot', UserController.postForgot);
 authRouter.post(
-  '/reset/password',
+  '/reset',
   validatePassword,
   validateConfirmPassword,
   validate,
   UserController.resetPassword
 );
-authRouter.post('/refresh-token', UserController.refreshToken);
+authRouter.post('/reset/verify', UserController.resetVerify);
+
 authRouter.get(
   '/protected',
   passport.authenticate('jwt', { session: false }),

@@ -4,7 +4,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Login from './index';
 import Home from '../Home';
-import Register from '../Register';
+import Signup from '../Signup';
 
 describe('<Login />', () => {
   const user = userEvent.setup();
@@ -36,19 +36,19 @@ describe('<Login />', () => {
     expect(passwordInput.value).toBe('');
   });
 
-  it('should navigate to the register route after clicking the link at the end of the form', async () => {
+  it('should navigate to the signup route after clicking the link at the end of the form', async () => {
     const Stub = createRoutesStub([
       {
         path: '/login',
         Component: Login
       },
       {
-        path: '/register',
-        Component: Register
+        path: '/signup',
+        Component: Signup
       }
     ]);
-    // render the app stub at "/register"
-    render(<Stub initialEntries={['/register']} />);
+    // render the app stub at "/signup"
+    render(<Stub initialEntries={['/signup']} />);
 
     await user.click(screen.getByText('Create an account'));
 

@@ -110,8 +110,8 @@ export const handlers = [
   // USER/AUTH
   // ========================================
 
-  // Register
-  http.post(`${MOSAIC_BASE_URL}/auth/register`, async ({ request }) => {
+  // Signup
+  http.post(`${MOSAIC_BASE_URL}/auth/signup`, async ({ request }) => {
     const body = (await request.json()) as any;
 
     if (body.email === 'test@example.com') {
@@ -148,21 +148,21 @@ export const handlers = [
 
   // Verification
   http.get<{ id: string; token: string }>(
-    `${MOSAIC_BASE_URL}/auth/verify/email/:id/:token`,
+    `${MOSAIC_BASE_URL}/auth/signup/verify/:id/:token`,
     async ({ params }) => {
       const { id, token } = params;
 
       if (id === 'testid' && token === 'easytokenpass') {
-        return HttpResponse.redirect(`${MOSAIC_APP_URL}/verify/email?status=success`);
+        return HttpResponse.redirect(`${MOSAIC_APP_URL}/signup/verify?status=success`);
       } else {
         return HttpResponse.redirect(
-          `${MOSAIC_APP_URL}/verify/email?status=failed&email=test@example.com`
+          `${MOSAIC_APP_URL}/signup/verify?status=failed&email=test@example.com`
         );
       }
     }
   ),
 
-  http.post(`${MOSAIC_BASE_URL}/auth/resend-verification/email`, async ({ request }) => {
+  http.post(`${MOSAIC_BASE_URL}/auth/signup/resend`, async ({ request }) => {
     const body = (await request.json()) as any;
 
     if (body.email === 'test@example.com') {
@@ -174,7 +174,7 @@ export const handlers = [
     return new HttpResponse(null, { status: 401 });
   }),
 
-  http.post(`${MOSAIC_BASE_URL}/auth/send-verification/email/otp`, async ({ request }) => {
+  http.post(`${MOSAIC_BASE_URL}/auth/forgot`, async ({ request }) => {
     const body = (await request.json()) as any;
 
     if (body.email === 'test@example.com') {
@@ -186,7 +186,7 @@ export const handlers = [
     return new HttpResponse(null, { status: 401 });
   }),
 
-  http.post(`${MOSAIC_BASE_URL}/auth/verify/otp`, async ({ request }) => {
+  http.post(`${MOSAIC_BASE_URL}/auth/reset/verify`, async ({ request }) => {
     const body = (await request.json()) as any;
 
     if (body.email === 'test@example.com') {
@@ -208,7 +208,7 @@ export const handlers = [
     return new HttpResponse(null, { status: 401 });
   }),
 
-  http.post(`${MOSAIC_BASE_URL}/auth/reset/password`, async ({ request }) => {
+  http.post(`${MOSAIC_BASE_URL}/auth/reset`, async ({ request }) => {
     const body = (await request.json()) as any;
 
     if (body.email === 'test@example.com') {

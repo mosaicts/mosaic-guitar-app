@@ -1,10 +1,10 @@
-#register-page {
+#signup-page {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-#register-page #right {
+#signup-page #right {
   background-image: url('./app/Images/guitars.jpg');
   background-repeat: no-repeat;
   width: 100%;
@@ -14,16 +14,16 @@
   align-items: center;
 }
 
-#register-page #right .modal {
+#signup-page #right .modal {
   height: 80%;
   width: 80%;
 }
 
-#register-page #right h1 {
+#signup-page #right h1 {
   margin-bottom: 1rem;
 }
 
-#register-form {
+#signup-form {
   width: 70%;
   display: flex;
   flex-direction: column;
@@ -31,59 +31,59 @@
   gap: 1rem;
 }
 
-#register-form > div,
-#register-form .name > div,
-#register-form .submit-btn {
+#signup-form > div,
+#signup-form .name > div,
+#signup-form .submit-btn {
   width: 100%;
 }
 
-#register-form > div:not(.separation) {
+#signup-form > div:not(.separation) {
   display: flex;
   flex-direction: column;
 }
 
-#register-form > div.name {
+#signup-form > div.name {
   flex-direction: row;
   justify-content: space-between;
   gap: 1rem;
 }
 
-#register-form #first-name,
-#register-form #last-name {
+#signup-form #first-name,
+#signup-form #last-name {
   display: flex;
   flex-direction: column;
 }
 
-#register-form div label {
+#signup-form div label {
   font-weight: 600;
   margin-bottom: 8px;
 }
 
-#register-form div > input,
-#register-form .submit-btn {
+#signup-form div > input,
+#signup-form .submit-btn {
   height: 40px;
 }
 
-#register-form div > input {
+#signup-form div > input {
   font-size: 1rem;
   width: 100%;
 }
 
-#register-form input {
+#signup-form input {
   background-color: transparent;
   padding-left: 0.5rem;
 }
 
-#register-page div p {
+#signup-page div p {
   font-weight: 600;
   margin-bottom: 8px;
 }
 
-#register-page #left {
+#signup-page #left {
   width: 0;
 }
 
-#register-form #already-have-account {
+#signup-form #already-have-account {
   align-items: center;
 }
 
@@ -100,21 +100,21 @@
 }
 
 @media (min-width: 768px) {
-  #register-form > div.name {
+  #signup-form > div.name {
     flex-direction: column;
   }
 
-  #register-page {
+  #signup-page {
     background-color: var(--color-background);
   }
 
-  #register-page #right {
+  #signup-page #right {
     background-image: none;
     background-color: var(--color-background);
     width: 50%;
   }
 
-  #register-page #left {
+  #signup-page #left {
     background-image: url('./app/Images/guitars.jpg');
     background-repeat: no-repeat;
     width: 50%;
@@ -122,17 +122,17 @@
     overflow-y: hidden;
   }
 
-  #register-page #right .modal {
+  #signup-page #right .modal {
     width: 80%;
   }
 }
 
 @media (min-width: 1200px) {
-  #register-form > div.name {
+  #signup-form > div.name {
     flex-direction: row;
   }
 
-  #register-page #right .modal {
+  #signup-page #right .modal {
     width: 70%;
   }
 }

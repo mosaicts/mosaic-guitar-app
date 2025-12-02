@@ -6,8 +6,7 @@ const userRouter = Router();
 
 userRouter.get('/all', UserController.getAll);
 userRouter.post(
-  '/:id?',
-  // TODO: uncomment this
+  '/profile/:id?',
   passport.authenticate('jwt', { session: false }),
   UserController.getProfile
 );

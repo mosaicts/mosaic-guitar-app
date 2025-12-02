@@ -1,17 +1,17 @@
 import axios from 'axios';
 import {
   baseURL,
-  guitarListURL,
-  loginURL,
-  getUserURL,
+  getProfileURL,
   updateUserURL,
-  registerURL,
+  loginURL,
+  signupURL,
+  signupVerifyURL,
+  signupResendURL,
+  forgotPasswordURL,
+  resetVerifyURL,
+  resetPasswordURL,
   refreshTokenURL,
-  verifyEmailUrl,
-  verifyOTPURL,
-  sendVerificationLinkURL,
-  sendVerificationOTPURL,
-  resetPasswordURL
+  guitarListURL
 } from '../Constants/apis';
 import { type Guitar } from './models';
 
@@ -33,8 +33,8 @@ export async function fetchSingleGuitar(id: number) {
   return response.data.product as Guitar;
 }
 
-export async function getUser(data: object) {
-  const response = await axios.post(getUserURL, data, {
+export async function getProfile(data: object) {
+  const response = await axios.post(getProfileURL, data, {
     headers: {
       'Content-Type': 'application/json'
     },
@@ -47,12 +47,13 @@ export async function updateUser(data: object) {
   const response = await axios.post(updateUserURL, data, {
     headers: {
       'Content-Type': 'application/json'
-    }
+    },
+    withCredentials: true
   });
   return response;
 }
 
-export async function login(data: object) {
+export async function loginApi(data: object) {
   const response = await axios.post(loginURL, data, {
     headers: {
       'Content-Type': 'application/json'
@@ -62,8 +63,8 @@ export async function login(data: object) {
   return response;
 }
 
-export async function register(data: object) {
-  const response = await axios.post(registerURL, data, {
+export async function signup(data: object) {
+  const response = await axios.post(signupURL, data, {
     headers: {
       'Content-Type': 'application/json'
     }
@@ -71,8 +72,8 @@ export async function register(data: object) {
   return response;
 }
 
-export async function verifyEmail(data: object) {
-  const response = await axios.post(verifyEmailUrl, data, {
+export async function signupVerify(data: object) {
+  const response = await axios.post(signupVerifyURL, data, {
     headers: {
       'Content-Type': 'application/json'
     }
@@ -80,8 +81,8 @@ export async function verifyEmail(data: object) {
   return response;
 }
 
-export async function sendVerificationLink(data: object) {
-  const response = await axios.post(sendVerificationLinkURL, data, {
+export async function signupResend(data: object) {
+  const response = await axios.post(signupResendURL, data, {
     headers: {
       'Content-Type': 'application/json'
     }
@@ -89,8 +90,8 @@ export async function sendVerificationLink(data: object) {
   return response;
 }
 
-export async function sendVerificationOTP(data: object) {
-  const response = await axios.post(sendVerificationOTPURL, data, {
+export async function postForgot(data: object) {
+  const response = await axios.post(forgotPasswordURL, data, {
     headers: {
       'Content-Type': 'application/json'
     }
@@ -98,8 +99,8 @@ export async function sendVerificationOTP(data: object) {
   return response;
 }
 
-export async function verifyOTP(data: object) {
-  const response = await axios.post(verifyOTPURL, data, {
+export async function resetVerify(data: object) {
+  const response = await axios.post(resetVerifyURL, data, {
     headers: {
       'Content-Type': 'application/json'
     }

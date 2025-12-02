@@ -36,122 +36,6 @@ export class AuthService {
     });
   }
 
-  async register(req: Request, res: Response) {
-    const { firstName, lastName, username, email, password } = req.body;
-
-    const user = new User();
-
-    user.firstName = firstName;
-    user.lastName = lastName;
-    user.username = username;
-    user.email = email;
-    user.password = await hashPassword(password);
-    user.profilePicUrl = '';
-
-    this.#generateRefreshToken(user);
-
-    // save user to db
-    try {
-      await this.userRepository.save(user);
-    } catch (err) {
-      console.log('An error occured while saving user to db', err);
-      res.status(400).json({ message: 'Error signing up' });
-    }
-
-    // send verification link to email
-    try {
-      await this.#sendVerificationLinkToEmail(user);
-    } catch (err) {
-      return res
-        .status(400)
-        .json({ message: 'An error occurred while sending verification code to email' });
-    }
-
-    res.status(200).json({
-      message: 'Registration successful, please verify your email'
-    });
-    // return res.status(200).redirect(`${envConfig.CLIENT_URL}/check-your-email`);
-  }
-
-  async verifyEmail(req: Request, res: Response) {
-    try {
-      const { id, token } = req.params;
-
-      let user = await this.userRepository.findOne({ where: { id } });
-
-      if (!token || !id)
-        return res
-          .status(400)
-          .redirect(
-            `${envConfig.CLIENT_URL}/verify/email?status=failed&email=${encodeURIComponent(user.email)}`
-          );
-
-      if (user.verified) {
-        return res.status(200).redirect(`${envConfig.CLIENT_URL}/verify/email?status=success`);
-      }
-
-      const err = verifyJwt(token);
-
-      if (err !== null) {
-        return res
-          .status(400)
-          .redirect(
-            `${envConfig.CLIENT_URL}/verify/email?status=failed&email=${encodeURIComponent(user.email)}`
-          );
-      }
-
-      user = { ...user, verified: true };
-      await this.userRepository.save(user);
-      return res.status(200).redirect(`${envConfig.CLIENT_URL}/verify/email?status=success`);
-    } catch (err) {
-      console.log('An error occurred while verifying:', err);
-    }
-  }
-
-  async verifyOTP(req: Request, res: Response) {
-    const { email, pin } = req.body;
-
-    const resSlowEmail = await limiterSlowBruteOTPVerifyByEmail.get(email);
-
-    let retrySecs = 0;
-
-    if (
-      resSlowEmail !== null &&
-      resSlowEmail.consumedPoints > maxWrongOTPVerifyAttemptsByEmailPerDay
-    ) {
-      retrySecs = Math.round(resSlowEmail.msBeforeNext / 1000) || 1;
-    }
-
-    if (retrySecs > 0) {
-      res.set('Retry-After', String(retrySecs));
-      res.status(429).send('Too Many Requests');
-    } else {
-      try {
-        if (!email || email === 'null' || !pin)
-          return res.status(400).json({ message: 'Missing credentials' });
-
-        const otp = await searchAndFindToken(email);
-
-        if (otp === pin) {
-          return res.status(200).json({ message: 'success' });
-        } else {
-          await limiterSlowBruteOTPVerifyByEmail.consume(email);
-          return res.status(400).json({
-            message: `Wrong OTP. You have ${maxWrongOTPVerifyAttemptsByEmailPerDay - (resSlowEmail?.consumedPoints || 0) - 1} more tries.`
-          });
-        }
-      } catch (err) {
-        if (err instanceof Error) {
-          console.log('An error occurred while verifying:', err);
-          res.status(400).json({ message: 'Error logging in' });
-        } else {
-          res.set('Retry-After', String(Math.round(err.msBeforeNext / 1000)) || '1');
-          res.status(429).send('Too Many Requests');
-        }
-      }
-    }
-  }
-
   async login(req: Request, res: Response) {
     const { email, password } = req.body;
     const ipAddr = req.ip;
@@ -254,7 +138,81 @@ export class AuthService {
     }
   }
 
-  async sendVerificationLink(req: Request, res: Response) {
+  async signup(req: Request, res: Response) {
+    const { firstName, lastName, username, email, password } = req.body;
+
+    const user = new User();
+
+    user.firstName = firstName;
+    user.lastName = lastName;
+    user.username = username;
+    user.email = email;
+    user.password = await hashPassword(password);
+    user.profilePicUrl = '';
+
+    // save user to db
+    try {
+      await this.userRepository.save(user);
+    } catch (err) {
+      console.log('An error occured while saving user to db', err);
+      res.status(400).json({ message: 'Error signing up' });
+    }
+
+    // send verification link to email
+    try {
+      const verificationToken = this.#generateVerificationToken(user);
+      const verificationUrl = `${envConfig.BACKEND_URL}/auth/signup/verify/${user.id}/${verificationToken}`;
+      await sendVerificationLinkToMail(user, verificationUrl);
+    } catch (err) {
+      console.log(err);
+
+      return res
+        .status(400)
+        .json({ message: 'An error occurred while sending verification code to email' });
+    }
+
+    res.status(200).json({
+      message: 'Registration successful, please verify your email'
+    });
+    // return res.status(200).redirect(`${envConfig.CLIENT_URL}/check-your-email`);
+  }
+
+  async signupVerify(req: Request, res: Response) {
+    try {
+      const { id, token } = req.params;
+
+      let user = await this.userRepository.findOne({ where: { id } });
+
+      if (!token || !id)
+        return res
+          .status(400)
+          .redirect(
+            `${envConfig.CLIENT_URL}/signup/verify?status=failed&email=${encodeURIComponent(user.email)}`
+          );
+
+      if (user.verified) {
+        return res.status(200).redirect(`${envConfig.CLIENT_URL}/signup/verify?status=success`);
+      }
+
+      const err = verifyJwt(token);
+
+      if (err !== null) {
+        return res
+          .status(400)
+          .redirect(
+            `${envConfig.CLIENT_URL}/signup/verify?status=failed&email=${encodeURIComponent(user.email)}`
+          );
+      }
+
+      user = { ...user, verified: true };
+      await this.userRepository.save(user);
+      return res.status(200).redirect(`${envConfig.CLIENT_URL}/signup/verify?status=success`);
+    } catch (err) {
+      console.log('An error occurred while verifying:', err);
+    }
+  }
+
+  async signupResend(req: Request, res: Response) {
     const { email } = req.body;
 
     const user = await this.userRepository.findOne({ where: { email } });
@@ -264,7 +222,9 @@ export class AuthService {
     }
 
     try {
-      await this.#sendVerificationLinkToEmail(user);
+      const verificationToken = this.#generateVerificationToken(user);
+      const verificationUrl = `${envConfig.BACKEND_URL}/auth/verify/email/${user.id}/${verificationToken}`;
+      await sendVerificationLinkToMail(user, verificationUrl);
       // return res.status(200).redirect(`${envConfig.CLIENT_URL}/check-your-email`);
       return res.status(200).json({
         message: 'Verification link resent successfully'
@@ -279,19 +239,75 @@ export class AuthService {
     }
   }
 
-  async sendVerificationOTP(req: Request, res: Response) {
+  async postForgot(req: Request, res: Response) {
     const { email } = req.body;
 
     const user = await this.userRepository.findOne({ where: { email } });
 
     try {
-      await this.#sendVerificationOTPToEmail(user, email);
+      const verificationOTP = generateOTP();
+      await sendVerificationCodeToMail(user, email, verificationOTP);
+
       // return res.status(200).redirect(`${envConfig.CLIENT_URL}/check-your-email`);
+
+      const passwordReset = new PasswordReset();
+      passwordReset.resetToken = verificationOTP;
+      passwordReset.email = email;
+      const { id } = await this.passwordResetRepository.save(passwordReset);
+
       return res.status(200).json({
-        message: 'Verification code resent successfully'
+        message: 'Verification code resent successfully',
+        id
       });
     } catch (err) {
       console.log('An error occurred while sending verification token:', err);
+    }
+  }
+
+  async resetVerify(req: Request, res: Response) {
+    const { id, pin } = req.body;
+
+    const passwordReset = await this.passwordResetRepository.findOne({ where: { id } });
+    const email = passwordReset.email;
+
+    const resSlowEmail = await limiterSlowBruteOTPVerifyByEmail.get(email);
+
+    let retrySecs = 0;
+
+    if (
+      resSlowEmail !== null &&
+      resSlowEmail.consumedPoints > maxWrongOTPVerifyAttemptsByEmailPerDay
+    ) {
+      retrySecs = Math.round(resSlowEmail.msBeforeNext / 1000) || 1;
+    }
+
+    if (retrySecs > 0) {
+      res.set('Retry-After', String(retrySecs));
+      res.status(429).send('Too Many Requests');
+    } else {
+      try {
+        if (!email || email === 'null' || !pin)
+          return res.status(400).json({ message: 'Missing credentials' });
+
+        const token = passwordReset.resetToken;
+
+        if (token === pin) {
+          return res.status(200).json({ message: 'success' });
+        } else {
+          await limiterSlowBruteOTPVerifyByEmail.consume(email);
+          return res.status(400).json({
+            message: `Wrong OTP. You have ${maxWrongOTPVerifyAttemptsByEmailPerDay - (resSlowEmail?.consumedPoints || 0) - 1} more tries.`
+          });
+        }
+      } catch (err) {
+        if (err instanceof Error) {
+          console.log('An error occurred while verifying:', err);
+          res.status(400).json({ message: 'Error logging in' });
+        } else {
+          res.set('Retry-After', String(Math.round(err.msBeforeNext / 1000)) || '1');
+          res.status(429).send('Too Many Requests');
+        }
+      }
     }
   }
 
@@ -352,33 +368,6 @@ export class AuthService {
       });
   }
 
-  #sendVerificationLinkToEmail = async (user: User) => {
-    // send verification code to email
-    const verificationToken = this.#generateVerificationToken(user);
-    const verificationUrl = `${envConfig.BACKEND_URL}/auth/verify/email/${user.id}/${verificationToken}`;
-    try {
-      await sendVerificationLinkToMail(user, verificationUrl);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  #sendVerificationOTPToEmail = async (user: User, email: string) => {
-    // send verification code to email
-    const verificationOTP = generateOTP();
-    await storeToken(email, verificationOTP, 60);
-    try {
-      await sendVerificationCodeToMail(user, email, verificationOTP);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  #generateRefreshToken(user: User) {
-    const refreshToken = uuidv4();
-    user.refreshToken = refreshToken;
-    user.refreshTokenExpiresAt = new Date(Date.now() + 1000 * 60 * 60 * 1); // 1 hour
-    return refreshToken;
   }
 
   #generateVerificationToken(user: User) {
@@ -390,15 +379,5 @@ export class AuthService {
       }
     });
     return verificationToken;
-  }
-
-  #issueJwt(res: Response, user: User) {
-    // Generate a random string that will constitute the fingerprint for this user
-    const fingerprint = crypto.randomBytes(50).toString('hex');
-
-    // Add the fingerprint in a hardened cookie to prevent Token Sidejacking
-    // https://cheatsheetseries.owasp.org/cheatsheets/JSON_Web_Token_for_Java_Cheat_Sheet.html#token-sidejacking
-    const jwt = setFingerprintCookieAndSignJwt(fingerprint, res, user);
-    return jwt;
   }
 }

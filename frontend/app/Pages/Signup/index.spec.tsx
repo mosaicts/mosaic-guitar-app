@@ -3,22 +3,22 @@ import { expect, describe, it } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { redirect } from 'react-router';
-import Register from './index';
+import Signup from './index';
 import Login from '../Login';
-import CheckYourEmail from '../CheckYourEmail';
+import CheckEmail from './CheckEmail';
 
-describe('<Register />', () => {
+describe('<Signup />', () => {
   const user = userEvent.setup();
 
   it('should render successfully and find all the elements', async () => {
     const Stub = createRoutesStub([
       {
-        path: '/register',
-        Component: Register
+        path: '/signup',
+        Component: Signup
       }
     ]);
-    // render the app stub at "/register"
-    render(<Stub initialEntries={['/register']} />);
+    // render the app stub at "/signup"
+    render(<Stub initialEntries={['/signup']} />);
 
     // find all the important elements
     expect(screen.getByText('Create an account')).toBeInTheDocument();
@@ -60,15 +60,15 @@ describe('<Register />', () => {
         Component: Login
       },
       {
-        path: '/register',
-        Component: Register,
+        path: '/signup',
+        Component: Signup,
         action() {
           return redirect('/login');
         }
       }
     ]);
-    // render the app stub at "/register"
-    render(<Stub initialEntries={['/register']} />);
+    // render the app stub at "/signup"
+    render(<Stub initialEntries={['/signup']} />);
 
     await user.click(screen.getByText('→ Login'));
 
@@ -80,12 +80,12 @@ describe('<Register />', () => {
   it('should focus on the first empty field to display error message if clicking submit button', async () => {
     const Stub = createRoutesStub([
       {
-        path: '/register',
-        Component: Register
+        path: '/signup',
+        Component: Signup
       }
     ]);
-    // render the app stub at "/register"
-    render(<Stub initialEntries={['/register']} />);
+    // render the app stub at "/signup"
+    render(<Stub initialEntries={['/signup']} />);
 
     const firstnameInput = screen.getByLabelText('First name *') as HTMLInputElement;
     await user.click(screen.getByRole('button', { name: 'Create account' }));
@@ -104,12 +104,12 @@ describe('<Register />', () => {
 
     const Stub = createRoutesStub([
       {
-        path: '/register',
-        Component: Register
+        path: '/signup',
+        Component: Signup
       }
     ]);
-    // render the app stub at "/register"
-    render(<Stub initialEntries={['/register']} />);
+    // render the app stub at "/signup"
+    render(<Stub initialEntries={['/signup']} />);
 
     const passwordInput = screen.getByLabelText('Password *') as HTMLInputElement;
     const confirmPasswordInput = screen.getByLabelText('Confirm password *') as HTMLInputElement;
@@ -128,12 +128,12 @@ describe('<Register />', () => {
   it("should display password's strength: low", async () => {
     const Stub = createRoutesStub([
       {
-        path: '/register',
-        Component: Register
+        path: '/signup',
+        Component: Signup
       }
     ]);
-    // render the app stub at "/register"
-    render(<Stub initialEntries={['/register']} />);
+    // render the app stub at "/signup"
+    render(<Stub initialEntries={['/signup']} />);
 
     const passwordInput = screen.getByLabelText('Password *') as HTMLInputElement;
 
@@ -145,12 +145,12 @@ describe('<Register />', () => {
   it("should display password's strength: medium", async () => {
     const Stub = createRoutesStub([
       {
-        path: '/register',
-        Component: Register
+        path: '/signup',
+        Component: Signup
       }
     ]);
-    // render the app stub at "/register"
-    render(<Stub initialEntries={['/register']} />);
+    // render the app stub at "/signup"
+    render(<Stub initialEntries={['/signup']} />);
 
     const passwordInput = screen.getByLabelText('Password *') as HTMLInputElement;
 
@@ -162,12 +162,12 @@ describe('<Register />', () => {
   it("should display password's strength: strong", async () => {
     const Stub = createRoutesStub([
       {
-        path: '/register',
-        Component: Register
+        path: '/signup',
+        Component: Signup
       }
     ]);
-    // render the app stub at "/register"
-    render(<Stub initialEntries={['/register']} />);
+    // render the app stub at "/signup"
+    render(<Stub initialEntries={['/signup']} />);
 
     const passwordInput = screen.getByLabelText('Password *') as HTMLInputElement;
 
@@ -179,12 +179,12 @@ describe('<Register />', () => {
   it('should display no error if user copy the text from password input to the confirm password input and the password input text is valid (>=8 characters)', async () => {
     const Stub = createRoutesStub([
       {
-        path: '/register',
-        Component: Register
+        path: '/signup',
+        Component: Signup
       }
     ]);
-    // render the app stub at "/register"
-    render(<Stub initialEntries={['/register']} />);
+    // render the app stub at "/signup"
+    render(<Stub initialEntries={['/signup']} />);
 
     let passwordInput = screen.getByLabelText('Password *') as HTMLInputElement;
     const confirmPasswordInput = screen.getByLabelText('Confirm password *') as HTMLInputElement;
@@ -205,12 +205,12 @@ describe('<Register />', () => {
 
     const Stub = createRoutesStub([
       {
-        path: '/register',
-        Component: Register
+        path: '/signup',
+        Component: Signup
       }
     ]);
-    // render the app stub at "/register"
-    render(<Stub initialEntries={['/register']} />);
+    // render the app stub at "/signup"
+    render(<Stub initialEntries={['/signup']} />);
 
     let passwordInput = screen.getByLabelText('Password *') as HTMLInputElement;
     const confirmPasswordInput = screen.getByLabelText('Confirm password *') as HTMLInputElement;
@@ -233,12 +233,12 @@ describe('<Register />', () => {
 
     const Stub = createRoutesStub([
       {
-        path: '/register',
-        Component: Register
+        path: '/signup',
+        Component: Signup
       }
     ]);
-    // render the app stub at "/register"
-    render(<Stub initialEntries={['/register']} />);
+    // render the app stub at "/signup"
+    render(<Stub initialEntries={['/signup']} />);
 
     // find the elements
     const firstNameInput = screen.getByLabelText('First name *');
@@ -269,8 +269,8 @@ describe('<Register />', () => {
 
     const Stub = createRoutesStub([
       {
-        path: '/register',
-        Component: Register,
+        path: '/signup',
+        Component: Signup,
         action: async () => {
           await new Promise((resolve) => setTimeout(resolve, 50));
           return {
@@ -285,8 +285,8 @@ describe('<Register />', () => {
         }
       }
     ]);
-    // render the app stub at "/register"
-    render(<Stub initialEntries={['/register']} />);
+    // render the app stub at "/signup"
+    render(<Stub initialEntries={['/signup']} />);
 
     // find the elements
     const firstNameInput = screen.getByLabelText('First name *');
@@ -326,8 +326,8 @@ describe('<Register />', () => {
 
     const Stub = createRoutesStub([
       {
-        path: '/register',
-        Component: Register,
+        path: '/signup',
+        Component: Signup,
         action() {
           return {
             success: false,
@@ -342,7 +342,7 @@ describe('<Register />', () => {
       }
     ]);
     // render the app stub at "/login"
-    render(<Stub initialEntries={['/register']} />);
+    render(<Stub initialEntries={['/signup']} />);
 
     // find the elements
     const firstNameInput = screen.getByLabelText('First name *');
@@ -368,22 +368,22 @@ describe('<Register />', () => {
     });
   });
 
-  it('should navigate to the /check-your-email route after registering successfully', async () => {
+  it('should navigate to the /check-email route after signuping successfully', async () => {
     const Stub = createRoutesStub([
       {
-        path: '/check-your-email',
-        Component: CheckYourEmail
+        path: '/check-email',
+        Component: CheckEmail
       },
       {
-        path: '/register',
-        Component: Register,
+        path: '/signup',
+        Component: Signup,
         action() {
-          return redirect('/check-your-email');
+          return redirect('/check-email');
         }
       }
     ]);
-    // render the app stub at "/register"
-    render(<Stub initialEntries={['/register']} />);
+    // render the app stub at "/signup"
+    render(<Stub initialEntries={['/signup']} />);
 
     // find the elements
     const firstNameInput = screen.getByLabelText('First name *');

@@ -40,7 +40,7 @@ export default function Guitar() {
       </div>
       <div id="full-img-panel">
         <div id="full-img-div">
-          <img id="full-img" src={`../${guitar.image}`} alt={guitar.name} />
+          <img id="full-img" src={`../../${guitar.image}`} alt={guitar.name} />
         </div>
       </div>
       <Modal isShown={isAddCart} />

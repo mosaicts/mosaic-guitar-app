@@ -27,7 +27,7 @@ describe('<Layout />', () => {
     expect(screen.queryByRole('link', { name: 'orders Orders' })).not.toBeInTheDocument();
   });
 
-  it('should render successfully, find all the elements, and display the nav as a part of the layout -  desktop view', async () => {
+  it('should render successfully, find all the elements, and display the nav as a part of the layout - desktop view', async () => {
     global.innerWidth = 1024;
 
     const Stub = createRoutesStub([

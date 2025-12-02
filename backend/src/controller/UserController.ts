@@ -6,32 +6,34 @@ export class UserController {
     await authService.protected(res);
   }
 
-  static async register(req: Request, res: Response) {
-    await authService.register(req, res);
+  static async login(req: Request, res: Response) {
+    await authService.login(req, res);
   }
 
-  static async verifyEmail(req: Request, res: Response) {
-    await authService.verifyEmail(req, res);
+  static async signup(req: Request, res: Response) {
+    await authService.signup(req, res);
   }
 
-  static async verifyOTP(req: Request, res: Response) {
-    await authService.verifyOTP(req, res);
+  static async signupVerify(req: Request, res: Response) {
+    await authService.signupVerify(req, res);
   }
 
-  static async sendVerificationLink(req: Request, res: Response) {
-    await authService.sendVerificationLink(req, res);
+  static async signupResend(req: Request, res: Response) {
+    await authService.signupResend(req, res);
   }
 
-  static async sendVerificationOTP(req: Request, res: Response) {
-    await authService.sendVerificationOTP(req, res);
+  static async postForgot(req: Request, res: Response) {
+    await authService.postForgot(req, res);
+  }
+
+  static async resetVerify(req: Request, res: Response) {
+    await authService.resetVerify(req, res);
   }
 
   static async resetPassword(req: Request, res: Response) {
     await authService.resetPassword(req, res);
   }
 
-  static async login(req: Request, res: Response) {
-    await authService.login(req, res);
   }
 
   static async refreshToken(req: Request, res: Response) {

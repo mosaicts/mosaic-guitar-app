@@ -30,7 +30,7 @@ export const sendVerificationLinkToMail = async (user: User, verificationUrl: st
 export const sendVerificationCodeToMail = async (
   user: User,
   email: string,
-  verificationCode: number
+  verificationCode: number | string
 ) => {
   const mailOptions = {
     from: envConfig.GMAIL_USER,

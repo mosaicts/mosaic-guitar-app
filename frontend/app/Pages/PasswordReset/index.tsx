@@ -3,15 +3,15 @@ import { Form, redirect, useActionData, useNavigation, useSubmit } from 'react-r
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { sendVerificationOTP } from '@/utils/apis';
+import { postForgot } from '@/utils/apis';
 import './index.css';
 
 export async function clientAction({ request }: Route.ActionArgs) {
   const formData = await request.formData();
   const data = Object.fromEntries(formData);
   try {
-    await sendVerificationOTP(data);
-    return redirect(`/password-reset/verify-otp?email=${formData.get('email')}`);
+    const response = await postForgot(data);
+    return redirect(`/forgot/reset/verify?email=${formData.get('email')}&id=${response.data.id}`);
   } catch (err: any) {
     return {
       success: false,
@@ -20,10 +20,10 @@ export async function clientAction({ request }: Route.ActionArgs) {
   }
 }
 
-export default function ResetPassword({ request }: Route.ClientActionArgs) {
+export default function Forgot({ request }: Route.ClientActionArgs) {
   return (
     <div className="modal-bg">
-      <div id="verify-email" className="modal">
+      <div id="forgot" className="modal">
         <h3>
           Enter your user account's verified email address and we will send you a verification code
         </h3>
@@ -62,7 +62,7 @@ const InputEmail = () => {
   };
 
   return (
-    <Form id="verify-email-form" method="post" onSubmit={handleSubmit(onSubmit)}>
+    <Form id="forgot-form" method="post" onSubmit={handleSubmit(onSubmit)}>
       {!errors.email && errorMsg && <p className="err">{errorMsg}</p>}
       <div id="email">
         <label htmlFor="email-input">Email</label>

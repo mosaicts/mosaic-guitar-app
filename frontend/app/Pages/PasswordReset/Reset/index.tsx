@@ -17,7 +17,7 @@ import { passwordValidationPatterns } from '@/lib/password';
 import { resetPassword } from '@/utils/apis';
 import './index.css';
 
-const NewPasswordSchema = z
+const ResetSchema = z
   .object({
     password: z
       .string()
@@ -33,7 +33,7 @@ const NewPasswordSchema = z
     path: ['confirmPassword']
   });
 
-type NewPasswordSchemaType = z.infer<typeof NewPasswordSchema>;
+type ResetSchemaType = z.infer<typeof ResetSchema>;
 
 export async function clientAction({ request }: Route.ActionArgs) {
   const formData = await request.formData();
@@ -49,15 +49,15 @@ export async function clientAction({ request }: Route.ActionArgs) {
   }
 }
 
-export default function NewPassword() {
+export default function Reset() {
   const {
     control,
     register,
     handleSubmit,
     setError,
     formState: { errors }
-  } = useForm<NewPasswordSchemaType>({
-    resolver: zodResolver(NewPasswordSchema),
+  } = useForm<ResetSchemaType>({
+    resolver: zodResolver(ResetSchema),
     defaultValues: {
       password: '',
       confirmPassword: ''
@@ -114,9 +114,9 @@ export default function NewPassword() {
 
   return (
     <div className="modal-bg">
-      <div id="new-password" className="modal">
+      <div id="reset" className="modal">
         <h1>Reset your password</h1>
-        <Form id="new-password-form" method="post" onSubmit={handleSubmit(onSubmit)}>
+        <Form id="reset-form" method="post" onSubmit={handleSubmit(onSubmit)}>
           <div id="password">
             <label htmlFor="password-input">
               New password <span className="required-asterisk">*</span>

@@ -4,11 +4,11 @@ import { expect, describe, it } from 'vitest';
 import { render, screen, waitFor, act, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { redirect } from 'react-router';
-import VerifyCode from './index';
+import ResetVerify from './index';
 import Login from '@/Pages/Login';
-import NewPassword from '../NewPass';
+import Reset from '../Reset';
 
-describe('<VerifyCode />', () => {
+describe('<ResetVerify />', () => {
   const fn = vi.fn();
   const user = userEvent.setup({
     advanceTimers: vi.advanceTimersByTime
@@ -40,38 +40,38 @@ describe('<VerifyCode />', () => {
   it('should render successfully and find all the elements', async () => {
     const Stub = createRoutesStub([
       {
-        path: '/password-reset/verify-otp',
-        Component: VerifyCode
+        path: '/reset/verify',
+        Component: ResetVerify
       }
     ]);
-    render(<Stub initialEntries={['/password-reset/verify-otp']} />);
+    render(<Stub initialEntries={['/reset/verify']} />);
 
     expect(screen.getByText('OTP Verification')).toBeVisible();
     expect(screen.getAllByRole('textbox')).toHaveLength(6);
-    expect(screen.getByRole('button', { name: 'Resend OTP in 01:00' })).toBeVisible();
+    expect(screen.getByRole('button', { name: 'Resend OTP in 00:30' })).toBeVisible();
     expect(screen.getByRole('button', { name: 'Cancel' })).toBeVisible();
   });
 
   it('should update remaining times to resend after some time passes accordingly', async () => {
     const Stub = createRoutesStub([
       {
-        path: '/password-reset/verify-otp',
-        Component: VerifyCode
+        path: '/reset/verify',
+        Component: ResetVerify
       }
     ]);
-    render(<Stub initialEntries={['/password-reset/verify-otp']} />);
+    render(<Stub initialEntries={['/reset/verify']} />);
 
-    expect(screen.getByRole('button', { name: 'Resend OTP in 01:00' })).toBeVisible();
+    expect(screen.getByRole('button', { name: 'Resend OTP in 00:30' })).toBeVisible();
     act(() => {
       vi.advanceTimersByTime(2000);
     });
-    expect(screen.getByRole('button', { name: 'Resend OTP in 00:58' })).toBeVisible();
+    expect(screen.getByRole('button', { name: 'Resend OTP in 00:28' })).toBeVisible();
     act(() => {
       vi.advanceTimersByTime(10_000);
     });
-    expect(screen.getByRole('button', { name: 'Resend OTP in 00:48' })).toBeVisible();
+    expect(screen.getByRole('button', { name: 'Resend OTP in 00:18' })).toBeVisible();
     act(() => {
-      vi.advanceTimersByTime(49_000);
+      vi.advanceTimersByTime(19_000);
     });
     expect(screen.getByRole('button', { name: 'Resend OTP' })).toBeVisible();
   });
@@ -79,15 +79,15 @@ describe('<VerifyCode />', () => {
   it('should be able to resend code after timer expires then reset the timer', async () => {
     const Stub = createRoutesStub([
       {
-        path: '/password-reset/verify-otp',
-        Component: VerifyCode,
+        path: '/reset/verify',
+        Component: ResetVerify,
         action() {
           fn();
         }
       }
     ]);
-    render(<Stub initialEntries={['/password-reset/verify-otp']} />);
-    expect(screen.getByRole('button', { name: 'Resend OTP in 01:00' })).toBeVisible();
+    render(<Stub initialEntries={['/reset/verify']} />);
+    expect(screen.getByRole('button', { name: 'Resend OTP in 00:30' })).toBeVisible();
 
     act(() => {
       vi.advanceTimersByTime(61_000);
@@ -100,20 +100,20 @@ describe('<VerifyCode />', () => {
       await user.click(resendBtn);
     });
     expect(fn).toHaveBeenCalled();
-    expect(screen.getByRole('button', { name: 'Resend OTP in 01:00' })).toBeVisible();
+    expect(screen.getByRole('button', { name: 'Resend OTP in 00:30' })).toBeVisible();
   });
 
   it('should call route action when all pin inputs are filled', async () => {
     const Stub = createRoutesStub([
       {
-        path: '/password-reset/verify-otp',
-        Component: VerifyCode,
+        path: '/reset/verify',
+        Component: ResetVerify,
         action() {
           fn();
         }
       }
     ]);
-    render(<Stub initialEntries={['/password-reset/verify-otp']} />);
+    render(<Stub initialEntries={['/reset/verify']} />);
 
     let pinInputs = screen.getAllByRole('textbox');
     for (let i = 0; i < pinInputs.length; ++i) {
@@ -131,14 +131,14 @@ describe('<VerifyCode />', () => {
         Component: Login
       },
       {
-        path: '/password-reset/verify-otp',
-        Component: VerifyCode,
+        path: '/reset/verify',
+        Component: ResetVerify,
         action() {
           return redirect('/login');
         }
       }
     ]);
-    render(<Stub initialEntries={['/password-reset/verify-otp']} />);
+    render(<Stub initialEntries={['/reset/verify']} />);
 
     await user.click(screen.getByRole('button', { name: 'Cancel' }));
     expect(screen.getByRole('button', { name: 'Sign in' })).toBeInTheDocument();
@@ -149,8 +149,8 @@ describe('<VerifyCode />', () => {
 
     const Stub = createRoutesStub([
       {
-        path: '/password-reset/verify-otp',
-        Component: VerifyCode,
+        path: '/reset/verify',
+        Component: ResetVerify,
         action() {
           fn();
           return {
@@ -162,7 +162,7 @@ describe('<VerifyCode />', () => {
         }
       }
     ]);
-    render(<Stub initialEntries={['/password-reset/verify-otp']} />);
+    render(<Stub initialEntries={['/reset/verify']} />);
 
     let pinInputs = screen.getAllByRole('textbox');
     for (let i = 0; i < pinInputs.length; ++i) {
@@ -179,19 +179,19 @@ describe('<VerifyCode />', () => {
 
     const Stub = createRoutesStub([
       {
-        path: '/password-reset/new-password',
-        Component: NewPassword
+        path: '/reset',
+        Component: Reset
       },
       {
-        path: '/password-reset/verify-otp',
-        Component: VerifyCode,
+        path: '/reset/verify',
+        Component: ResetVerify,
         action() {
           fn();
-          return redirect(`/password-reset/new-password`);
+          return redirect(`/reset`);
         }
       }
     ]);
-    render(<Stub initialEntries={['/password-reset/verify-otp']} />);
+    render(<Stub initialEntries={['/reset/verify']} />);
 
     let pinInputs = screen.getAllByRole('textbox');
     for (let i = 0; i < pinInputs.length; ++i) {

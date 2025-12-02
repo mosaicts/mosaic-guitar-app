@@ -17,8 +17,8 @@ async function pasteText(locator: Locator, text: string) {
 test.describe('Successful Authentication Flow', () => {
   test.describe('Registration', () => {
     test.beforeEach(async ({ page }) => {
-      // Register
-      await page.goto('/register');
+      // Signup
+      await page.goto('/signup');
 
       const firstNameInput = page.getByLabel('First name *');
       const lastNameInput = page.getByLabel('Last name *');
@@ -26,7 +26,7 @@ test.describe('Successful Authentication Flow', () => {
       const emailInput = page.getByLabel('Email *');
       const passwordInput = page.getByRole('textbox', { name: 'Password *', exact: true });
       const confirnPasswordInput = page.getByRole('textbox', { name: 'Confirm password *' });
-      const registerBtn = page.getByRole('button', { name: 'Create account' });
+      const signupBtn = page.getByRole('button', { name: 'Create account' });
 
       await firstNameInput.fill('test');
       await lastNameInput.fill('example');
@@ -34,17 +34,17 @@ test.describe('Successful Authentication Flow', () => {
       await emailInput.fill('test@example.com');
       await passwordInput.fill('password123');
       await confirnPasswordInput.fill('password123');
-      await registerBtn.click();
+      await signupBtn.click();
     });
 
-    test('should complete full registration flow: register → verify email → login', async ({
+    test('should complete full registration flow: signup → verify email → login', async ({
       page
     }) => {
       // Verify email
-      await page.waitForURL('/check-your-email');
+      await page.waitForURL('/signup/check-email');
       expect(page.getByText('Please check your email for a verification link.')).toBeVisible();
 
-      await page.goto(`${MOSAIC_BASE_URL}/auth/verify/email/testid/easytokenpass`);
+      await page.goto(`${MOSAIC_BASE_URL}/auth/signup/verify/testid/easytokenpass`);
       expect(page.getByText('Verification Success')).toBeVisible();
       expect(
         page.getByText(
@@ -68,14 +68,14 @@ test.describe('Successful Authentication Flow', () => {
       expect(page.getByText('Featured Guitars')).toBeVisible();
     });
 
-    test('should complete full registration flow: register → verify email -> failed -> resend verification code -> verify email -> success → login', async ({
+    test('should complete full registration flow: signup → verify email -> failed -> resend verification code -> verify email -> success → login', async ({
       page
     }) => {
       // Verify email
-      await page.waitForURL('/check-your-email');
+      await page.waitForURL('/signup/check-email');
       expect(page.getByText('Please check your email for a verification link.')).toBeVisible();
 
-      await page.goto(`${MOSAIC_BASE_URL}/auth/verify/email/testid/tokenexpired`);
+      await page.goto(`${MOSAIC_BASE_URL}/auth/signup/verify/testid/tokenexpired`);
       await page.waitForTimeout(1500);
       expect(page.getByText('Verification Failed')).toBeVisible();
       // expect(page.getByText('Click here to resend verification code')).toBeVisible();
@@ -87,7 +87,7 @@ test.describe('Successful Authentication Flow', () => {
       await page.waitForTimeout(1500);
 
       expect(page.getByText('Please check your email for a verification link.')).toBeVisible();
-      await page.goto(`${MOSAIC_BASE_URL}/auth/verify/email/testid/easytokenpass`);
+      await page.goto(`${MOSAIC_BASE_URL}/auth/signup/verify/testid/easytokenpass`);
       await page.waitForTimeout(1500);
       expect(page.getByText('Verification Success')).toBeVisible();
       expect(
@@ -119,7 +119,7 @@ test.describe('Successful Authentication Flow', () => {
     }) => {
       await page.goto('/login');
       await page.getByRole('link', { name: 'Forgot password?' }).click();
-      await page.waitForURL('/password-reset');
+      await page.waitForURL('/forgot');
 
       let submitBtn = page.getByRole('button', { name: 'Send verification code' });
       const emailInput = page.getByLabel('Email');
@@ -129,7 +129,7 @@ test.describe('Successful Authentication Flow', () => {
       const testEmail = 'test@example.com';
       await emailInput.fill(testEmail);
       await submitBtn.click();
-      await page.waitForURL(`/password-reset/verify-otp?email=${testEmail}`);
+      await page.waitForURL(`/forgot/verify?email=${testEmail}`);
 
       expect(page.getByRole('heading', { name: 'OTP Verification' })).toBeVisible();
       expect(page.getByText('Resend OTP in 01:00')).toBeVisible();

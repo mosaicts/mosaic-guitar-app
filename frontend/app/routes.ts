@@ -12,14 +12,16 @@ export default [
   ]),
 
   route('login', 'Pages/Login/index.tsx'),
-  route('register', 'Pages/Register/index.tsx'),
-  route('check-your-email', 'Pages/CheckYourEmail/index.tsx'),
 
-  ...prefix('verify', [route('email', 'Pages/VerifyEmail/index.tsx')]),
+  ...prefix('signup', [
+    index('Pages/Signup/index.tsx'),
+    route('check-email', 'Pages/Signup/CheckEmail/index.tsx'),
+    route('verify', 'Pages/Signup/Verify/index.tsx')
+  ]),
 
-  ...prefix('password-reset', [
+  ...prefix('forgot', [
     index('Pages/PasswordReset/index.tsx'),
-    route('verify-otp', 'Pages/PasswordReset/VerifyOTP/index.tsx'),
-    route('new-password', 'Pages/PasswordReset/NewPass/index.tsx')
+    route('verify', 'Pages/PasswordReset/Verify/index.tsx'),
+    route('reset', 'Pages/PasswordReset/Reset/index.tsx')
   ])
 ] satisfies RouteConfig;
