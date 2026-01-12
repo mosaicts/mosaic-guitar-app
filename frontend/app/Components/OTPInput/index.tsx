@@ -42,8 +42,9 @@ const OTPInput = ({ length = 4, onComplete }: InputTypes) => {
     checkAndHandleComplete(newPin);
   };
 
-  const handleDelete = (input: string, index: number) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
     const newPin = [...OTP];
+    const input = e.key;
 
     if (input === 'Backspace') {
       if (newPin[index].length === 1) {
@@ -54,15 +55,19 @@ const OTPInput = ({ length = 4, onComplete }: InputTypes) => {
           inputRef.current[index - 1]?.focus();
         }
       }
-
       setOTP(newPin);
+    } else if (input.match(/[0-9]/)) {
+      // handle overwrite
+      if (newPin[index].length === 1) {
+        handleTextChange(input, index);
+        e.preventDefault();
+      }
     }
   };
 
   const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>, index: number) => {
-    e.preventDefault();
-
     const input = e.clipboardData?.getData('text') || '';
+
     const newPin = [...OTP];
 
     if (/[0-9]+/.test(input)) {
@@ -75,9 +80,8 @@ const OTPInput = ({ length = 4, onComplete }: InputTypes) => {
     }
 
     checkAndHandleComplete(newPin);
+    e.preventDefault();
   };
-
-  // return the inputs component
 
   return (
     <div
@@ -93,7 +97,7 @@ const OTPInput = ({ length = 4, onComplete }: InputTypes) => {
           maxLength={1}
           value={OTP[index]}
           onChange={(e) => handleTextChange(e.target.value, index)}
-          onKeyDown={(e) => handleDelete(e.key, index)}
+          onKeyDown={(e) => handleKeyDown(e, index)}
           onPaste={(e) => handlePaste(e, index)}
           ref={(ref) => {
             inputRef.current[index] = ref as HTMLInputElement;

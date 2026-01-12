@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import * as OTPAuth from 'otpauth';
 
 export const uuidv4 = (): string => {
   // @ts-ignore
@@ -8,6 +9,27 @@ export const uuidv4 = (): string => {
   );
 };
 
-export const generateOTP = () => {
-  return crypto.randomInt(100000, 999999);
+export const generateTOTP = (email: string, secret?: string) => {
+  const totp = new OTPAuth.TOTP({
+    // Provider or service the account is associated with.
+    issuer: 'mosaic.com',
+    // Account identifier.
+    label: email,
+    // Algorithm used for the HMAC function, possible values are:
+    //   "SHA1", "SHA224", "SHA256", "SHA384", "SHA512",
+    //   "SHA3-224", "SHA3-256", "SHA3-384" and "SHA3-512".
+    algorithm: 'SHA512',
+    // Length of the generated tokens.
+    digits: 6,
+    // Interval of time for which a token is valid, in seconds.
+    period: 30,
+    // Arbitrary key encoded in base32 or `OTPAuth.Secret` instance
+    // (if omitted, a cryptographically secure random secret is generated).
+    secret: secret ? OTPAuth.Secret.fromBase32(secret) : new OTPAuth.Secret()
+    // secret: new OTPAuth.Secret()
+    //   or: `OTPAuth.Secret.fromBase32("US3WHSG7X5KAPV27VANWKQHF3SH3HULL")`
+    //   or: `new OTPAuth.Secret()`
+  });
+
+  return totp;
 };

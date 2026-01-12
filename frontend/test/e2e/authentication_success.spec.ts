@@ -117,6 +117,8 @@ test.describe('Successful Authentication Flow', () => {
     test('should complete password reset flow: forgot password → send code to email -> confirm code -> success -> input new password → login', async ({
       page
     }) => {
+      await page.clock.install();
+
       await page.goto('/login');
       await page.getByRole('link', { name: 'Forgot password?' }).click();
       await page.waitForURL('/forgot');
@@ -132,7 +134,7 @@ test.describe('Successful Authentication Flow', () => {
       await page.waitForURL(`/forgot/verify?email=${testEmail}`);
 
       expect(page.getByRole('heading', { name: 'OTP Verification' })).toBeVisible();
-      expect(page.getByText('Resend OTP in 01:00')).toBeVisible();
+      expect(page.getByText('Resend OTP in 00:30')).toBeVisible();
 
       let pinInputs = page.getByRole('textbox');
       expect(pinInputs.first()).toBeVisible();
@@ -144,8 +146,6 @@ test.describe('Successful Authentication Flow', () => {
       // Input 1 by 1
       await pinInputs.first().fill('1');
       await pinInputs.nth(1).fill('2');
-
-      pinInputs = page.getByRole('textbox');
       expect(pinInputs.first()).toBeEnabled();
       await pinInputs.nth(2).fill('3');
       await pinInputs.nth(3).fill('4');
@@ -153,7 +153,6 @@ test.describe('Successful Authentication Flow', () => {
       await pinInputs.nth(5).fill('6');
       // expect(page.getByPlaceholder('123456')).toBeVisible();
 
-      pinInputs = page.getByRole('textbox');
       expect(pinInputs.first()).toBeDisabled();
       expect(page.getByText('Wrong OTP. You have 4 more tries.')).toBeVisible();
 
@@ -162,16 +161,27 @@ test.describe('Successful Authentication Flow', () => {
       expect(firstInput).toBeEnabled();
       await pasteText(firstInput, '457891');
 
-      await page.waitForTimeout(1500);
+      await page.waitForTimeout(1000);
       expect(page.getByText('Wrong OTP. You have 3 more tries.')).toBeVisible();
-
-      pinInputs = page.getByRole('textbox');
       await pinInputs.first().fill('7');
       await pinInputs.nth(1).fill('8');
-      await pasteText(pinInputs.nth(2), '9012');
-      await page.waitForTimeout(1500);
-      expect(page.getByRole('heading', { name: 'OTP Verification' })).not.toBeVisible(); // verification success
 
+      // Code expired -> resend code
+      await page.clock.runFor('30');
+      await pasteText(pinInputs.nth(2), '9012');
+      await page.waitForTimeout(1000);
+      expect(page.getByText('expired')).toBeVisible();
+      let resendBtn = page.getByRole('button', { name: 'Resend OTP' });
+      expect(resendBtn).toBeVisible();
+      await resendBtn.click();
+      expect(page.getByText('Resend OTP in 00:30')).toBeVisible();
+
+      // Verification Success
+      await pasteText(firstInput, '248748');
+      await page.waitForTimeout(1000);
+      expect(page.getByRole('heading', { name: 'OTP Verification' })).not.toBeVisible();
+
+      // Reset password
       expect(page.getByLabel('New password *')).toBeVisible();
       expect(page.getByLabel('Confirm password *')).toBeVisible();
       expect(page.getByRole('button', { name: 'Submit' })).toBeVisible();

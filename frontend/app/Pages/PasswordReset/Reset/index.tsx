@@ -42,6 +42,7 @@ export async function clientAction({ request }: Route.ActionArgs) {
     await resetPassword(data);
     return redirect('/');
   } catch (err: any) {
+    console.log(err);
     return {
       success: false,
       response: err.response.data
@@ -83,11 +84,11 @@ export default function Reset() {
     setErrorsPostSubmit();
   }, [data]);
 
-  const onSubmit = async (data) => {
-    submit({ ...data, email: searchParams.get('email') }, { method: 'post' });
+  const onSubmit = async (data: object) => {
+    submit({ ...data, id: searchParams.get('id') }, { method: 'post' });
   };
 
-  const onCancel = () => {
+  const onCancel = async () => {
     submit(
       { type: 'cancel' },
       {

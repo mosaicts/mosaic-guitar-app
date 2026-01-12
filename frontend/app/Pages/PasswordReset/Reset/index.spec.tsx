@@ -149,7 +149,13 @@ describe('<Reset />', () => {
     await user.type(passwordInput, 'abcdefgh');
     await user.keyboard('{Control>}A{/Control}'); // select all
     await user.copy();
+    // await user.keyboard('{Control>}C{/Control}');
+    // await navigator.clipboard.writeText('abcdefgh');
+
     await user.click(confirmPasswordInput);
+
+    // await user.keyboard('{Control>}V{/Control}');
+
     await user.paste();
 
     expect(confirmPasswordInput).toHaveValue('abcdefgh');

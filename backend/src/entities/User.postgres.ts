@@ -46,6 +46,9 @@ export class User {
   updatedAt: Date;
 
   @Column({ nullable: true })
+  secret: string;
+
+  @Column({ nullable: true })
   refreshToken: string;
 
   @Column({ nullable: true })

@@ -10,8 +10,8 @@ export async function clientAction({ request }: Route.ActionArgs) {
   const formData = await request.formData();
   const data = Object.fromEntries(formData);
   try {
-    const response = await postForgot(data);
-    return redirect(`/forgot/reset/verify?email=${formData.get('email')}&id=${response.data.id}`);
+    await postForgot(data);
+    return redirect(`/forgot/verify?email=${formData.get('email')}`);
   } catch (err: any) {
     return {
       success: false,

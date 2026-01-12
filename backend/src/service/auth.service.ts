@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { Repository } from 'typeorm';
-const crypto = require('crypto');
+import crypto from 'crypto';
+import * as OTPAuth from 'otpauth';
 import envConfig from '../config/envConfig';
 
 import { checkPassword, hashPassword } from '../lib/password';
@@ -11,7 +12,7 @@ import {
   REFRESH_TOKEN_COOKIE_NAME
 } from '../lib/cookie';
 import { generateJwt, sha256, verifyJwt } from '../lib/jwt';
-import { generateOTP, uuidv4 } from '../lib/auth';
+import { generateTOTP, uuidv4 } from '../lib/auth';
 import {
   maxConsecutiveLoginFailsByEmailAndIP,
   maxWrongAttemptsByIPperDay,
@@ -25,10 +26,14 @@ import {
   checkDeviceWasUsedPreviously
 } from '../config/rateLimiter';
 import { User } from '../entities/User.postgres';
+import { PasswordReset } from '../entities/PasswordReset.postgres';
 import { sendVerificationLinkToMail, sendVerificationCodeToMail } from '../config/emailTransporter';
 
 export class AuthService {
-  constructor(private readonly userRepository: Repository<User>) {}
+  constructor(
+    private readonly userRepository: Repository<User>,
+    private readonly passwordResetRepository: Repository<PasswordReset>
+  ) {}
 
   async protected(res: Response) {
     res.status(200).json({
@@ -76,7 +81,7 @@ export class AuthService {
       res.status(429).send('Too Many Requests');
     } else {
       try {
-        const user = await this.userRepository.findOne({ where: { email } });
+        let user = await this.userRepository.findOne({ where: { email } });
         if (!user) {
           if (!isDeviceTrusted) {
             await limiterSlowBruteByIP.consume(ipAddr);
@@ -147,14 +152,14 @@ export class AuthService {
   async signup(req: Request, res: Response) {
     const { firstName, lastName, username, email, password } = req.body;
 
-    const user = new User();
+    let user = new User();
 
     user.firstName = firstName;
     user.lastName = lastName;
     user.username = username;
     user.email = email;
     user.password = await hashPassword(password);
-    user.profilePicUrl = '';
+    user.secret = new OTPAuth.Secret().base32;
 
     // save user to db
     try {
@@ -221,7 +226,7 @@ export class AuthService {
   async signupResend(req: Request, res: Response) {
     const { email } = req.body;
 
-    const user = await this.userRepository.findOne({ where: { email } });
+    let user = await this.userRepository.findOne({ where: { email } });
 
     if (!user) {
       return res.status(400).json({ message: 'Wrong email' });
@@ -247,23 +252,44 @@ export class AuthService {
 
   async postForgot(req: Request, res: Response) {
     const { email } = req.body;
+    let secret;
 
-    const user = await this.userRepository.findOne({ where: { email } });
+    let user = await this.userRepository.findOne({ where: { email } });
+
+    // user not exist
+    if (!user) {
+      return res.status(200).json({
+        message: 'Verification code resent successfully'
+      }); // consistent message to prevent user enumeration attack
+    }
+
+    if (!user.secret) {
+      secret = new OTPAuth.Secret().base32;
+      user.secret = secret;
+      await this.userRepository.save(user);
+    } else {
+      secret = user.secret;
+    }
 
     try {
-      const verificationOTP = generateOTP();
-      await sendVerificationCodeToMail(user, email, verificationOTP);
+      // deleting previous incomplete password reset records
+      let existingPasswordResets = await this.passwordResetRepository.find({
+        where: { email, verified: false }
+      });
+      await this.passwordResetRepository.remove(existingPasswordResets);
 
-      // return res.status(200).redirect(`${envConfig.CLIENT_URL}/check-your-email`);
+      const totp = generateTOTP(user.email, secret);
+      const otp = totp.generate();
+      await sendVerificationCodeToMail(user, email, otp);
 
-      const passwordReset = new PasswordReset();
-      passwordReset.resetToken = verificationOTP;
-      passwordReset.email = email;
-      const { id } = await this.passwordResetRepository.save(passwordReset);
+      let pwResetRecord = new PasswordReset();
+      pwResetRecord.email = email;
+      pwResetRecord.otp = otp + '';
+      pwResetRecord.expiry = String(+Date.now() + 1000 * 30); // 30 secs
+      await this.passwordResetRepository.save(pwResetRecord);
 
       return res.status(200).json({
-        message: 'Verification code resent successfully',
-        id
+        message: 'Verification code resent successfully'
       });
     } catch (err) {
       console.log('An error occurred while sending verification token:', err);
@@ -271,10 +297,13 @@ export class AuthService {
   }
 
   async resetVerify(req: Request, res: Response) {
-    const { id, pin } = req.body;
+    const { email, otp } = req.body;
 
-    const passwordReset = await this.passwordResetRepository.findOne({ where: { id } });
-    const email = passwordReset.email;
+    if (!otp || !email) return res.status(400).json({ message: 'Error verifying' });
+
+    let pwResetRecord = await this.passwordResetRepository.findOne({
+      where: { email, verified: false }
+    });
 
     const resSlowEmail = await limiterSlowBruteOTPVerifyByEmail.get(email);
 
@@ -292,13 +321,21 @@ export class AuthService {
       res.status(429).send('Too Many Requests');
     } else {
       try {
-        if (!email || email === 'null' || !pin)
-          return res.status(400).json({ message: 'Missing credentials' });
+        if (pwResetRecord && pwResetRecord.otp == otp) {
+          if (Date.now() > parseInt(pwResetRecord.expiry, 10)) {
+            return res.status(400).json({ message: 'expired' });
+          }
 
-        const token = passwordReset.resetToken;
+          pwResetRecord.verified = true;
+          pwResetRecord.completedAt = new Date(Date.now());
+          await this.passwordResetRepository.save(pwResetRecord);
 
-        if (token === pin) {
-          return res.status(200).json({ message: 'success' });
+          // Reset on successful attempt
+          if (resSlowEmail !== null && resSlowEmail.consumedPoints > 0) {
+            await limiterSlowBruteOTPVerifyByEmail.delete(email);
+          }
+
+          return res.status(200).json({ message: 'success', id: pwResetRecord.id });
         } else {
           await limiterSlowBruteOTPVerifyByEmail.consume(email);
           return res.status(400).json({
@@ -308,7 +345,7 @@ export class AuthService {
       } catch (err) {
         if (err instanceof Error) {
           console.log('An error occurred while verifying:', err);
-          res.status(400).json({ message: 'Error logging in' });
+          res.status(400).json({ message: 'Error verifying' });
         } else {
           res.set('Retry-After', String(Math.round(err.msBeforeNext / 1000)) || '1');
           res.status(429).send('Too Many Requests');
@@ -318,20 +355,28 @@ export class AuthService {
   }
 
   async resetPassword(req: Request, res: Response) {
-    const { email, password } = req.body;
-    console.log('Email:', email);
+    const { id, password } = req.body;
 
-    const user = await this.userRepository.findOne({ where: { email } });
+    let pwResetRecord = await this.passwordResetRepository.findOne({ where: { id } });
+
+    if (!pwResetRecord || !pwResetRecord.verified) {
+      return res.status(400).json({ message: 'Error resetting password' });
+    }
+
+    let user = await this.userRepository.findOne({ where: { email: pwResetRecord.email } });
 
     user.password = await hashPassword(password);
 
-    // save user to db
     try {
+      const updatedTime = new Date();
+      user.updatedAt = updatedTime;
+      pwResetRecord.completedAt = updatedTime;
+      await this.passwordResetRepository.save(pwResetRecord);
       await this.userRepository.save(user);
       res.status(200).json({ message: 'success' });
     } catch (err) {
-      console.log('An error occured while saving user to db', err);
-      res.status(400).json({ message: 'Error updating password' });
+      console.log('An error occured while updating password', err);
+      res.status(400).json({ message: 'Error resetting password' });
     }
   }
 

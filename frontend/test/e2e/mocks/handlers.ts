@@ -130,7 +130,7 @@ export const handlers = [
     if (body.email === 'test@example.com') {
       return HttpResponse.json({
         message: 'User login successfully',
-        jwt: 'testjwt',
+        jwt: 'test.jwt',
         refreshToken: 'testrefreshtoken',
         user: {
           id: 'cus_test_789',
@@ -174,6 +174,7 @@ export const handlers = [
     return new HttpResponse(null, { status: 401 });
   }),
 
+  // Forgot password
   http.post(`${MOSAIC_BASE_URL}/auth/forgot`, async ({ request }) => {
     const body = (await request.json()) as any;
 
@@ -191,7 +192,10 @@ export const handlers = [
 
     if (body.email === 'test@example.com') {
       await delay(50);
-      if (body.pin === '789012') {
+      if (body.otp === '789012') {
+        return HttpResponse.json({ message: 'expired' }, { status: 400 });
+      } else if (body.otp === '248748') {
+        // otp after resend
         return HttpResponse.json({
           message: 'success'
         });
@@ -211,11 +215,25 @@ export const handlers = [
   http.post(`${MOSAIC_BASE_URL}/auth/reset`, async ({ request }) => {
     const body = (await request.json()) as any;
 
-    if (body.email === 'test@example.com') {
+    if (body.password === 'pass@example') {
       return HttpResponse.json({
         message: 'success'
       });
     }
     return new HttpResponse(null, { status: 401 });
+  }),
+
+  // Profile
+  http.post(`${MOSAIC_BASE_URL}/user/profile`, async ({ request }) => {
+    return HttpResponse.json({
+      user: {
+        id: 'cus_test_789',
+        firstName: 'Test',
+        lastName: 'User',
+        username: 'testusr789',
+        email: 'test@example.com',
+        profilePicUrl: 'http://test.jpg.com'
+      }
+    });
   })
 ];

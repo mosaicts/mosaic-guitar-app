@@ -1,19 +1,26 @@
 import type { Route } from './+types';
-import { redirect, useSearchParams, useSubmit, useActionData } from 'react-router';
+import { redirect, useSearchParams, useSubmit, useActionData, useLoaderData } from 'react-router';
 import { useState, useEffect } from 'react';
 import OTPInput from '@/Components/OTPInput';
 import { postForgot, resetVerify } from '@/utils/apis';
 import './index.css';
 
+const TOTP_SECS = 30;
+
 export async function clientAction({ request }: Route.ClientActionArgs) {
   let formData = await request.formData();
+  let response;
   try {
     switch (formData.get('type')) {
       case 'resend':
-        await postForgot(formData);
+        response = await postForgot(formData);
+        return {
+          success: true,
+          remaining: response.data.remaining
+        };
       case 'submit':
-        await resetVerify(formData);
-        return redirect(`/forgot/reset?id=${formData.get('email')}`);
+        response = await resetVerify(formData);
+        return redirect(`/forgot/reset?id=${response.data.id}`);
     }
   } catch (err: any) {
     return {
@@ -25,11 +32,11 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
 
 export default function ResetVerify() {
   const submit = useSubmit();
-  const [remainingSecs, setRemainingSecs] = useState(30);
   const [searchParams] = useSearchParams();
   const [error, setError] = useState(null);
   const data = useActionData();
-  const id = searchParams.get('id');
+  const [remainingSecs, setRemainingSecs] = useState(TOTP_SECS);
+  const email = searchParams.get('email');
   const isResetEnabled = remainingSecs < 0;
 
   useEffect(() => {
@@ -54,20 +61,20 @@ export default function ResetVerify() {
 
   const handleResend = () => {
     submit(
-      { type: 'resend', id },
+      { type: 'resend', email },
       {
-        action: `/reset/verify?id=${id}`,
+        action: `/forgot/verify?email=${email}`,
         method: 'post'
       }
     );
-    setRemainingSecs(30);
+    setRemainingSecs(TOTP_SECS);
   };
 
   const handleComplete = (pin: string) => {
     submit(
-      { type: 'submit', pin, id },
+      { type: 'submit', otp: pin, email },
       {
-        action: `/reset/verify?id=${id}`,
+        action: `/forgot/verify?email=${email}`,
         method: 'post'
       }
     );

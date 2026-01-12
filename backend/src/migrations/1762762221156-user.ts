@@ -13,6 +13,7 @@ export class User1762762221156 implements MigrationInterface {
             "email" VARCHAR(255) NOT NULL,
             "password" VARCHAR(255) NOT NULL,
             "role"  VARCHAR(50) NOT NULL DEFAULT 'user',
+            "secret" VARCHAR,
             "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
             "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
             "refreshToken" VARCHAR,

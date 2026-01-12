@@ -40,11 +40,11 @@ describe('<ResetVerify />', () => {
   it('should render successfully and find all the elements', async () => {
     const Stub = createRoutesStub([
       {
-        path: '/reset/verify',
+        path: '/forgot/verify',
         Component: ResetVerify
       }
     ]);
-    render(<Stub initialEntries={['/reset/verify']} />);
+    render(<Stub initialEntries={['/forgot/verify']} />);
 
     expect(screen.getByText('OTP Verification')).toBeVisible();
     expect(screen.getAllByRole('textbox')).toHaveLength(6);
@@ -55,11 +55,11 @@ describe('<ResetVerify />', () => {
   it('should update remaining times to resend after some time passes accordingly', async () => {
     const Stub = createRoutesStub([
       {
-        path: '/reset/verify',
+        path: '/forgot/verify',
         Component: ResetVerify
       }
     ]);
-    render(<Stub initialEntries={['/reset/verify']} />);
+    render(<Stub initialEntries={['/forgot/verify']} />);
 
     expect(screen.getByRole('button', { name: 'Resend OTP in 00:30' })).toBeVisible();
     act(() => {
@@ -79,14 +79,14 @@ describe('<ResetVerify />', () => {
   it('should be able to resend code after timer expires then reset the timer', async () => {
     const Stub = createRoutesStub([
       {
-        path: '/reset/verify',
+        path: '/forgot/verify',
         Component: ResetVerify,
         action() {
           fn();
         }
       }
     ]);
-    render(<Stub initialEntries={['/reset/verify']} />);
+    render(<Stub initialEntries={['/forgot/verify']} />);
     expect(screen.getByRole('button', { name: 'Resend OTP in 00:30' })).toBeVisible();
 
     act(() => {
@@ -106,14 +106,14 @@ describe('<ResetVerify />', () => {
   it('should call route action when all pin inputs are filled', async () => {
     const Stub = createRoutesStub([
       {
-        path: '/reset/verify',
+        path: '/forgot/verify',
         Component: ResetVerify,
         action() {
           fn();
         }
       }
     ]);
-    render(<Stub initialEntries={['/reset/verify']} />);
+    render(<Stub initialEntries={['/forgot/verify']} />);
 
     let pinInputs = screen.getAllByRole('textbox');
     for (let i = 0; i < pinInputs.length; ++i) {
@@ -131,14 +131,14 @@ describe('<ResetVerify />', () => {
         Component: Login
       },
       {
-        path: '/reset/verify',
+        path: '/forgot/verify',
         Component: ResetVerify,
         action() {
           return redirect('/login');
         }
       }
     ]);
-    render(<Stub initialEntries={['/reset/verify']} />);
+    render(<Stub initialEntries={['/forgot/verify']} />);
 
     await user.click(screen.getByRole('button', { name: 'Cancel' }));
     expect(screen.getByRole('button', { name: 'Sign in' })).toBeInTheDocument();
@@ -149,7 +149,7 @@ describe('<ResetVerify />', () => {
 
     const Stub = createRoutesStub([
       {
-        path: '/reset/verify',
+        path: '/forgot/verify',
         Component: ResetVerify,
         action() {
           fn();
@@ -162,7 +162,7 @@ describe('<ResetVerify />', () => {
         }
       }
     ]);
-    render(<Stub initialEntries={['/reset/verify']} />);
+    render(<Stub initialEntries={['/forgot/verify']} />);
 
     let pinInputs = screen.getAllByRole('textbox');
     for (let i = 0; i < pinInputs.length; ++i) {
@@ -183,7 +183,7 @@ describe('<ResetVerify />', () => {
         Component: Reset
       },
       {
-        path: '/reset/verify',
+        path: '/forgot/verify',
         Component: ResetVerify,
         action() {
           fn();
@@ -191,7 +191,7 @@ describe('<ResetVerify />', () => {
         }
       }
     ]);
-    render(<Stub initialEntries={['/reset/verify']} />);
+    render(<Stub initialEntries={['/forgot/verify']} />);
 
     let pinInputs = screen.getAllByRole('textbox');
     for (let i = 0; i < pinInputs.length; ++i) {
