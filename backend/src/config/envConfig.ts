@@ -28,6 +28,11 @@ type EnvConfig = {
   GMAIL_SERVICE: string;
   GMAIL_USER: string;
   GMAIL_PASS: string;
+
+  GOOGLE_CLIENT_ID: string;
+  GOOGLE_CLIENT_SECRET: string;
+  FACEBOOK_APP_ID: string;
+  FACEBOOK_SECRET: string;
 };
 
 type ENV = Partial<EnvConfig> & {
@@ -56,7 +61,12 @@ const getConfig = (): ENV => ({
   GMAIL_HOST: process.env.GMAIL_HOST,
   GMAIL_SERVICE: process.env.GMAIL_SERVICE,
   GMAIL_USER: process.env.GMAIL_USER,
-  GMAIL_PASS: process.env.GMAIL_PASS
+  GMAIL_PASS: process.env.GMAIL_PASS,
+
+  GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
+  FACEBOOK_APP_ID: process.env.FACEBOOK_APP_ID,
+  FACEBOOK_SECRET: process.env.FACEBOOK_SECRET
 });
 
 const getSanitizedConfig = (config: ENV): EnvConfig => {

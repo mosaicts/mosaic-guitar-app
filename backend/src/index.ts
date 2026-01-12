@@ -8,6 +8,7 @@ import path from 'path';
 import cors from 'cors';
 import passport from 'passport';
 import cookieParser from 'cookie-parser';
+import session from 'express-session';
 
 import userRouter from './routes/user.routes';
 import authRouter from './routes/auth.routes';
@@ -18,7 +19,6 @@ import { requestLogger } from './middlewares/requestLogger';
 import { requestSanitizer } from './middlewares/requestSanitizer';
 
 const { PORT } = envConfig;
-require('./config/passport')(passport);
 
 export const main = async () => {
   try {
@@ -26,6 +26,11 @@ export const main = async () => {
 
     // This will initialize the passport object on every request
     app.use(passport.initialize());
+    /**
+     * API keys and Passport configuration.
+     */
+    require('./config/passport');
+    app.use(session({ secret: 'SECRET' }));
     app.use(
       helmet({
         contentSecurityPolicy: {
@@ -42,8 +47,8 @@ export const main = async () => {
     );
     app.use(
       cors({
-        origin: 'http://localhost:5173',
-        optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+        origin: ['http://localhost:5173', 'https://accounts.google.com'],
+        optionsSuccessStatus: 200,
         credentials: true
       })
     );

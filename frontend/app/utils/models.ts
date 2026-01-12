@@ -9,7 +9,7 @@ export interface User {
   lastName: string;
   username: string;
   email: string;
-  profilePicUrl: string;
+  avatar: string;
   role: Role;
 }
 

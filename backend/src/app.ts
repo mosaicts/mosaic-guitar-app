@@ -10,12 +10,17 @@ import cookieParser from 'cookie-parser';
 import envConfig from './config/envConfig';
 import userRouter from './routes/user.routes';
 import authRouter from './routes/auth.routes';
-import guitarRouter from './routes/guitar.routes';
+import productRouter from './routes/product.routes';
 import reportRouter from './routes/reporting.routes';
 import { errorHandler } from './middlewares/errorHandler';
 
 // Pass the global passport object into the configuration function
-require('./config/passport')(passport);
+// require('./config/passport')(passport);
+
+/**
+ * API keys and Passport configuration.
+ */
+const passportConfig = require('./config/passport');
 
 const app = express();
 
@@ -49,7 +54,7 @@ app.use(express.static(path.join(__dirname, '..', 'src', '/images'))); // Serve 
 
 app.use('/auth', authRouter);
 app.use('/user', userRouter);
-app.use('/guitar', guitarRouter);
+app.use('/guitar', productRouter);
 app.use('/reporting', reportRouter);
 
 app.get('*', (req: Request, res: Response) => {

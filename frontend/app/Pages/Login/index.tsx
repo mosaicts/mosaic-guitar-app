@@ -4,8 +4,13 @@ import { Form, Link, useNavigate, useSubmit, useActionData, useNavigation } from
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faGoogle } from '@fortawesome/free-brands-svg-icons';
+import { faFacebook } from '@fortawesome/free-brands-svg-icons';
+import { type IconProp } from '@fortawesome/fontawesome-svg-core';
 
 import { loginApi } from '@/utils/apis';
+import { facebookSigninURL, googleSigninURL } from '@/Constants/apis';
 import { useAuth } from '@/Providers/authProvider';
 import PasswordInput from '@/Components/PasswordInput';
 import Separation from '@/Components/Separation';
@@ -20,9 +25,10 @@ export type LoginUserSchemaType = z.infer<typeof LoginUserSchema>;
 
 export async function clientAction({ request }: Route.ActionArgs) {
   const formData = await request.formData();
-  const data = Object.fromEntries(formData);
+  const { type, ...data } = Object.fromEntries(formData);
+  let response;
   try {
-    const response = await loginApi(data);
+    response = await loginApi(data);
     return {
       success: true,
       response
@@ -53,18 +59,18 @@ export default function Login() {
   const navigate = useNavigate();
   const navigation = useNavigation();
   const data = useActionData();
-  const errorMsg = data && !data.success && data?.response.data.message;
+  const errorMsg =
+    data && !data.success && data.response !== undefined && data.response.data.message;
 
   useEffect(() => {
-    if (data && data.success && data.response) {
-      const response = data.response;
-      onLogin(response.data.jwt);
+    if (data && data.success && data.response !== undefined) {
+      onLogin(data.response.data.jwt);
       navigate('/');
     }
   }, [data]);
 
-  const onSubmit = (data) => {
-    submit(data, { method: 'post' });
+  const onSubmit = async (data: object) => {
+    submit({ ...data, type: 'default' }, { method: 'post' });
   };
 
   const isSubmitting = navigation.state === 'submitting';
@@ -72,35 +78,42 @@ export default function Login() {
   const isDisabled = isSubmitting; // Prevents double-submit
 
   return (
-    <div id="login-page">
-      <div className="modal">
+    <div className="login">
+      <div className="container">
         <h1>Sign in</h1>
-        <Form id="login-form" method="post" onSubmit={handleSubmit(onSubmit)}>
-          {!errors.email && !errors.password && errorMsg && <p className="err">{errorMsg}</p>}
-          <div id="email">
+        <Form method="post" onSubmit={handleSubmit(onSubmit)}>
+          {!errors.email && !errors.password && errorMsg && <p className="error">{errorMsg}</p>}
+          <div className="email">
             <label htmlFor="email-input">Email</label>
             <input id="email-input" required {...register('email')} />
             {errors.email && <span className="err">{errors.email.message}</span>}
           </div>
-          <div id="password">
+          <div className="password">
             <div>
               <label htmlFor="password-input">Password</label>
               <Link to="/forgot">Forgot password?</Link>
             </div>
             <PasswordInput required {...register('password')} />
-            {errors.password && <span className="err">{errors.password.message}</span>}
+            {errors.password && <span className="error">{errors.password.message}</span>}
           </div>
           <button
             type="submit"
             disabled={isDisabled}
-            className={'submit-btn' + (isSubmitting ? ' progress' : '')}
+            className={'submit btn' + (isSubmitting ? ' progress' : '')}
           >
             {isSubmitting ? 'Sign in...' : 'Sign in'}
           </button>
           <Separation />
-          <button id="with-google" type="submit" className="submit-btn">
-            Continue with Google
-          </button>
+          <a className="fb btn" href={facebookSigninURL}>
+            <span className="login-text">
+              <FontAwesomeIcon icon={faFacebook as IconProp} /> Continue with Facebook
+            </span>
+          </a>
+          <a className="google btn" href={googleSigninURL}>
+            <span className="login-text">
+              <FontAwesomeIcon icon={faGoogle as IconProp} /> Continue with Google
+            </span>
+          </a>
         </Form>
         <div id="create-account">
           <p>

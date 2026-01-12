@@ -46,6 +46,15 @@ export class User {
   updatedAt: Date;
 
   @Column({ nullable: true })
+  provider: string;
+
+  @Column({ nullable: true })
+  googleId: string;
+
+  @Column({ nullable: true })
+  facebookId: string;
+
+  @Column({ nullable: true })
   secret: string;
 
   @Column({ nullable: true })
@@ -54,11 +63,8 @@ export class User {
   @Column({ nullable: true })
   refreshTokenExpiresAt: Date;
 
-  @Column()
-  profilePicUrl: string;
-
-  @UpdateDateColumn()
-  profilePicUpdatedAt: Date;
+  @Column({ nullable: true })
+  avatar: string;
 
   @Column({ default: false })
   verified: boolean;

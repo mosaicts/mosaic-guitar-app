@@ -1,6 +1,7 @@
 import { NavLink } from 'react-router';
 import { useState, useRef } from 'react';
 import type * as CSS from 'csstype';
+import { useAuth } from '@/Providers/authProvider';
 import { nameToColour } from '@/lib/stringToColour';
 import useClickOutside from '@/Hooks/useClickOutside';
 import './index.css';
@@ -11,6 +12,7 @@ interface ProfileDropdownTypes {
 }
 
 const ProfileDropdown = ({ userFirstName, userLastName }: ProfileDropdownTypes) => {
+  const { user } = useAuth();
   const ref = useRef<HTMLDivElement | null>(null);
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const profileImageStyle = {
@@ -30,6 +32,7 @@ const ProfileDropdown = ({ userFirstName, userLastName }: ProfileDropdownTypes) 
         style={profileImageStyle}
         onClick={() => setDropdownOpen(!isDropdownOpen)}
       >
+        <img src={user.avatar} />
         {userFirstName !== '' && userFirstName[0].toUpperCase() + userLastName[0].toUpperCase()}
       </button>
       {isDropdownOpen && (

@@ -6,12 +6,9 @@ import ProfileDropdown from '.';
 
 const user = userEvent.setup();
 
-const onSignout = vi.fn();
-
 const defaultProps = {
   userFirstName: 'dung',
-  userLastName: 'nguyen',
-  handleSignout: onSignout
+  userLastName: 'nguyen'
 };
 
 const ProfileDropdownWithProps = () => <ProfileDropdown {...defaultProps} />;
@@ -78,15 +75,5 @@ describe('<ProfileDropdown />', () => {
     expect(screen.getByRole('menu')).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'My profile' })).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Sign out' })).toBeInTheDocument();
-  });
-
-  it('should run onClick function after clicking Sign out', async () => {
-    await user.click(screen.getByRole('button', { name: 'DN' }));
-    expect(screen.getByRole('link', { name: 'My profile' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Sign out' })).toBeInTheDocument();
-
-    const signoutLink = screen.getByRole('link', { name: 'Sign out' });
-    await user.click(signoutLink);
-    expect(onSignout).toHaveBeenCalled();
   });
 });

@@ -12,7 +12,9 @@ import {
   resetPasswordURL,
   refreshTokenURL,
   signoutURL,
-  guitarListURL
+  guitarListURL,
+  singleGuitarURL,
+  googleSigninURL
 } from '../Constants/apis';
 import { type Guitar } from './models';
 
@@ -26,7 +28,7 @@ export async function fetchGuitars() {
 }
 
 export async function fetchSingleGuitar(id: number) {
-  const response = await axios.get(`${baseURL}/guitar/${id}`, {
+  const response = await axios.get(`${singleGuitarURL}/${id}`, {
     headers: {
       'Content-Type': 'application/json'
     }
@@ -56,6 +58,16 @@ export async function updateUser(data: object) {
 
 export async function loginApi(data: object) {
   const response = await axios.post(loginURL, data, {
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    withCredentials: true
+  });
+  return response;
+}
+
+export async function googleSignin(data: object) {
+  const response = await axios.post(googleSigninURL, data, {
     headers: {
       'Content-Type': 'application/json'
     },

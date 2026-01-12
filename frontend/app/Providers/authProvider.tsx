@@ -1,6 +1,5 @@
 import { axiosInstance as axios } from '@/lib/axiosInterceptor';
-import { createContext, useContext, useEffect, useRef } from 'react';
-import { signoutApi } from '@/utils/apis';
+import { createContext, useContext, useEffect } from 'react';
 import { Role, type User } from '@/utils/models';
 import usePersistor, { useDriver, LocalStorageManager } from '@/Hooks/usePersistor';
 import useGlobalSignout from '@/Hooks/useGlobalSignout';
@@ -24,7 +23,7 @@ const initialContextValues = {
     lastName: '',
     username: '',
     email: '',
-    profilePicUrl: '',
+    avatar: '',
     role: Role.USER
   },
   setUser: (data: User) => null,
@@ -90,9 +89,9 @@ const AuthProvider = ({ children }: Props) => {
 
   // Provide the authentication context to the children components
   return (
-    <AuthContext.Provider value={{ user, setUser, jwt, setJwt, isLoggedIn, onLogin, onSignout }}>
+    <AuthContext value={{ user, setUser, jwt, setJwt, isLoggedIn, onLogin, onSignout }}>
       {children}
-    </AuthContext.Provider>
+    </AuthContext>
   );
 };
 
