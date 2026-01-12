@@ -47,8 +47,8 @@ export default function SignupVerify() {
   });
 
   return (
-    <div id="signup-verify" className="modal-bg">
-      <div className="modal">
+    <div className="signup verify background">
+      <div className="container">
         <h2>{verificationStatus}</h2>
         {success ? (
           <p>
@@ -68,7 +68,7 @@ export default function SignupVerify() {
           </p>
         ) : (
           <button
-            className={'submit-btn' + (isSubmitting ? ' progress' : '')}
+            className={'submit btn' + (isSubmitting ? ' progress' : '')}
             disabled={isDisabled}
             onClick={handleBtnClick}
           >

@@ -1,4 +1,4 @@
-import { Navigate, useNavigation, useActionData, useLoaderData } from 'react-router';
+import { Navigate, useNavigation, useLoaderData } from 'react-router';
 import { useEffect } from 'react';
 import { useAuth } from '@/Providers/authProvider';
 import { signoutApi } from '@/utils/apis';

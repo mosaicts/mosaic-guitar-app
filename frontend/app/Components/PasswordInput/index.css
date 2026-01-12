@@ -1,8 +1,8 @@
-.password-input-box {
+.password.box {
   position: relative;
 }
 
-.toggle-visibility {
+.toggle.visibility {
   position: absolute;
   bottom: 0.5rem;
   right: 0.5rem;

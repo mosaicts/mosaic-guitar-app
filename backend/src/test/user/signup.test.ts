@@ -1,6 +1,6 @@
 import { TestFactory } from '../factory';
 
-describe('Register user', () => {
+describe('Signup user', () => {
   const factory: TestFactory = new TestFactory();
 
   beforeEach(() => {
@@ -12,7 +12,7 @@ describe('Register user', () => {
   });
 
   beforeEach(() => {
-    return factory.app.post('/auth/register').set('content-type', 'application/json').send({
+    return factory.app.post('/auth/signup').set('content-type', 'application/json').send({
       firstName: 'test',
       lastName: 'example',
       username: 'testexample',
@@ -22,7 +22,7 @@ describe('Register user', () => {
     });
   });
 
-  describe('Register an user with wrong passwords', () => {
+  describe('Signup an user with wrong passwords', () => {
     const userInfoPartial = {
       firstName: 'test',
       lastName: 'example',
@@ -32,7 +32,7 @@ describe('Register user', () => {
 
     it('should return error about empty password ', async () => {
       const res = await factory.app
-        .post('/auth/register')
+        .post('/auth/signup')
         .set('content-type', 'application/json')
         .send({
           ...userInfoPartial,
@@ -50,7 +50,7 @@ describe('Register user', () => {
 
     it('should return error about empty confirm password ', async () => {
       const res = await factory.app
-        .post('/auth/register')
+        .post('/auth/signup')
         .set('content-type', 'application/json')
         .send({
           ...userInfoPartial,
@@ -67,7 +67,7 @@ describe('Register user', () => {
 
     it('should return error about mismatched password and confirm password ', async () => {
       const res = await factory.app
-        .post('/auth/register')
+        .post('/auth/signup')
         .set('content-type', 'application/json')
         .send({
           ...userInfoPartial,
@@ -82,7 +82,7 @@ describe('Register user', () => {
     });
   });
 
-  describe('Register an user with wrong emails', () => {
+  describe('Signup an user with wrong emails', () => {
     const userInfoPartial = {
       firstName: 'test',
       lastName: 'example',
@@ -93,7 +93,7 @@ describe('Register user', () => {
 
     it('should return error missing email ', async () => {
       const res = await factory.app
-        .post('/auth/register')
+        .post('/auth/signup')
         .set('content-type', 'application/json')
         .send({
           ...userInfoPartial,
@@ -108,7 +108,7 @@ describe('Register user', () => {
 
     it('should return error of invalid email ', async () => {
       const res = await factory.app
-        .post('/auth/register')
+        .post('/auth/signup')
         .set('content-type', 'application/json')
         .send({
           ...userInfoPartial,
@@ -123,7 +123,7 @@ describe('Register user', () => {
 
     // it('should return error of invalid email ', async () => {
     //   const res = await factory.app
-    //     .post('/auth/register')
+    //     .post('/auth/signup')
     //     .set('content-type', 'application/json')
     //     .send({
     //       ...userInfoPartial,
@@ -138,7 +138,7 @@ describe('Register user', () => {
 
     it('should return error of duplicate email ', async () => {
       const res = await factory.app
-        .post('/auth/register')
+        .post('/auth/signup')
         .set('content-type', 'application/json')
         .send({
           ...userInfoPartial,
@@ -149,7 +149,7 @@ describe('Register user', () => {
     });
   });
 
-  describe('Register an user with wrong usernames', () => {
+  describe('Signup an user with wrong usernames', () => {
     const userInfoPartial = {
       firstName: 'test',
       lastName: 'example',
@@ -160,7 +160,7 @@ describe('Register user', () => {
 
     it('should return error about empty username', async () => {
       const res = await factory.app
-        .post('/auth/register')
+        .post('/auth/signup')
         .set('content-type', 'application/json')
         .send({
           ...userInfoPartial,
@@ -175,7 +175,7 @@ describe('Register user', () => {
 
     it('should return error about duplicate username', async () => {
       const res = await factory.app
-        .post('/auth/register')
+        .post('/auth/signup')
         .set('content-type', 'application/json')
         .send({
           ...userInfoPartial,
@@ -186,10 +186,10 @@ describe('Register user', () => {
     });
   });
 
-  describe('Register an user successfully', () => {
+  describe('Signup an user successfully', () => {
     it('should return no error', async () => {
       const res = await factory.app
-        .post('/auth/register')
+        .post('/auth/signup')
         .set('content-type', 'application/json')
         .send({
           firstName: 'test',
@@ -206,7 +206,7 @@ describe('Register user', () => {
 
   it('should return no error given long password', async () => {
     const res = await factory.app
-      .post('/auth/register')
+      .post('/auth/signup')
       .set('content-type', 'application/json')
       .send({
         firstName: 'test',

@@ -1,41 +1,41 @@
-#forgot.modal {
+.forgot .container {
   width: 500px;
   text-align: justify;
 }
 
-#forgot-form {
+.forgot form {
   display: flex;
   flex-direction: column;
   justify-self: start;
   gap: 1rem;
 }
 
-#forgot-form > div:not(.separation) {
+.forgot form > div:not(.separation) {
   display: flex;
   flex-direction: column;
 }
 
-#forgot-form > div:not(.separation) {
+.forgot form > div:not(.separation) {
   display: flex;
   flex-direction: column;
 }
 
-#forgot-form div label {
+.forgot form div label {
   font-weight: 600;
   margin-bottom: 0.5rem;
 }
 
-#forgot-form div > input {
+.forgot form div > input {
   font-size: 1rem;
   padding-left: 0.5rem;
   width: 400px;
 }
 
-#forgot-form div > input,
-#forgot-form .submit-btn {
+.forgot form div > input,
+.forgot form .btn {
   height: 40px;
 }
 
-#forgot-form input {
+.forgot form input {
   background-color: transparent;
 }

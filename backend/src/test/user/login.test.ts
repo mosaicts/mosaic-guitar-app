@@ -12,7 +12,7 @@ describe('Login user', () => {
   });
 
   beforeEach(() => {
-    return factory.app.post('/auth/register').set('content-type', 'application/json').send({
+    return factory.app.post('/auth/signup').set('content-type', 'application/json').send({
       firstName: 'test',
       lastName: 'example',
       username: 'testexample',

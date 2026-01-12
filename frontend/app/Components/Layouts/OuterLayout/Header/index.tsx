@@ -31,18 +31,6 @@ export default function Header({ menuRef, isMobile, toggleNavMenu }: HeaderTypes
         }
         <div id="right-header">
           <ProfileDropdown userFirstName={user.firstName} userLastName={user.lastName} />
-          {
-            // (
-            // <div id="auth-nav">
-            //   <NavLink id="login-navlink" to="/login">
-            //     <p>Sign in</p>
-            //   </NavLink>
-            //   <NavLink id="register-navlink" to="/register">
-            //     <p>Sign up</p>
-            //   </NavLink>
-            // </div>
-            // )
-          }
         </div>
       </header>
     </div>

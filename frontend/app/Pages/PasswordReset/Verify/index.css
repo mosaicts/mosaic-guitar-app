@@ -21,7 +21,7 @@
   gap: 0.5rem;
 }
 
-.resend-btn {
+.resend {
   background-color: transparent;
   border: none;
   color: var(--color-foreground);
@@ -29,30 +29,22 @@
   align-self: end;
 }
 
-.resend-btn.enabled {
+.resend.enabled {
   color: var(--color-link);
 }
 
-.resend-btn.enabled:hover {
+.resend.enabled:hover {
   cursor: pointer;
 }
 
-#reset-verify .resend-btn .timer {
+#reset-verify .resend .timer {
   font-family: 'Consolas', 'Menlo', monospace;
   font-size: 1rem;
   letter-spacing: 0; /* Ensure no extra spacing */
   font-weight: normal;
 }
 
-#reset-verify #submit-btns {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  gap: 1rem;
-  align-items: center;
-}
-
-#reset-verify #submit-btns > * {
+#reset-verify .cancel {
   height: 40px;
   width: 80%;
 }

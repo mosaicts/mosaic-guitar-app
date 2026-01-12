@@ -4,12 +4,17 @@ import type { Guitar } from '@/utils/models';
 import './index.css';
 
 export async function clientLoader() {
+  console.log('running client loader...');
+  // if (getJwt()) {
+  console.log('loading guitars...');
   try {
     const guitars = await fetchGuitars();
+    console.log('guitars loaded');
     return guitars;
   } catch {
     return redirect('/login');
   }
+  // }
 }
 
 export default function Home() {

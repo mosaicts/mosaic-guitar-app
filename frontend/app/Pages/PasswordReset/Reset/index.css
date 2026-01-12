@@ -30,7 +30,7 @@
 }
 
 #reset-form div > input,
-#reset-form .submit-btn {
+#reset-form .btn {
   width: 400px;
   height: 40px;
 }

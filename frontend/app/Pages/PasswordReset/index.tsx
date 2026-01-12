@@ -22,8 +22,8 @@ export async function clientAction({ request }: Route.ActionArgs) {
 
 export default function Forgot({ request }: Route.ClientActionArgs) {
   return (
-    <div className="modal-bg">
-      <div id="forgot" className="modal">
+    <div className="forgot background">
+      <div className="container">
         <h3>
           Enter your user account's verified email address and we will send you a verification code
         </h3>
@@ -62,17 +62,17 @@ const InputEmail = () => {
   };
 
   return (
-    <Form id="forgot-form" method="post" onSubmit={handleSubmit(onSubmit)}>
+    <Form method="post" onSubmit={handleSubmit(onSubmit)}>
       {!errors.email && errorMsg && <p className="err">{errorMsg}</p>}
-      <div id="email">
+      <div className="email">
         <label htmlFor="email-input">Email</label>
         <input id="email-input" required {...register('email')} />
-        {errors.email && <span className="err">{errors.email.message}</span>}
+        {errors.email && <span className="error">{errors.email.message}</span>}
       </div>
       <button
         type="submit"
         disabled={isDisabled}
-        className={'submit-btn' + (isSubmitting ? ' progress' : '')}
+        className={'submit btn' + (isSubmitting ? ' progress' : '')}
       >
         {isSubmitting ? 'Send Verification Code...' : 'Send Verification Code'}
       </button>

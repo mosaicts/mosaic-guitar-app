@@ -106,7 +106,7 @@ export default function ResetVerify() {
           <OTPInput length={6} onComplete={handleComplete} />
           <span className="err">{error}</span>
           <button
-            className={'resend-btn' + (isResetEnabled ? ' enabled' : '')}
+            className={'resend btn' + (isResetEnabled ? ' enabled' : '')}
             onClick={handleResend}
             disabled={!isResetEnabled}
           >
@@ -122,15 +122,9 @@ export default function ResetVerify() {
             )}
           </button>
         </div>
-
-        <div id="submit-btns">
-          {
-            // <button className="submit-btn">Verify</button>
-          }
-          <button id="cancel-btn" className="submit-btn" onClick={handleCancel}>
-            Cancel
-          </button>
-        </div>
+        <button className="cancel btn" onClick={handleCancel}>
+          Cancel
+        </button>
       </div>
     </div>
   );

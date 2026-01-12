@@ -1,9 +1,9 @@
-#signup-verify .modal {
+.signup.verify .container {
   width: 50%;
   text-align: center;
 }
 
-#signup-verify .submit-btn {
+.signup.verify .btn {
   height: 40px;
   padding: 0 1rem;
 }

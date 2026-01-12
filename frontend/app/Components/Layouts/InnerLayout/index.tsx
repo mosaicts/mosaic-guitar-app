@@ -29,7 +29,7 @@ export default function InnerLayout() {
                 menuRef.current &&
                 !menuRef.current.contains(event?.target as HTMLElement)
               ) {
-                setNavOpen(false);
+                setNavOpen(false); // close the nav
               }
             }}
           />

@@ -1,4 +1,4 @@
-#login-page {
+.login {
   background-color: var(--color-background);
   height: 100vh;
   display: flex;
@@ -6,56 +6,75 @@
   align-items: center;
 }
 
-#login-page .modal {
+.login .container {
   width: 550px;
 }
 
-#login-form {
+.login form {
   display: flex;
   flex-direction: column;
   justify-self: start;
   gap: 1rem;
 }
 
-#login-form > div:not(.separation) {
+.login form > div:not(.separation) {
   display: flex;
   flex-direction: column;
 }
 
-#login-form div label {
+.login form div label {
   font-weight: 600;
   margin-bottom: 0.5rem;
 }
 
-#login-form div > input {
+.login form div > input {
   font-size: 1rem;
   padding-left: 0.5rem;
 }
 
-#login-form div > input,
-#login-form .submit-btn {
+.login form div > input,
+.login form .btn {
   height: 40px;
 }
 
-#login-form #password > div {
+.login form .password > div {
   display: flex;
   justify-content: space-between;
 }
 
-#login-form #email input,
-#login-form #password input,
-#login-form .submit-btn {
+.login form .email input,
+.login form .password input,
+.login form .btn {
   width: 400px;
 }
 
-#login-form > .err {
+.login form > .err {
   text-align: center;
 }
 
-#login-form #with-google {
-  background-color: #1e2d3f;
+.login form .fb,
+.login form .google {
+  color: var(--color-foreground);
+  display: flex;
+  display: block;
+  text-align: center;
+  font-size: 1rem;
+  padding: 10px;
 }
 
-#login-form input {
+.login form .fb {
+  background-color: #3b5998;
+}
+
+.login form .google {
+  background-color: #dd4b39;
+}
+
+.login form input {
   background-color: transparent;
+}
+
+.login form .login-text {
+  display: inline-block;
+  min-width: 250px;
 }

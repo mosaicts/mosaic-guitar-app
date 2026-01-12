@@ -99,7 +99,7 @@ describe('<Signup />', () => {
     expect(lastNameInput.validity.valueMissing).toBe(true);
   });
 
-  it.skip('should keep displaying error of short password and focusing the field if clicking outside the it', async () => {
+  it.skip('should keep displaying error of short password and focusing the field if clicking outside it', async () => {
     const ERROR_MESSAGE = 'Password must be at least 8 characters';
 
     const Stub = createRoutesStub([
@@ -368,7 +368,7 @@ describe('<Signup />', () => {
     });
   });
 
-  it('should navigate to the /check-email route after signuping successfully', async () => {
+  it('should navigate to the /check-email route after signing up successfully', async () => {
     const Stub = createRoutesStub([
       {
         path: '/check-email',

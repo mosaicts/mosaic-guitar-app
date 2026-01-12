@@ -179,11 +179,11 @@ export default function Reset() {
           <button
             type="submit"
             disabled={isDisabled}
-            className={'submit-btn' + (isSubmitting ? ' progress' : '')}
+            className={'submit btn' + (isSubmitting ? ' progress' : '')}
           >
             {isSubmitting ? 'Submitting...' : 'Submit'}
           </button>
-          <button id="cancel-btn" className="submit-btn" onClick={onCancel}>
+          <button className="cancel btn" onClick={onCancel}>
             Cancel
           </button>
         </Form>

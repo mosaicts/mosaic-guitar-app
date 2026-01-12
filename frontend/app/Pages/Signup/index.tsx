@@ -104,43 +104,43 @@ export default function Signup() {
   const isDisabled = isSubmitting; // Prevents double-submit
 
   return (
-    <div id="signup-page">
-      <div id="left"></div>
-      <div id="right">
-        <div className="modal">
+    <div className="signup">
+      <div className="left"></div>
+      <div className="right">
+        <div className="container">
           <h1>Create an account</h1>
-          <Form id="signup-form" method="post" onSubmit={handleSubmit(onSubmit)}>
-            <div className="name">
-              <div id="first-name">
+          <Form method="post" onSubmit={handleSubmit(onSubmit)}>
+            <div className="names">
+              <div id="first name">
                 <label htmlFor="first-name-input">
                   First name <span className="required-asterisk">*</span>
                 </label>
                 <input id="first-name-input" required {...register('firstName')} />
-                {errors.firstName && <span className="err">{errors.firstName.message}</span>}
+                {errors.firstName && <span className="error">{errors.firstName.message}</span>}
               </div>
-              <div id="last-name">
+              <div id="last name">
                 <label htmlFor="last-name-input">
                   Last name <span className="required-asterisk">*</span>
                 </label>
                 <input id="last-name-input" required {...register('lastName')} />
-                {errors.lastName && <span className="err">{errors.lastName.message}</span>}
+                {errors.lastName && <span className="error">{errors.lastName.message}</span>}
               </div>
             </div>
-            <div id="username">
+            <div className="username">
               <label htmlFor="username-input">
                 Username <span className="required-asterisk">*</span>
               </label>
               <input id="username-input" required {...register('username')} />
-              {errors.username && <span className="err">{errors.username.message}</span>}
+              {errors.username && <span className="error">{errors.username.message}</span>}
             </div>
-            <div id="email">
+            <div className="email">
               <label htmlFor="email-input">
                 Email <span className="required-asterisk">*</span>
               </label>
               <input id="email-input" required {...register('email')} />
-              {errors.email && <span className="err">{errors.email.message}</span>}
+              {errors.email && <span className="error">{errors.email.message}</span>}
             </div>
-            <div id="password">
+            <div className="password">
               <label htmlFor="password-input">
                 Password <span className="required-asterisk">*</span>
               </label>
@@ -161,16 +161,16 @@ export default function Signup() {
                 })}
               />
               {errors.password ? (
-                <span className="err">{errors.password.message}</span>
+                <span className="error">{errors.password.message}</span>
               ) : (
                 password.length > 0 && (
-                  <span className="password-strength" id={passwordStrength}>
+                  <span className={`strength ${passwordStrength}`}>
                     Strength: {passwordStrength}
                   </span>
                 )
               )}
             </div>
-            <div id="confirm-password">
+            <div className="confirm-password">
               <label htmlFor="confirm-password-input">
                 Confirm password <span className="required-asterisk">*</span>
               </label>
@@ -194,19 +194,19 @@ export default function Signup() {
                 })}
               />
               {errors.confirmPassword && (
-                <span className="err">{errors.confirmPassword.message}</span>
+                <span className="error">{errors.confirmPassword.message}</span>
               )}
             </div>
             <button
               id="signup"
               type="submit"
               disabled={isDisabled}
-              className={'submit-btn' + (isSubmitting ? ' progress' : '')}
+              className={'submit btn' + (isSubmitting ? ' progress' : '')}
             >
               {isSubmitting ? 'Create account...' : 'Create account'}
             </button>
             <Separation />
-            <div id="already-have-account">
+            <div className="have-account">
               <span>
                 Already have an account?{' '}
                 <Link id="to_login" to="/login">

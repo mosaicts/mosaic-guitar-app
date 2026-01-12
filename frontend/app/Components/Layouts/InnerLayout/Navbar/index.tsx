@@ -11,7 +11,7 @@ interface NavbarTypes {
 export default function Navbar({ navState, onClickOutside }: NavbarTypes) {
   const ref = useRef<HTMLDivElement | null>(null);
 
-  useClickOutside(ref, onClickOutside);
+  useClickOutside(ref, onClickOutside); // click outside the sidebar
 
   return (
     <div id="sidebar" ref={ref}>

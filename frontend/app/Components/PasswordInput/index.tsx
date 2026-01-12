@@ -5,7 +5,7 @@ const PasswordInput = ({ ...rest }) => {
   const [passwordVisibility, setPasswordVisibility] = useState(false);
   return (
     <>
-      <div className="password-input-box">
+      <div className="password box">
         <input
           id="password-input"
           type={passwordVisibility ? 'text' : 'password'}
@@ -13,7 +13,7 @@ const PasswordInput = ({ ...rest }) => {
           {...rest}
         />
         <button
-          className="toggle-visibility"
+          className="toggle visibility"
           onClick={(e: React.MouseEvent) => {
             e.preventDefault();
             setPasswordVisibility(!passwordVisibility);
