@@ -29,16 +29,17 @@ export class UserService {
   }
 
   async updateUser(req: Request, res: Response) {
+    // await new Promise((resolve) => setTimeout(resolve, 1000));
     let user = req.user as User;
     user = { ...user, ...req.body };
     await this.userRepository.save(user);
-    res.status(200).json({ message: 'updated', user });
+    res.status(200).json({ message: 'success' });
   }
 
   async deleteUser(req: Request, res: Response) {
     const { id } = req.params;
     try {
-      const user = await this.userRepository.findOne({
+      let user = await this.userRepository.findOne({
         where: { id }
       });
       await this.userRepository.remove(user);
@@ -47,6 +48,6 @@ export class UserService {
       return res.status(400).json({ message: 'An error occurred' });
     }
 
-    res.status(200).json({ message: 'ok' });
+    res.status(200).json({ message: 'success' });
   }
 }
