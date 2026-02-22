@@ -18,29 +18,31 @@ export default function Guitar() {
   const guitar: Guitar = useLoaderData();
 
   return (
-    <div id="description-panel">
-      <div id="details-container">
-        <Link id="back" to="/">
+    <div className="details-panel">
+      <div className="container">
+        <Link className="back" to="/">
           &larr; Back to all guitars
         </Link>
-        <h1 id="name">{guitar.name}</h1>
-        <p id="description">{guitar.description}</p>
-        <div id="price-div">
-          <div id="price">${guitar.price}</div>
+        <div className="info-container">
+          <h1 className="name">{guitar.name}</h1>
+          <p className="description">{guitar.description}</p>
+        </div>
+        <div className="price-container">
+          <div className="price">${guitar.price}</div>
           <button
             onClick={() => {
               setAddCart(true);
               setTimeout(() => setAddCart(false), 3000);
             }}
-            id="cart-btn"
+            className="cart btn"
           >
             Add to Cart
           </button>
         </div>
       </div>
-      <div id="full-img-panel">
-        <div id="full-img-div">
-          <img id="full-img" src={`../../${guitar.image}`} alt={guitar.name} />
+      <div className="img-panel">
+        <div className="img-container">
+          <img src={`../../${guitar.image}`} alt={guitar.name} />
         </div>
       </div>
       <Modal isShown={isAddCart} />
@@ -55,7 +57,7 @@ interface ModalTypes {
 function Modal({ isShown }: ModalTypes) {
   return (
     isShown && (
-      <div className="modal-bg">
+      <div className="background">
         <div className="modal">
           <img src="/app/Images/tick_icon.svg" width="1" height="1" />
           <p>Item added</p>

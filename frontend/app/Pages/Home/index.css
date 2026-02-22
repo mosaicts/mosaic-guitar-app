@@ -124,12 +124,6 @@ main #title {
   line-clamp: 2;
 }
 
-#price {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--color-emerald-400);
-}
-
 @media (min-width: 768px) {
   #content-item {
     width: calc(50% - 1.5rem);

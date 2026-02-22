@@ -134,6 +134,12 @@ pre {
   background-color: #909090;
 }
 
+.price {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-emerald-400);
+}
+
 .progress,
 .progress:hover {
   opacity: 0.7;

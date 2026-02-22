@@ -1,4 +1,4 @@
-#description-panel {
+.details-panel {
   grid-area: alias-main;
   min-height: 100%;
   position: relative;
@@ -8,8 +8,13 @@
   overflow-y: hidden;
 }
 
-#details-container {
+.details-panel > .container {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 0.5rem;
+  align-items: stretch;
   z-index: 1;
   width: 60%;
   background-color: var(--color-gray-900-60);
@@ -21,28 +26,30 @@
   left: 1rem;
 }
 
-#back {
+.back {
   display: inline-block;
-  margin-bottom: 0.5rem;
   color: var(--color-emerald-400);
 }
 
-#back:hover {
+.back:hover {
   color: var(--color-emerald-300);
 }
 
-#description {
+.details {
   color: var(--color-gray-300);
   margin-bottom: 1rem;
 }
 
-#price-div {
+.price-container {
   display: flex;
+  flex-direction: row;
   align-items: center;
   justify-content: space-between;
+  padding: 0;
+  gap: 0;
 }
 
-#cart-btn {
+.cart.btn {
   background-color: var(--color-emerald-600);
   color: #fff;
   padding: 4px 6px;
@@ -53,11 +60,11 @@
   transition-duration: var(--default-transition-duration);
 }
 
-#cart-btn:hover {
+.cart.btn:hover {
   background-color: var(--color-emerald-500);
 }
 
-#full-img-panel {
+.img-panel {
   position: absolute;
   top: 1rem;
   right: 1rem;
@@ -67,7 +74,7 @@
   z-index: 0;
 }
 
-#full-img-div {
+.img-panel .img-container {
   width: 100%;
   height: 100%;
   overflow: hidden;
@@ -77,20 +84,25 @@
   margin-bottom: 1rem;
 }
 
-#full-img {
+.img-panel img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-#description-panel .modal-bg {
+.details-panel .background {
   background-color: opacity;
   justify-content: center;
   align-items: center;
 }
 
-#description-panel .modal {
+.details-panel .modal {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   position: fixed;
+  border-radius: 1rem;
   padding: 80px;
   width: 320px;
   height: 150px;
@@ -99,12 +111,12 @@
   box-shadow: var(--shadow-2xl);
 }
 
-#description-panel .modal > img {
+.details-panel .modal > img {
   width: 70px;
   height: 70px;
 }
 
-#description-panel .modal > p {
+.details-panel .modal > p {
   font-size: 1rem;
   font-weight: 700;
   color: #fff;

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Outlet } from 'react-router';
-import useWindowWidth from '@/Hooks/useWindowWidth';
+import useWindowListener from '@/Hooks/useWindowListener';
 import Header from './Header';
 import './index.css';
 
@@ -8,9 +8,13 @@ export default function OuterLayout() {
   const menuRef = useRef<HTMLButtonElement | null>(null);
   const [isNavOpen, setNavOpen] = useState(false);
   const [isNavCollapsed, setNavCollapsed] = useState(true); // collapse nav by default in mobile view (ie, removing the nav from the DOM)
-  const windowWidth = useWindowWidth();
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const isMobile = windowWidth < 768;
   const navState = !isMobile ? '' : isNavOpen ? 'slide-in' : 'slide-out';
+
+  useWindowListener('resize', () => {
+    setWindowWidth(window.innerWidth);
+  });
 
   useEffect(() => {
     // this only run once at the start of the new view (mobile or desktop)

@@ -26,7 +26,7 @@ const ProfileDropdown = ({ userFirstName, userLastName }: ProfileDropdownTypes) 
   });
 
   return (
-    <div id="profile-dropdown" ref={ref}>
+    <div className="profile dropdown" ref={ref}>
       <button
         className="avatar"
         style={profileImageStyle}
@@ -39,7 +39,7 @@ const ProfileDropdown = ({ userFirstName, userLastName }: ProfileDropdownTypes) 
         )}
       </button>
       {isDropdownOpen && (
-        <div id="dropdown-menu" role="menu">
+        <div className="menu dropdown" role="menu">
           <NavLink to="/profile">My profile</NavLink>
           <hr></hr>
           <NavLink to="/signout">Sign out</NavLink>

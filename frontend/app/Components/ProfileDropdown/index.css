@@ -1,15 +1,22 @@
-#profile-image {
+.avatar {
   height: 45px;
   width: 45px;
   border-radius: 25%;
   border: none;
 }
 
-#profile-image:hover {
+.avatar:hover {
   cursor: pointer;
+  border-radius: 25%;
 }
 
-#dropdown-menu {
+.avatar img {
+  height: 45px;
+  width: 45px;
+  border-radius: 25%;
+}
+
+.menu.dropdown {
   background-color: #151a26;
   position: absolute;
   display: flex;
@@ -24,6 +31,6 @@
   border: 1px solid rgba(255, 255, 255, 0.5);
 }
 
-#dropdown-menu a {
+.menu.dropdown a {
   color: var(--color-foreground);
 }

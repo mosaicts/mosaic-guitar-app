@@ -39,7 +39,7 @@ export default function Home() {
                 <div id="details">
                   <h2 className="name">{guitar.name}</h2>
                   <p id="short-description">{guitar.shortDescription}</p>
-                  <div id="price">${guitar.price}</div>
+                  <div className="price">${guitar.price}</div>
                 </div>
               </Link>
             </div>
