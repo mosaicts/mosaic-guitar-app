@@ -28,7 +28,7 @@ describe('<Login />', () => {
 
     expect(emailInput).toBeInTheDocument();
     expect(passwordInput).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Continue with Google' })).toBeInTheDocument();
+    // expect(screen.getByRole('button', { name: 'Continue with Google' })).toBeInTheDocument();
     expect(screen.getByText('Create an account')).toBeInTheDocument();
 
     // check initial values

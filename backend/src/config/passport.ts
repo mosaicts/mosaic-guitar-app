@@ -142,7 +142,7 @@ const facebookLogin = new FacebookStrategy(
     callbackURL: `${envConfig.BACKEND_URL}/auth/facebook/callback`,
     profileFields: [
       'id',
-      'email',
+      'emails',
       'gender',
       'profileUrl',
       'displayName',
@@ -154,8 +154,8 @@ const facebookLogin = new FacebookStrategy(
       'picture.type(large)'
     ]
   },
-  async (req, accessToken, refreshToken, params, profile, done) => {
-    console.log(profile);
+  async (accessToken, refreshToken, profile, done) => {
+    console.log({ profile });
     try {
       const oldUser = await userRepository.findOneBy({ email: profile.emails[0].value });
 

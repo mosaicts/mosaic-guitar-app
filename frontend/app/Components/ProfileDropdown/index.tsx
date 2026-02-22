@@ -28,12 +28,15 @@ const ProfileDropdown = ({ userFirstName, userLastName }: ProfileDropdownTypes) 
   return (
     <div id="profile-dropdown" ref={ref}>
       <button
-        id="profile-image"
+        className="avatar"
         style={profileImageStyle}
         onClick={() => setDropdownOpen(!isDropdownOpen)}
       >
-        <img src={user.avatar} />
-        {userFirstName !== '' && userFirstName[0].toUpperCase() + userLastName[0].toUpperCase()}
+        {user.avatar ? (
+          <img src={user.avatar} />
+        ) : (
+          userFirstName !== '' && userFirstName[0].toUpperCase() + userLastName[0].toUpperCase()
+        )}
       </button>
       {isDropdownOpen && (
         <div id="dropdown-menu" role="menu">

@@ -46,18 +46,6 @@ export class User {
   updatedAt: Date;
 
   @Column({ nullable: true })
-  provider: string;
-
-  @Column({ nullable: true })
-  googleId: string;
-
-  @Column({ nullable: true })
-  facebookId: string;
-
-  @Column({ nullable: true })
-  secret: string;
-
-  @Column({ nullable: true })
   refreshToken: string;
 
   @Column({ nullable: true })
@@ -68,4 +56,14 @@ export class User {
 
   @Column({ default: false })
   verified: boolean;
+
+  @Column({ nullable: true })
+  provider: string;
+
+  @Column({ nullable: true })
+  googleId: string;
+
+  @Column({ nullable: true })
+  facebookId: string;
+
 }

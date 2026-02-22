@@ -22,7 +22,7 @@ const authRouter = Router();
 const userRepository = handleGetRepository(User);
 
 authRouter.post('/login', UserController.login);
-authRouter.get('/facebook', passport.authenticate('facebook'));
+authRouter.get('/facebook', passport.authenticate('facebook', { scope: ['email'] }));
 authRouter.get(
   '/facebook/callback',
   passport.authenticate('facebook', {
