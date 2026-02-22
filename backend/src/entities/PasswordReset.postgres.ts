@@ -17,15 +17,15 @@ export class PasswordReset {
   @Column({ nullable: false })
   otp: string;
 
-  @Column({ nullable: false })
-  expiry: string;
-
   @CreateDateColumn()
   createdAt: Date;
 
-  @UpdateDateColumn()
-  completedAt: Date;
-
   @Column({ default: false })
   verified: boolean;
+
+  @Column({ nullable: false })
+  expiry: string;
+
+  @UpdateDateColumn()
+  completedAt: Date;
 }

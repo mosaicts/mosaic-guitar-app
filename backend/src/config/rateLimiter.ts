@@ -1,5 +1,7 @@
-import { redisClient } from '../utils/handleGetRepository';
+import { handleGetRedisClient } from '../utils/handleGetRepository';
 import { RateLimiterRedis } from 'rate-limiter-flexible';
+
+const redisClient = handleGetRedisClient();
 
 export const maxWrongAttemptsByIPperDay = 100;
 export const maxConsecutiveLoginFailsByEmailAndIP = 10;

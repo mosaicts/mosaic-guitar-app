@@ -3,8 +3,11 @@ import {
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
-  UpdateDateColumn
+  UpdateDateColumn,
+  OneToMany
 } from 'typeorm';
+import { Cart } from './Cart.postgres';
+import { Order } from './Order.postgres';
 
 const UserRole = {
   ADMIN: 'admin',
@@ -29,7 +32,7 @@ export class User {
   @Column({ nullable: false })
   email: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   password: string;
 
   @Column({
@@ -38,6 +41,9 @@ export class User {
     default: UserRole.USER
   })
   role: string;
+
+  @Column({ nullable: true })
+  secret: string;
 
   @CreateDateColumn()
   createdAt: Date;
@@ -66,4 +72,9 @@ export class User {
   @Column({ nullable: true })
   facebookId: string;
 
+  @OneToMany(() => Cart, (cart) => cart.user, { cascade: true })
+  carts: Cart[];
+
+  @OneToMany(() => Order, (order) => order.user, { cascade: true })
+  orders: Order[];
 }

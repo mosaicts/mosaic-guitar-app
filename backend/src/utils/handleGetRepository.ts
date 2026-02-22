@@ -3,15 +3,16 @@ import dataSource, { redisConfig, testRedisConfig } from '../data-source';
 import envConfig from '../config/envConfig';
 import { Redis } from 'ioredis';
 
+const environment = envConfig.NODE_ENV || 'development';
+
 const handleGetRepository = <T>(entity: EntityTarget<T>): Repository<T> => {
-  const environment = envConfig.NODE_ENV || 'development';
   return environment === 'test'
     ? dataSource.TestDataSource.manager.getRepository(entity)
     : dataSource.AppDataSource.manager.getRepository(entity);
 };
 
+export const handleGetRedisClient = (): Redis => {
+  return environment === 'test' ? new Redis(testRedisConfig) : new Redis(redisConfig);
+};
+
 export default handleGetRepository;
-export const redisClient =
-  (envConfig.NODE_ENV || 'development') === 'test'
-    ? new Redis(testRedisConfig)
-    : new Redis(redisConfig);
