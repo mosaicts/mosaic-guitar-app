@@ -1,10 +1,11 @@
 import { axiosInstance as axios } from '@/lib/axiosInterceptor';
+import { useNavigate } from 'react-router';
 import { createContext, useContext, useEffect } from 'react';
 import { Role, type User } from '@/utils/models';
-import usePersistor, { useDriver, LocalStorageManager } from '@/Hooks/usePersistor';
+import usePersistor, { useDriver } from '@/Hooks/usePersistor';
 import useGlobalSignout from '@/Hooks/useGlobalSignout';
-import { getFingerprintHash } from '@/lib/auth';
-import { getProfile } from '@/utils/apis';
+import useIsSsr from '@/Hooks/useIsSsr';
+import { parseJwt } from '@/lib/auth';
 
 interface AuthContextType {
   user: User;
@@ -12,7 +13,7 @@ interface AuthContextType {
   jwt: string;
   setJwt: (data: string) => void;
   isLoggedIn: boolean;
-  onLogin: (jwt: string) => void;
+  onLogin: (token: string) => void;
   onSignout: () => void;
 }
 
@@ -30,7 +31,7 @@ const initialContextValues = {
   jwt: '',
   setJwt: () => null,
   isLoggedIn: false,
-  onLogin: (jwt: string) => null,
+  onLogin: (token: string) => null,
   onSignout: () => null
 };
 
@@ -41,18 +42,21 @@ interface Props {
 }
 
 const AuthProvider = ({ children }: Props) => {
-  const [driver, userDriver] = useDriver() as [
-    LocalStorageManager<string>,
-    LocalStorageManager<User>
-  ];
-  const [user, setUser] = usePersistor<User>('user', initialContextValues.user, userDriver);
-  const [jwt, setJwt] = usePersistor<string>('jwt', initialContextValues.jwt, driver);
+  const isSsr = useIsSsr();
+  const driver = useDriver<string>(isSsr);
+  const userDriver = useDriver<User>(isSsr);
+  const [jwt, setJwt] = usePersistor<string>('jwt', initialContextValues.jwt, driver, isSsr);
+  const userInfo = parseJwt(jwt);
+  const [user, setUser] = usePersistor<User>('user', userInfo, userDriver, isSsr);
   const isLoggedIn = jwt !== initialContextValues.jwt;
+  const navigate = useNavigate();
+  console.log({ jwt, isLoggedIn });
 
   const onSignout = useGlobalSignout(() => {
     setJwt(initialContextValues.jwt);
     setUser(initialContextValues.user);
     driver.remove('jwt');
+    navigate('/login');
   });
 
   const onLogin = (token: string) => {
@@ -62,28 +66,17 @@ const AuthProvider = ({ children }: Props) => {
   useEffect(() => {
     if (jwt) {
       axios.defaults.headers.common['Authorization'] = 'Bearer ' + jwt;
-      console.log('jwt set');
+      console.log('jwt set in header');
     } else {
       delete axios.defaults.headers.common['Authorization'];
-      console.log('jwt unset');
+      console.log('jwt unset in header');
     }
   }, [jwt]);
 
   useEffect(() => {
-    if (jwt && !user.id) {
-      const fingerprintHash = getFingerprintHash(jwt);
-      getProfile({ fingerprintHash })
-        .then((response) => {
-          const user = response.data.user;
-          if (user) {
-            setUser(user);
-            console.log('profile loaded');
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-          console.log('profile load failed');
-        });
+    if (jwt) {
+      console.log('set user to global state...');
+      setUser(userInfo);
     }
   }, [jwt]);
 

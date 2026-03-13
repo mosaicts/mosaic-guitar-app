@@ -1,14 +1,18 @@
 export function getJwt() {
-  return sessionStorage.getItem('jwt') || '';
+  if (typeof window === 'undefined') return '';
+  return window.sessionStorage.getItem('jwt') || '';
 }
 
 export function storeJwt(token: string) {
-  sessionStorage.setItem('jwt', token);
+  if (typeof window !== 'undefined') {
+    console.log('set jwt to session storage');
+    window.sessionStorage.setItem('jwt', token);
+  }
 }
 
 export function getFingerprintHash(jwt: string) {
   const parsedJwt = jwt != undefined ? parseJwt(jwt) : {};
-  const fingerprintHash = parsedJwt?.['X-User-Fingerprint'];
+  const fingerprintHash = parsedJwt.otherClaims?.['fingerprint'];
   return fingerprintHash;
 }
 
