@@ -62,7 +62,7 @@ passport.use(
       delete req.body.fingerprintHash;
 
       userRepository
-        .findOneBy({ id: jwt_payload['X-User-Id'] })
+        .findOneBy({ id: jwt_payload.sub })
         .then((user) => {
           if (user) {
             // Since we are here, the JWT is valid and our user is valid, so we are authorized!

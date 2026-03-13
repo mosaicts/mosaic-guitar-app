@@ -8,6 +8,12 @@ export const sha256 = (value: string) => {
 };
 
 interface GenerateJWTParams {
+  sub: StringValue;
+  username?: StringValue;
+  firstName?: StringValue;
+  lastName?: StringValue;
+  email?: StringValue;
+  role?: StringValue;
   expiresIn?: StringValue;
   otherClaims?: Record<string, string>;
 }
@@ -15,7 +21,7 @@ interface GenerateJWTParams {
 export const generateJwt = (params: GenerateJWTParams) => {
   const payload = {
     iat: Date.now(),
-    ...params.otherClaims
+    ...params
   };
 
   return jwt.sign(payload, envConfig.PRIV_KEY, {

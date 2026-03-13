@@ -34,8 +34,8 @@ export class UserController {
     await authService.resetPassword(req, res);
   }
 
-  static async refreshToken(req: Request, res: Response) {
-    await authService.refreshToken(req, res);
+  static async updateToken(req: Request, res: Response) {
+    await authService.updateToken(req, res);
   }
 
   static async signout(req: Request, res: Response) {

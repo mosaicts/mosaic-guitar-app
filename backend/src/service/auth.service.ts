@@ -103,12 +103,7 @@ export class AuthService {
 
             // Add the fingerprint in a hardened cookie to prevent Token Sidejacking
             // https://cheatsheetseries.owasp.org/cheatsheets/JSON_Web_Token_for_Java_Cheat_Sheet.html#token-sidejacking
-            const jwt = generateJwt({
-              otherClaims: {
-                'X-User-Id': String(user.id),
-                'X-User-Fingerprint': sha256(fingerprint)
-              }
-            });
+            const jwt = this.#generateJwt(user, fingerprint);
 
             // Generate refresh token
             const refreshToken = uuidv4();
@@ -252,7 +247,7 @@ export class AuthService {
 
   async postForgot(req: Request, res: Response) {
     const { email } = req.body;
-    let secret;
+    let secret: string;
 
     let user = await this.userRepository.findOne({ where: { email } });
 
@@ -380,7 +375,7 @@ export class AuthService {
     }
   }
 
-  async refreshToken(req: Request, res: Response) {
+  async updateToken(req: Request, res: Response) {
     const refreshToken = req.cookies[REFRESH_TOKEN_COOKIE_NAME];
     const fingerprintCookie = req.cookies[FINGERPRINT_COOKIE_NAME];
 
@@ -408,14 +403,9 @@ export class AuthService {
 
         setCookie(fingerprint, refreshToken, res);
 
-        const jwt = generateJwt({
-          otherClaims: {
-            'X-User-Id': String(user.id),
-            'X-User-Fingerprint': sha256(fingerprint)
-          }
-        });
+        const jwt = this.#generateJwt(user, fingerprint);
 
-        console.log({ jwt });
+        console.log({ fingerprint, refreshToken, jwt });
 
         return this.userRepository.save(user).then(() => {
           return res.status(200).json({ jwt });
@@ -433,14 +423,26 @@ export class AuthService {
     return res.status(200).json({ message: 'success' });
   }
 
-  #generateVerificationToken(user: User) {
-    const verificationToken = generateJwt({
-      expiresIn: '5m',
+  #generateJwt(user: User, fingerprint: string) {
+    return generateJwt({
+      sub: user.id,
+      username: user.username,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      role: user.role,
       otherClaims: {
-        'X-User-Id': String(user.id),
-        'X-User-Email': user.email
+        avatar: user.avatar,
+        fingerprint: sha256(fingerprint)
       }
     });
-    return verificationToken;
+  }
+
+  #generateVerificationToken(user: User) {
+    return generateJwt({
+      sub: user.id,
+      email: user.email,
+      expiresIn: '5m'
+    });
   }
 }
