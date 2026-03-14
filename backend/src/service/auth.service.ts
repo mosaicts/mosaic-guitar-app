@@ -393,6 +393,8 @@ export class AuthService {
           return res.status(400).json({ message: 'User not found' });
         }
 
+        console.log({ user });
+
         // Generate a random string that will constitute the fingerprint for this user
         const fingerprint = crypto.randomBytes(50).toString('hex');
 
@@ -405,7 +407,7 @@ export class AuthService {
 
         const jwt = this.#generateJwt(user, fingerprint);
 
-        console.log({ fingerprint, refreshToken, jwt });
+        console.log(__filename, { fingerprint, refreshToken, jwt });
 
         return this.userRepository.save(user).then(() => {
           return res.status(200).json({ jwt });

@@ -1,16 +1,21 @@
 import type { Route } from './+types';
-import { useFetcher, useActionData, useNavigate, redirect, useLoaderData } from 'react-router';
+import { axiosInstance as axios } from '@/lib/axiosInterceptor';
+import { useFetcher, redirect, useLoaderData, useActionData } from 'react-router';
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../Providers/authProvider';
 import { updateUser, getProfile } from '../../utils/apis';
-import { getJwt, getFingerprintHash } from '../../lib/auth';
+import { getJwt, getFingerprintHash, parseUser } from '../../lib/auth';
 import './index.css';
 
 export async function clientLoader() {
-  const fingerprintHash = getFingerprintHash(getJwt());
+  console.log('Run loader...');
+  const jwt = getJwt();
+  const fingerprintHash = getFingerprintHash(jwt);
+  axios.defaults.headers.common['Authorization'] = 'Bearer ' + jwt;
   try {
     const response = await getProfile({ fingerprintHash });
-    return { latestUserData: response.data.user };
+    console.log({ data: response.data });
+    return { latestUserData: parseUser(response.data.user) };
   } catch (err) {
     console.log(err);
     return redirect('/login');
@@ -33,7 +38,7 @@ export async function clientAction({ request }: Route.ActionArgs) {
 
 export default function Profile() {
   const fetcher = useFetcher();
-  const { setUser } = useAuth();
+  const { user: ctxUser, setUser } = useAuth();
   const [isEdit, setEdit] = useState<boolean>(false);
   const { latestUserData } = useLoaderData();
   const user = fetcher.formData
@@ -45,6 +50,11 @@ export default function Profile() {
     setUser(user);
     setEdit(false);
   }, [isUpdating]);
+
+  // useEffect(() => {
+  //   console.log({ user: JSON.stringify(user), ctxUser: JSON.stringify(ctxUser) });
+  //   if (JSON.stringify(user) !== JSON.stringify(ctxUser)) setUser(ctxUser);
+  // }, [ctxUser]);
 
   return (
     <div id="profile">
@@ -63,6 +73,7 @@ export default function Profile() {
               <label>Last name:</label>
               <input name="lastName" defaultValue={user?.lastName} />
             </div>
+
             <div id="edit-form-btns">
               <button id="update" type="submit">
                 Submit

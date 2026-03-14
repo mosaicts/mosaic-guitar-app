@@ -35,7 +35,7 @@ const ProfileDropdown = ({ userFirstName, userLastName }: ProfileDropdownTypes) 
         {user.avatar ? (
           <img src={user.avatar} />
         ) : (
-          userFirstName !== '' && userFirstName[0].toUpperCase() + userLastName[0].toUpperCase()
+          userFirstName && userFirstName[0].toUpperCase() + userLastName[0].toUpperCase()
         )}
       </button>
       {isDropdownOpen && (

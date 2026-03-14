@@ -1,12 +1,19 @@
+import { type User } from '@/utils/models';
+
 export function getJwt() {
-  if (typeof window === 'undefined') return '';
-  return window.sessionStorage.getItem('jwt') || '';
+  if (typeof window === 'undefined') {
+    return '';
+  }
+  const jwt = window.sessionStorage.getItem('jwt');
+  return jwt || '';
 }
 
 export function storeJwt(token: string) {
   if (typeof window !== 'undefined') {
     console.log('set jwt to session storage');
     window.sessionStorage.setItem('jwt', token);
+  } else {
+    console.log('window is not set');
   }
 }
 
@@ -32,6 +39,24 @@ export function parseJwt(token: string) {
 
     return JSON.parse(jsonPayload);
   } catch (err) {
+    console.log(err);
     return {};
+  }
+}
+
+export function parseUser(data: any) {
+  const { id, firstName, lastName, username, email, avatar, role, ...rest } = data;
+  return { id, firstName, lastName, username, email, avatar, role };
+}
+
+export function parseUserDataFromJwt(token: string, initialData: User) {
+  const userInfo = parseJwt(token);
+  try {
+    const { otherClaims, ...rest } = userInfo;
+    const { sub: id, firstName, lastName, username, email, role } = rest;
+    return { id, firstName, lastName, username, email, avatar: otherClaims.avatar, role };
+  } catch (err) {
+    console.log(err);
+    return initialData;
   }
 }

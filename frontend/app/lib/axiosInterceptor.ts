@@ -1,5 +1,5 @@
 import axios, { type AxiosError, type AxiosResponse } from 'axios';
-import { getJwt, storeJwt, parseJwt } from './auth';
+import { getJwt, parseJwt, getFingerprintHash } from './auth';
 import { refreshTokenApi } from '@/utils/apis';
 
 export const axiosInstance = axios.create();
@@ -8,15 +8,16 @@ axiosInstance.interceptors.response.use(
   async (response: AxiosResponse) => response,
   async (error: AxiosError) => {
     if (error.response?.status === 401) {
-      console.log('refresh token');
-
       try {
-        const response = await refreshTokenApi();
-        const jwt = response.data.jwt;
-        storeJwt(jwt);
+        // console.log('refresh token');
+        // const response = await refreshTokenApi();
+        // const jwt = response.data.jwt;
+        // console.log({ jwt });
+        // storeJwt(jwt);
+        // console.log('token refreshed');
 
-        const parsedJwt = parseJwt(jwt as string);
-        const fingerprintHash = parsedJwt?.['X-User-Fingerprint'];
+        const jwt = getJwt();
+        const fingerprintHash = getFingerprintHash(jwt);
 
         error.response.config.headers['Authorization'] = 'Bearer ' + jwt;
         const data = JSON.parse(error.response.config.data);

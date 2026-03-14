@@ -47,7 +47,10 @@ passport.use(
       const fingerprintCookie = req.cookies[FINGERPRINT_COOKIE_NAME];
       console.log({ fingerprintCookie });
 
-      if (!fingerprintCookie) return done(null, false);
+      if (!fingerprintCookie) {
+        console.log('no fingerprint cookie');
+        return done(null, false);
+      }
 
       // Compute a SHA256 hash of the received fingerprint in cookie in order to compare
       // it to the fingerprint hash stored in the token

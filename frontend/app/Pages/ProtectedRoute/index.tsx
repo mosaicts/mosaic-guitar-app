@@ -17,6 +17,8 @@ export async function clientLoader() {
     try {
       const response = await refreshTokenApi();
       newJwt = response.data.jwt;
+      console.log({ newJwt });
+      storeJwt(newJwt);
       console.log('token refreshed');
     } catch (err) {
       console.log(err);

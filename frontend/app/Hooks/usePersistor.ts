@@ -70,7 +70,7 @@ export default function usePersistor<T>(
   useEffect(() => {
     console.log(`get ${key} data`);
     const value = _readValue();
-    console.log('set data');
+    console.log(`set ${key} data`);
     _setStoredData(value);
     _channel.postMessage({ message: 'UPDATE', key, data: value });
   }, [isSsr]);

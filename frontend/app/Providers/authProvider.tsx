@@ -5,7 +5,7 @@ import { Role, type User } from '@/utils/models';
 import usePersistor, { useDriver } from '@/Hooks/usePersistor';
 import useGlobalSignout from '@/Hooks/useGlobalSignout';
 import useIsSsr from '@/Hooks/useIsSsr';
-import { parseJwt } from '@/lib/auth';
+import { parseUserDataFromJwt } from '@/lib/auth';
 
 interface AuthContextType {
   user: User;
@@ -46,11 +46,10 @@ const AuthProvider = ({ children }: Props) => {
   const driver = useDriver<string>(isSsr);
   const userDriver = useDriver<User>(isSsr);
   const [jwt, setJwt] = usePersistor<string>('jwt', initialContextValues.jwt, driver, isSsr);
-  const userInfo = parseJwt(jwt);
-  const [user, setUser] = usePersistor<User>('user', userInfo, userDriver, isSsr);
+  const [user, setUser] = usePersistor<User>('user', initialContextValues.user, userDriver, isSsr);
+  console.log({ user });
   const isLoggedIn = jwt !== initialContextValues.jwt;
   const navigate = useNavigate();
-  console.log({ jwt, isLoggedIn });
 
   const onSignout = useGlobalSignout(() => {
     setJwt(initialContextValues.jwt);
@@ -76,7 +75,9 @@ const AuthProvider = ({ children }: Props) => {
   useEffect(() => {
     if (jwt) {
       console.log('set user to global state...');
-      setUser(userInfo);
+      const userData = parseUserDataFromJwt(jwt, initialContextValues.user);
+      console.log({ userData });
+      setUser(userData);
     }
   }, [jwt]);
 
