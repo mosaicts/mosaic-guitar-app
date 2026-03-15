@@ -5,7 +5,8 @@ import { Role, type User } from '@/utils/models';
 import usePersistor, { useDriver } from '@/Hooks/usePersistor';
 import useGlobalSignout from '@/Hooks/useGlobalSignout';
 import useIsSsr from '@/Hooks/useIsSsr';
-import { parseUserDataFromJwt } from '@/lib/auth';
+import { getProfile } from '@/utils/apis';
+import { parseUserDataFromJwt, getFingerprintHash } from '@/lib/auth';
 
 interface AuthContextType {
   user: User;
@@ -75,9 +76,23 @@ const AuthProvider = ({ children }: Props) => {
   useEffect(() => {
     if (jwt) {
       console.log('set user to global state...');
-      const userData = parseUserDataFromJwt(jwt, initialContextValues.user);
-      console.log({ userData });
-      setUser(userData);
+      // const userData = parseUserDataFromJwt(jwt, initialContextValues.user);
+      // console.log({ userData });
+      // setUser(userData);
+
+      const fingerprintHash = getFingerprintHash(jwt);
+      getProfile({ fingerprintHash })
+        .then((response) => {
+          const userData = response.data.user;
+          if (user) {
+            setUser(userData);
+            console.log('profile loaded');
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          console.log('profile load failed');
+        });
     }
   }, [jwt]);
 

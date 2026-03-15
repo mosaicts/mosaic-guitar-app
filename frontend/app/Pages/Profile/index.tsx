@@ -2,9 +2,9 @@ import type { Route } from './+types';
 import { axiosInstance as axios } from '@/lib/axiosInterceptor';
 import { useFetcher, redirect, useLoaderData, useActionData } from 'react-router';
 import { useState, useEffect } from 'react';
-import { useAuth } from '../../Providers/authProvider';
-import { updateUser, getProfile } from '../../utils/apis';
-import { getJwt, getFingerprintHash, parseUser } from '../../lib/auth';
+import { useAuth } from '@/Providers/authProvider';
+import { updateUser, getProfile } from '@/utils/apis';
+import { getJwt, getFingerprintHash, parseUser } from '@/lib/auth';
 import './index.css';
 
 export async function clientLoader() {
@@ -38,23 +38,24 @@ export async function clientAction({ request }: Route.ActionArgs) {
 
 export default function Profile() {
   const fetcher = useFetcher();
-  const { user: ctxUser, setUser } = useAuth();
+  let { user, setUser } = useAuth();
   const [isEdit, setEdit] = useState<boolean>(false);
   const { latestUserData } = useLoaderData();
-  const user = fetcher.formData
-    ? { ...latestUserData, ...Object.fromEntries(fetcher.formData) }
-    : latestUserData;
-  const isUpdating = JSON.stringify(user) !== JSON.stringify(latestUserData);
 
+  /**
+  After form submit, re-render: fetcher.formData change (containing form data submitted)
+  Then client revalidate by loading new data, re-render: formData become undefined
+   */
   useEffect(() => {
-    setUser(user);
+    let newUser;
+    if (fetcher.formData) {
+      newUser = { ...user, ...Object.fromEntries(fetcher.formData) };
+    } else {
+      newUser = latestUserData;
+    }
+    setUser(newUser);
     setEdit(false);
-  }, [isUpdating]);
-
-  // useEffect(() => {
-  //   console.log({ user: JSON.stringify(user), ctxUser: JSON.stringify(ctxUser) });
-  //   if (JSON.stringify(user) !== JSON.stringify(ctxUser)) setUser(ctxUser);
-  // }, [ctxUser]);
+  }, [fetcher.formData]);
 
   return (
     <div id="profile">
