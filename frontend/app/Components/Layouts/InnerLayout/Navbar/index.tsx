@@ -14,12 +14,12 @@ export default function Navbar({ navState, onClickOutside }: NavbarTypes) {
   useClickOutside(ref, onClickOutside); // click outside the sidebar
 
   return (
-    <div id="sidebar" ref={ref}>
+    <div className="sidebar" ref={ref}>
       <nav className={navState} role="menu">
-        <NavLink id="home-nav" to="/">
+        <NavLink to="/">
           <HomeNav />
         </NavLink>
-        <NavLink id="orders-nav" to="/orders">
+        <NavLink to="/orders">
           <OrdersNav />
         </NavLink>
       </nav>

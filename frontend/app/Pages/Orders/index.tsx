@@ -8,5 +8,5 @@ export async function clientAction({ params }: Route.ClientActionArgs) {}
 
 export default function Guitars({ loaderData }: Route.ComponentProps) {
   const { user } = useAuth();
-  return <div id="orders">{user?.username}'s orders:</div>;
+  return <div className="orders">{user?.username}'s orders:</div>;
 }

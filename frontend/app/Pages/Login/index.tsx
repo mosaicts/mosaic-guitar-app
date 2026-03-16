@@ -78,7 +78,7 @@ export default function Login() {
   const isDisabled = isSubmitting; // Prevents double-submit
 
   return (
-    <div className="login">
+    <div className="login background">
       <div className="container">
         <h1>Sign in</h1>
         <Form method="post" onSubmit={handleSubmit(onSubmit)}>

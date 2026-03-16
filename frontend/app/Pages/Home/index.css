@@ -1,35 +1,35 @@
-#index-page {
+.home {
   grid-area: alias-main;
   overflow-y: scroll;
   display: grid;
   padding: 1rem;
 }
 
-#index-page main {
+.home main {
   grid-area: alias-content;
 }
 
-main #title {
+main h1 {
   font-size: 1.875rem;
   font-weight: 700;
   margin-bottom: 24px;
   text-align: center;
 }
 
-#content-container {
+home .container {
   display: flex;
   flex-wrap: wrap;
   gap: 48px;
   justify-content: center;
 }
 
-#content-item {
+home .item {
   width: 100%;
   position: relative;
   margin-bottom: 48px;
 }
 
-#panel {
+.panel {
   position: relative;
   z-index: 0;
   width: 100%;
@@ -37,7 +37,7 @@ main #title {
   margin-bottom: 48px;
 }
 
-#img-grid {
+.grid {
   width: 100%;
   height: 100%;
   overflow: hidden;
@@ -46,7 +46,7 @@ main #title {
   box-shadow: var(--shadow-2xl);
 }
 
-#img-grid img {
+.grid img {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -55,23 +55,23 @@ main #title {
   transition-duration: 500ms;
 }
 
-#img-grid img:hover {
+.grid img:hover {
   transform: scale(1.05);
 }
 
-#lining {
+.lining {
   position: absolute;
   inset: 0;
   transition-property: opacity;
 }
 
-#lining:hover {
+.lining:hover {
   opacity: 1;
   transition-timing-function: var(--default-transition-timing-function);
   transition-duration: 300ms;
 }
 
-#action {
+.action {
   position: absolute;
   bottom: 4;
   left: 1/2;
@@ -85,7 +85,7 @@ main #title {
   transition-property: opacity;
 }
 
-#action:hover {
+.action:hover {
   opacity: 1;
   transform: translate(-0.5px);
   transition-timing-function: var(--default-transition-timing-function);
@@ -93,7 +93,7 @@ main #title {
   backdrop-filter: blur(8px);
 }
 
-#details {
+.details {
   position: absolute;
   width: 80%;
   bottom: 0;
@@ -108,13 +108,13 @@ main #title {
   transform: translateY(40%);
 }
 
-#details .name {
+.details .name {
   font-size: 1.25rem;
   font-weight: 700;
   margin-bottom: 0.8rem;
 }
 
-#short-description {
+.description.short {
   color: var(--color-gray-300);
   margin-bottom: 1rem;
   overflow: hidden;
@@ -125,13 +125,13 @@ main #title {
 }
 
 @media (min-width: 768px) {
-  #content-item {
+  .item {
     width: calc(50% - 1.5rem);
   }
 }
 
 @media (min-width: 1280px) {
-  #content-item {
+  .item {
     width: calc(33.333% - 2rem);
   }
 }

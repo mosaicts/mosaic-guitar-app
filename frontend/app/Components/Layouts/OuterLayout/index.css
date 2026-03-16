@@ -1,4 +1,4 @@
-#outer-layout {
+.outer.layout {
   height: 100vh;
   display: grid;
   grid-template-rows: 70px auto;
@@ -7,6 +7,6 @@
     'alias-inner-grid';
 }
 
-#header {
+.header {
   grid-area: alias-header;
 }

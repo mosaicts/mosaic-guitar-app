@@ -35,7 +35,7 @@ export default function InnerLayout() {
           />
         )
       }
-      {isMobile && isNavOpen && <div className="modal-bg"></div>}
+      {isMobile && isNavOpen && <div className="background"></div>}
       <Outlet />
     </>
   );

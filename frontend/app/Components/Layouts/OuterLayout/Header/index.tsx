@@ -13,23 +13,23 @@ export default function Header({ menuRef, isMobile, toggleNavMenu }: HeaderTypes
   const { user } = useAuth();
 
   return (
-    <div id="header">
+    <div className="header">
       {isMobile && (
-        <button id="menu" onClick={toggleNavMenu} ref={menuRef}>
+        <button className="menu" onClick={toggleNavMenu} ref={menuRef}>
           <span className="material-symbols-outlined" id="menu-icon">
             menu
           </span>
         </button>
       )}
       <header>
-        <div id="left-header">
-          <h2 id="logo">Mosaic</h2>
+        <div className="header left">
+          <h2 className="logo">Mosaic</h2>
         </div>
         {
           // TODO: implement search bar
-          // <div id="search-bar"></div>
+          // <div className="search"></div>
         }
-        <div id="right-header">
+        <div className="header right">
           <ProfileDropdown userFirstName={user.firstName} userLastName={user.lastName} />
         </div>
       </header>

@@ -114,11 +114,11 @@ export default function Reset() {
   const isDisabled = isSubmitting; // Prevents double-submit
 
   return (
-    <div className="modal-bg">
-      <div id="reset" className="modal">
+    <div className="reset background">
+      <div className="container">
         <h1>Reset your password</h1>
-        <Form id="reset-form" method="post" onSubmit={handleSubmit(onSubmit)}>
-          <div id="password">
+        <Form method="post" onSubmit={handleSubmit(onSubmit)}>
+          <div className="password">
             <label htmlFor="password-input">
               New password <span className="required-asterisk">*</span>
             </label>
@@ -143,13 +143,11 @@ export default function Reset() {
               <span className="err">{errors.password.message}</span>
             ) : (
               password.length > 0 && (
-                <span className="password-strength" id={passwordStrength}>
-                  Strength: {passwordStrength}
-                </span>
+                <span className={`strength ${passwordStrength}`}>Strength: {passwordStrength}</span>
               )
             )}
           </div>
-          <div id="confirm-password">
+          <div className="confirm password">
             <label htmlFor="confirm-password-input">
               Confirm password <span className="required-asterisk">*</span>
             </label>

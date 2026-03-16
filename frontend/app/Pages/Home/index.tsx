@@ -22,23 +22,23 @@ export default function Home() {
   // const guitars = loaderData;
 
   return (
-    <div id="index-page">
+    <div className="home">
       <main>
-        <h1 id="title">Featured Guitars</h1>
-        <div id="content-container">
+        <h1>Featured Guitars</h1>
+        <div className="container">
           {guitars.map((guitar) => (
-            <div key={guitar.id} id="content-item">
+            <div key={guitar.id} className="item">
               <Link to={`/guitars/${guitar.id.toString()}`}>
-                <div id="panel">
-                  <div id="img-grid">
-                    <img src={guitar.image} alt={guitar.name} className="guitar-image" />
-                    <div id="lining"></div>
+                <div className="panel">
+                  <div className="grid">
+                    <img src={guitar.image} alt={guitar.name} className="guitar" />
+                    <div className="lining"></div>
                   </div>
-                  <div id="action">View Details</div>
+                  <div className="action">View Details</div>
                 </div>
-                <div id="details">
+                <div className="details">
                   <h2 className="name">{guitar.name}</h2>
-                  <p id="short-description">{guitar.shortDescription}</p>
+                  <p className="description short">{guitar.shortDescription}</p>
                   <div className="price">${guitar.price}</div>
                 </div>
               </Link>

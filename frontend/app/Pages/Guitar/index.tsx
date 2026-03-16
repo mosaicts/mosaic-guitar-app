@@ -18,17 +18,17 @@ export default function Guitar() {
   const guitar: Guitar = useLoaderData();
 
   return (
-    <div className="details-panel">
+    <div className="descriptions">
       <div className="container">
         <Link className="back" to="/">
           &larr; Back to all guitars
         </Link>
-        <div className="info-container">
+        <div className="info">
           <h1 className="name">{guitar.name}</h1>
           <p className="description">{guitar.description}</p>
         </div>
-        <div className="price-container">
-          <div className="price">${guitar.price}</div>
+        <div className="price container1">
+          <div className="container2">${guitar.price}</div>
           <button
             onClick={() => {
               setAddCart(true);
@@ -40,8 +40,8 @@ export default function Guitar() {
           </button>
         </div>
       </div>
-      <div className="img-panel">
-        <div className="img-container">
+      <div className="img container1">
+        <div className="container2">
           <img src={`../../${guitar.image}`} alt={guitar.name} />
         </div>
       </div>

@@ -85,7 +85,7 @@ const OTPInput = ({ length = 4, onComplete }: InputTypes) => {
 
   return (
     <div
-      className="otp-block"
+      className="otp block"
       style={{
         gridTemplateColumns: `repeat(${length}, minmax(0, 1fr))`
       }}
@@ -103,7 +103,7 @@ const OTPInput = ({ length = 4, onComplete }: InputTypes) => {
             inputRef.current[index] = ref as HTMLInputElement;
           }}
           // className={`border border-solid border-border-slate-500 focus:border-blue-600 p-5 outline-none`}
-          className={'otp-input' + (isSubmitting ? ' progress' : '')}
+          className={isSubmitting ? ' progress' : ''}
           style={{ marginRight: index === length - 1 ? '0' : '10px' }}
           disabled={isSubmitting}
         />

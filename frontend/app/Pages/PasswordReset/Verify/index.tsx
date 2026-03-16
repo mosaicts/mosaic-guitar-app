@@ -91,8 +91,8 @@ export default function ResetVerify() {
   };
 
   return (
-    <div className="modal-bg">
-      <div id="reset-verify" className="modal">
+    <div className="reset verify background">
+      <div className="container">
         <div id="header">
           <h2>OTP Verification</h2>
           <p>
@@ -102,7 +102,7 @@ export default function ResetVerify() {
           <p>Enter the OTP below to verify it.</p>
         </div>
 
-        <div className="otp-container">
+        <div className="otp container">
           <OTPInput length={6} onComplete={handleComplete} />
           <span className="err">{error}</span>
           <button

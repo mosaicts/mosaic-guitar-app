@@ -1,44 +1,44 @@
-#reset {
+.reset {
   width: 550px;
   gap: 2rem;
 }
 
-#reset-page .modal {
+.reset .modal {
   width: 550px;
 }
 
-#reset-form {
+.reset form {
   display: flex;
   flex-direction: column;
   justify-self: start;
   gap: 1rem;
 }
 
-#reset-form > div {
+.reset form > div {
   display: flex;
   flex-direction: column;
 }
 
-#reset-form div label {
+.reset form div label {
   font-weight: 600;
   margin-bottom: 0.5rem;
 }
 
-#reset-form div > input {
+.reset form div > input {
   font-size: 1rem;
   padding-left: 0.5rem;
 }
 
-#reset-form div > input,
-#reset-form .btn {
+.reset form div > input,
+.reset form .btn {
   width: 400px;
   height: 40px;
 }
 
-#reset-form > .err {
+.reset form > .err {
   text-align: center;
 }
 
-#reset-form input {
+.reset form input {
   background-color: transparent;
 }

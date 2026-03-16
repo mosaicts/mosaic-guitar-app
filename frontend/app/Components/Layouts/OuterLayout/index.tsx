@@ -25,7 +25,7 @@ export default function OuterLayout() {
   }, [isMobile]);
 
   return (
-    <div id="outer-layout">
+    <div className="outer layout">
       <Header
         menuRef={menuRef}
         isMobile={isMobile}
@@ -37,7 +37,7 @@ export default function OuterLayout() {
           setNavOpen(!isNavOpen);
         }}
       />
-      <div id="inner-layout">
+      <div className="inner layout">
         <Outlet context={{ menuRef, isMobile, navState, isNavCollapsed, isNavOpen, setNavOpen }} />
       </div>
     </div>

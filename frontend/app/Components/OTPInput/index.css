@@ -1,8 +1,8 @@
-.otp-block {
+.otp.block {
   display: grid;
 }
 
-.otp-block .otp-input {
+.otp.block input {
   border: 1px solid;
   outline: none;
   width: 45px;

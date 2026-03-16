@@ -58,28 +58,28 @@ export default function Profile() {
   }, [fetcher.formData]);
 
   return (
-    <div id="profile">
+    <div className="profile">
       {isEdit ? (
         <>
           <fetcher.Form method="post">
-            <div id="username">
+            <div className="username">
               <label>Username:</label>
               <input name="username" defaultValue={user?.username} />
             </div>
-            <div id="first-name">
+            <div className="first name">
               <label>First name:</label>
               <input name="firstName" defaultValue={user?.firstName} />
             </div>
-            <div id="last-name">
+            <div className="last name">
               <label>Last name:</label>
               <input name="lastName" defaultValue={user?.lastName} />
             </div>
 
-            <div id="edit-form-btns">
-              <button id="update" type="submit">
+            <div className="btns">
+              <button className="update btn" type="submit">
                 Submit
               </button>
-              <button id="cancel" onClick={() => setEdit(!isEdit)}>
+              <button className="cancel btn" onClick={() => setEdit(!isEdit)}>
                 Cancel
               </button>
             </div>
@@ -91,7 +91,7 @@ export default function Profile() {
           <label>First name: {user?.firstName}</label>
           <label>Last name: {user?.lastName}</label>
           <label>Email: {user?.email}</label>
-          <button id="Edit" onClick={() => setEdit(!isEdit)}>
+          <button className="edit btn" onClick={() => setEdit(!isEdit)}>
             Edit
           </button>
         </>

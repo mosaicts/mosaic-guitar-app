@@ -1,4 +1,4 @@
-.details-panel {
+.descriptions {
   grid-area: alias-main;
   min-height: 100%;
   position: relative;
@@ -8,7 +8,7 @@
   overflow-y: hidden;
 }
 
-.details-panel > .container {
+.descriptions > .container {
   position: relative;
   display: flex;
   flex-direction: column;
@@ -35,12 +35,7 @@
   color: var(--color-emerald-300);
 }
 
-.details {
-  color: var(--color-gray-300);
-  margin-bottom: 1rem;
-}
-
-.price-container {
+div.price.container1 {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -64,7 +59,7 @@
   background-color: var(--color-emerald-500);
 }
 
-.img-panel {
+div.img.container1 {
   position: absolute;
   top: 1rem;
   right: 1rem;
@@ -74,7 +69,7 @@
   z-index: 0;
 }
 
-.img-panel .img-container {
+div.img.container1 .container2 {
   width: 100%;
   height: 100%;
   overflow: hidden;
@@ -84,19 +79,19 @@
   margin-bottom: 1rem;
 }
 
-.img-panel img {
+div.img img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.details-panel .background {
+.descriptions .background {
   background-color: opacity;
   justify-content: center;
   align-items: center;
 }
 
-.details-panel .modal {
+.descriptions .modal {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -111,12 +106,12 @@
   box-shadow: var(--shadow-2xl);
 }
 
-.details-panel .modal > img {
+.descriptions .modal > img {
   width: 70px;
   height: 70px;
 }
 
-.details-panel .modal > p {
+.descriptions .modal > p {
   font-size: 1rem;
   font-weight: 700;
   color: #fff;

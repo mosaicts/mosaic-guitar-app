@@ -1,4 +1,4 @@
-#header {
+.header {
   display: flex;
   align-items: center;
   border: none;
@@ -13,13 +13,13 @@ header {
   justify-content: space-between;
 }
 
-#left-header {
+.header.left {
   grid-area: alias-lh;
   display: flex;
   align-items: center;
 }
 
-#right-header {
+.header.right {
   grid-area: alias-rh;
   position: relative;
 }
@@ -36,17 +36,17 @@ hr {
   border: 1px solid rgba(255, 255, 255, 0.4);
 }
 
-#register-navlink p {
-  padding: 0.5rem 0.75rem;
-  border-radius: 0.5rem;
-  border: 1px solid var(--color-gray-500);
-}
+/* #register-navlink p { */
+/*   padding: 0.5rem 0.75rem; */
+/*   border-radius: 0.5rem; */
+/*   border: 1px solid var(--color-gray-500); */
+/* } */
 
-#register-navlink:hover {
-  opacity: 0.8;
-}
+/* #register-navlink:hover { */
+/*   opacity: 0.8; */
+/* } */
 
-#menu {
+.menu {
   position: absolute;
   left: 1rem;
   align-items: center;
@@ -55,7 +55,7 @@ hr {
   background-color: transparent;
 }
 
-#menu:hover {
+.menu:hover {
   padding: 1px;
   cursor: pointer;
   opacity: 0.95;

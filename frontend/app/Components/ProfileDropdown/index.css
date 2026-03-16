@@ -16,7 +16,7 @@
   border-radius: 25%;
 }
 
-.menu.dropdown {
+.dropdown {
   background-color: #151a26;
   position: absolute;
   display: flex;
@@ -31,6 +31,6 @@
   border: 1px solid rgba(255, 255, 255, 0.5);
 }
 
-.menu.dropdown a {
+.dropdown a {
   color: var(--color-foreground);
 }
