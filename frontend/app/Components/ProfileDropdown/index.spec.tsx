@@ -7,8 +7,8 @@ import ProfileDropdown from '.';
 const user = userEvent.setup();
 
 const defaultProps = {
-  userFirstName: 'dung',
-  userLastName: 'nguyen'
+  userFirstName: 'test',
+  userLastName: 'example'
 };
 
 const ProfileDropdownWithProps = () => <ProfileDropdown {...defaultProps} />;
@@ -26,13 +26,13 @@ describe('<ProfileDropdown />', () => {
   });
 
   it('should render successfully and find all the elements', async () => {
-    expect(screen.getByRole('button', { name: 'DN' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'TE' })).toBeInTheDocument();
     expect(screen.queryByRole('menu')).not.toBeInTheDocument();
   });
 
   it('should display dropdown menu after clicking the profile image', async () => {
     expect(screen.queryByRole('menu')).not.toBeInTheDocument();
-    await user.click(screen.getByRole('button', { name: 'DN' }));
+    await user.click(screen.getByRole('button', { name: 'TE' }));
 
     expect(screen.getByRole('menu')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'My profile' })).toBeInTheDocument();
@@ -40,7 +40,7 @@ describe('<ProfileDropdown />', () => {
   });
 
   it('should close the dropdown menu after clicking outside it', async () => {
-    await user.click(screen.getByRole('button', { name: 'DN' }));
+    await user.click(screen.getByRole('button', { name: 'TE' }));
     expect(screen.getByRole('link', { name: 'My profile' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Sign out' })).toBeInTheDocument();
 
@@ -53,12 +53,12 @@ describe('<ProfileDropdown />', () => {
   });
 
   it('should close dropdown menu after clicking the profile image again', async () => {
-    await user.click(screen.getByRole('button', { name: 'DN' }));
+    await user.click(screen.getByRole('button', { name: 'TE' }));
     expect(screen.getByRole('link', { name: 'My profile' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Sign out' })).toBeInTheDocument();
 
     // clicking it again
-    await user.click(screen.getByRole('button', { name: 'DN' }));
+    await user.click(screen.getByRole('button', { name: 'TE' }));
 
     expect(screen.queryByRole('menu')).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'My profile' })).not.toBeInTheDocument();
@@ -66,7 +66,7 @@ describe('<ProfileDropdown />', () => {
   });
 
   it('should keep dropdown menu open after clicking it', async () => {
-    await user.click(screen.getByRole('button', { name: 'DN' }));
+    await user.click(screen.getByRole('button', { name: 'TE' }));
     expect(screen.getByRole('link', { name: 'My profile' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Sign out' })).toBeInTheDocument();
 

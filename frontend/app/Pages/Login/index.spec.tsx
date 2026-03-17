@@ -105,7 +105,7 @@ describe('<Login />', () => {
     const passwordInput = screen.getByLabelText('Password');
 
     // simulate interactions
-    await user.type(emailInput, 'dungnguyen2712002@gmail.com');
+    await user.type(emailInput, 'test@example.com');
     await user.type(passwordInput, 'abcd');
 
     await user.click(screen.getByRole('button', { name: 'Sign in' }));
@@ -177,7 +177,7 @@ describe('<Login />', () => {
     const passwordInput = screen.getByLabelText('Password');
 
     // simulate interactions
-    await user.type(emailInput, 'dungnguyen2712002@gmail.com');
+    await user.type(emailInput, 'test@example.com');
     await user.type(passwordInput, 'abcd');
 
     await user.click(screen.getByRole('button', { name: 'Sign in' }));
@@ -226,10 +226,10 @@ describe('<Login />', () => {
             response: {
               data: {
                 user: {
-                  firstName: 'dung',
-                  lastName: 'nguyen',
-                  username: 'dungnq',
-                  email: 'dungnguyen2712002@gmail.com'
+                  firstName: 'test',
+                  lastName: 'example',
+                  username: 'test',
+                  email: 'test@example.com'
                 }
               }
             }
@@ -245,7 +245,7 @@ describe('<Login />', () => {
     const passwordInput = screen.getByLabelText('Password');
 
     // simulate interactions
-    await user.type(emailInput, 'dungnguyen2712002@gmail.com');
+    await user.type(emailInput, 'test@example.com');
     await user.type(passwordInput, 'abcd');
 
     await user.click(screen.getByRole('button', { name: 'Sign in' }));

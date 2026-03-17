@@ -249,10 +249,10 @@ describe('<Signup />', () => {
     const confirmPasswordInput = screen.getByLabelText('Confirm password *');
 
     // simulate interactions
-    await user.type(firstNameInput, 'dung');
-    await user.type(lastNameInput, 'nguyen');
-    await user.type(usernameInput, 'dungnq');
-    await user.type(emailInput, 'dungnguyen2712002');
+    await user.type(firstNameInput, 'test');
+    await user.type(lastNameInput, 'example');
+    await user.type(usernameInput, 'testusr');
+    await user.type(emailInput, 'test2712002');
     await user.type(passwordInput, 'abcdefgh');
     await user.type(confirmPasswordInput, 'abcdefgh');
 
@@ -297,9 +297,9 @@ describe('<Signup />', () => {
     const confirmPasswordInput = screen.getByLabelText('Confirm password *');
 
     // simulate interactions
-    await user.type(firstNameInput, 'dung');
-    await user.type(lastNameInput, 'nguyen');
-    await user.type(usernameInput, 'dungnq');
+    await user.type(firstNameInput, 'test');
+    await user.type(lastNameInput, 'example');
+    await user.type(usernameInput, 'testusr');
     await user.type(emailInput, 'example@gmail.com');
     await user.type(passwordInput, 'abcdefgh');
     await user.type(confirmPasswordInput, 'abcdefgh');
@@ -353,9 +353,9 @@ describe('<Signup />', () => {
     const confirmPasswordInput = screen.getByLabelText('Confirm password *');
 
     // simulate interactions
-    await user.type(firstNameInput, 'dung');
-    await user.type(lastNameInput, 'nguyen');
-    await user.type(usernameInput, 'dungnq');
+    await user.type(firstNameInput, 'test');
+    await user.type(lastNameInput, 'example');
+    await user.type(usernameInput, 'testusr');
     await user.type(emailInput, 'example@gmail.com');
     await user.type(passwordInput, 'abcdefgh');
     await user.type(confirmPasswordInput, 'abcdefgh');
@@ -394,9 +394,9 @@ describe('<Signup />', () => {
     const confirmPasswordInput = screen.getByLabelText('Confirm password *');
 
     // simulate interactions
-    await user.type(firstNameInput, 'dung');
-    await user.type(lastNameInput, 'nguyen');
-    await user.type(usernameInput, 'dungnq');
+    await user.type(firstNameInput, 'test');
+    await user.type(lastNameInput, 'example');
+    await user.type(usernameInput, 'testusr');
     await user.type(emailInput, 'example@gmail.com');
     await user.type(passwordInput, 'abcdefgh');
     await user.type(confirmPasswordInput, 'abcdefgh');
