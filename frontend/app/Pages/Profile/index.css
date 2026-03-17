@@ -21,7 +21,7 @@
   gap: 0.5rem;
 }
 
-.profile button {
+.profile button.edit {
   width: 5rem;
   height: 2rem;
 }

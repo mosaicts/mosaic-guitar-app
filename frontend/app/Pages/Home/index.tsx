@@ -4,8 +4,6 @@ import type { Guitar } from '@/utils/models';
 import './index.css';
 
 export async function clientLoader() {
-  console.log('running client loader...');
-  // if (getJwt()) {
   console.log('loading guitars...');
   try {
     const guitars = await fetchGuitars();
@@ -14,7 +12,6 @@ export async function clientLoader() {
   } catch {
     return redirect('/login');
   }
-  // }
 }
 
 export default function Home() {
@@ -25,12 +22,12 @@ export default function Home() {
     <div className="home">
       <main>
         <h1>Featured Guitars</h1>
-        <div className="container">
+        <div className="grid">
           {guitars.map((guitar) => (
             <div key={guitar.id} className="item">
               <Link to={`/guitars/${guitar.id.toString()}`}>
                 <div className="panel">
-                  <div className="grid">
+                  <div className="image">
                     <img src={guitar.image} alt={guitar.name} className="guitar" />
                     <div className="lining"></div>
                   </div>

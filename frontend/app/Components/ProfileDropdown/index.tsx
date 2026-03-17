@@ -26,7 +26,7 @@ const ProfileDropdown = ({ userFirstName, userLastName }: ProfileDropdownTypes) 
   });
 
   return (
-    <div className="profile navigation" ref={ref}>
+    <div className="user navigation" ref={ref}>
       <button
         className="avatar"
         style={profileImageStyle}

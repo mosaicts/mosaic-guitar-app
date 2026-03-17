@@ -114,8 +114,8 @@ export default function Reset() {
   const isDisabled = isSubmitting; // Prevents double-submit
 
   return (
-    <div className="reset background">
-      <div className="container">
+    <div className="background">
+      <div className="reset container">
         <h1>Reset your password</h1>
         <Form method="post" onSubmit={handleSubmit(onSubmit)}>
           <div className="password">

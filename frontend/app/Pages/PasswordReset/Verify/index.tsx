@@ -91,8 +91,8 @@ export default function ResetVerify() {
   };
 
   return (
-    <div className="reset verify background">
-      <div className="container">
+    <div className="background">
+      <div className="reset verify container">
         <div id="header">
           <h2>OTP Verification</h2>
           <p>

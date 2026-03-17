@@ -28,7 +28,7 @@ export default function Guitar() {
           <p className="description">{guitar.description}</p>
         </div>
         <div className="price container1">
-          <div className="container2">${guitar.price}</div>
+          <div className="price container2">${guitar.price}</div>
           <button
             onClick={() => {
               setAddCart(true);

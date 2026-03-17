@@ -38,7 +38,7 @@
   cursor: pointer;
 }
 
-#reset-verify .resend .timer {
+.reset.verify .resend .timer {
   font-family: 'Consolas', 'Menlo', monospace;
   font-size: 1rem;
   letter-spacing: 0; /* Ensure no extra spacing */

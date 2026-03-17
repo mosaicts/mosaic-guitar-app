@@ -15,7 +15,7 @@ export async function clientLoader() {
   try {
     const response = await getProfile({ fingerprintHash });
     console.log({ data: response.data });
-    return { latestUserData: parseUser(response.data.user) };
+    return parseUser(response.data.user);
   } catch (err) {
     console.log(err);
     return redirect('/login');
@@ -40,7 +40,7 @@ export default function Profile() {
   const fetcher = useFetcher();
   let { user, setUser } = useAuth();
   const [isEdit, setEdit] = useState<boolean>(false);
-  const { latestUserData } = useLoaderData();
+  const data = useLoaderData();
 
   /**
   After form submit, re-render: fetcher.formData change (containing form data submitted)
@@ -51,7 +51,7 @@ export default function Profile() {
     if (fetcher.formData) {
       newUser = { ...user, ...Object.fromEntries(fetcher.formData) };
     } else {
-      newUser = latestUserData;
+      newUser = data;
     }
     setUser(newUser);
     setEdit(false);
