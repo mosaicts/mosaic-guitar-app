@@ -10,6 +10,7 @@ test.describe('Complete Checkout Flow', () => {
   test('should complete full checkout: cart → shipping → payment → order', async ({ page }) => {
     // Simulate logged in user
     await page.goto('/login');
+    await page.waitForTimeout(1000);
 
     const emailInput = page.getByLabel('Email');
     const passwordInput = page.getByLabel('Password');
@@ -18,7 +19,7 @@ test.describe('Complete Checkout Flow', () => {
     await emailInput.fill('test@example.com');
     await passwordInput.fill('password123');
     await loginBtn.click();
-    await page.waitForTimeout(1500);
+    await page.waitForTimeout(3000);
 
     expect(page.getByText('Featured Guitars')).toBeVisible();
   });

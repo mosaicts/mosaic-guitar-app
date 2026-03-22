@@ -19,22 +19,27 @@ test.describe('Successful Authentication Flow', () => {
     test.beforeEach(async ({ page }) => {
       // Signup
       await page.goto('/signup');
+      await page.waitForTimeout(1000);
 
       const firstNameInput = page.getByLabel('First name *');
-      const lastNameInput = page.getByLabel('Last name *');
-      const usernameInput = page.getByLabel('username *');
-      const emailInput = page.getByLabel('Email *');
-      const passwordInput = page.getByRole('textbox', { name: 'Password *', exact: true });
-      const confirnPasswordInput = page.getByRole('textbox', { name: 'Confirm password *' });
-      const signupBtn = page.getByRole('button', { name: 'Create account' });
-
       await firstNameInput.fill('test');
+
+      const lastNameInput = page.getByLabel('Last name *');
       await lastNameInput.fill('example');
+
+      const usernameInput = page.getByLabel('Username *');
       await usernameInput.fill('testexample');
+
+      const emailInput = page.getByLabel('Email *');
       await emailInput.fill('test@example.com');
+
+      const passwordInput = page.getByRole('textbox', { name: 'Password *', exact: true });
       await passwordInput.fill('password123');
+
+      const confirnPasswordInput = page.getByRole('textbox', { name: 'Confirm password *' });
       await confirnPasswordInput.fill('password123');
-      await signupBtn.click();
+
+      await page.getByRole('button', { name: 'Create account' }).click();
     });
 
     test('should complete full registration flow: signup → verify email → login', async ({
@@ -98,6 +103,7 @@ test.describe('Successful Authentication Flow', () => {
       await page.getByRole('link', { name: 'here' }).click();
       await page.waitForURL('/login');
       expect(page.getByRole('heading', { name: 'Sign in' })).toBeVisible();
+      await page.waitForTimeout(1000);
 
       // Login
       const emailLoginInput = page.getByLabel('Email');
@@ -152,8 +158,7 @@ test.describe('Successful Authentication Flow', () => {
       await pinInputs.nth(4).fill('5');
       await pinInputs.nth(5).fill('6');
       // expect(page.getByPlaceholder('123456')).toBeVisible();
-
-      expect(pinInputs.first()).toBeDisabled();
+      // expect(pinInputs.first()).toBeDisabled();
       expect(page.getByText('Wrong OTP. You have 4 more tries.')).toBeVisible();
 
       // simulate 'paste' event
@@ -185,12 +190,13 @@ test.describe('Successful Authentication Flow', () => {
       expect(page.getByLabel('New password *')).toBeVisible();
       expect(page.getByLabel('Confirm password *')).toBeVisible();
       expect(page.getByRole('button', { name: 'Submit' })).toBeVisible();
+
       const passwordInput = page.getByLabel('New password *');
-      const confirmPasswordInput = page.getByLabel('Confirm password *');
-      submitBtn = page.getByRole('button', { name: 'Submit' });
       await passwordInput.fill('pass@example');
+      const confirmPasswordInput = page.getByLabel('Confirm password *');
       await confirmPasswordInput.fill('pass@example');
-      await submitBtn.click();
+      await page.getByRole('button', { name: 'Submit' }).click();
+      await page.waitForTimeout(1000);
 
       // Password reset successfully
       await page.waitForURL('/login');

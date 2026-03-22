@@ -12,6 +12,8 @@ export const MOSAIC_APP_URL = process.env.VITE_PUBLIC_MOSAIC_APP_URL || 'http://
 
 console.log(MOSAIC_BASE_URL, MOSAIC_APP_URL);
 
+let isUserDataUpdated = false;
+
 /**
  * Mock Products
  */
@@ -225,15 +227,30 @@ export const handlers = [
 
   // Profile
   http.post(`${MOSAIC_BASE_URL}/user/profile`, async ({ request }) => {
-    return HttpResponse.json({
-      user: {
-        id: 'cus_test_789',
-        firstName: 'Test',
-        lastName: 'User',
-        username: 'testusr789',
-        email: 'test@example.com',
-        profilePicUrl: 'http://test.jpg.com'
-      }
-    });
+    let user = {
+      id: 'cus_test_789',
+      firstName: 'Test',
+      lastName: 'User',
+      username: 'testusr789',
+      email: 'test@example.com',
+      avatar: null
+    };
+
+    if (isUserDataUpdated) {
+      user = { ...user, firstName: 'nottest' };
+    }
+
+    return HttpResponse.json({ user });
+  }),
+
+  http.post(`${MOSAIC_BASE_URL}/user/update`, async ({ request }) => {
+    isUserDataUpdated = true;
+    return HttpResponse.json({ message: 'success' });
+  }),
+
+  // Refresh token
+
+  http.post(`${MOSAIC_BASE_URL}/auth/token`, async ({ request }) => {
+    return HttpResponse.json({ jwt: 'test.jwt' });
   })
 ];
