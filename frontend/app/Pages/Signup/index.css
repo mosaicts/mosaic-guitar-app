@@ -87,18 +87,6 @@
   align-items: center;
 }
 
-.strength.low {
-  color: #ebba09;
-}
-
-.strength.medium {
-  color: #0e21eb;
-}
-
-.strength.strong {
-  color: #20e859;
-}
-
 @media (min-width: 768px) {
   .signup form > div.names {
     flex-direction: column;

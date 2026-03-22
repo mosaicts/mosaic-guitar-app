@@ -50,11 +50,11 @@ export default function Profile() {
     let newUser;
     if (fetcher.formData) {
       newUser = { ...user, ...Object.fromEntries(fetcher.formData) };
+      setEdit(false);
     } else {
       newUser = data;
     }
     setUser(newUser);
-    setEdit(false);
   }, [fetcher.formData]);
 
   return (
@@ -63,16 +63,16 @@ export default function Profile() {
         <>
           <fetcher.Form method="post">
             <div className="username">
-              <label>Username:</label>
-              <input name="username" defaultValue={user?.username} />
+              <label htmlFor="username-input">Username:</label>
+              <input id="username-input" name="username" defaultValue={user?.username} />
             </div>
             <div className="first name">
-              <label>First name:</label>
-              <input name="firstName" defaultValue={user?.firstName} />
+              <label htmlFor="first-name-input">First name:</label>
+              <input id="first-name-input" name="firstName" defaultValue={user?.firstName} />
             </div>
             <div className="last name">
-              <label>Last name:</label>
-              <input name="lastName" defaultValue={user?.lastName} />
+              <label htmlFor="last-name-input">Last name:</label>
+              <input id="last-name-input" name="lastName" defaultValue={user?.lastName} />
             </div>
 
             <div className="btns">

@@ -59,8 +59,6 @@ export default function ProtectedRoute({ loaderData }: Route.ComponentProps) {
     }
   }, [newJwt, oldJwt, isLoggedIn]);
 
-  useEffect(() => {});
-
   if (navigation.state === 'loading' && !isLoggedIn) {
     return <Spinner />;
   }

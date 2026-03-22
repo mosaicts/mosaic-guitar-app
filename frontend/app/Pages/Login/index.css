@@ -13,7 +13,7 @@
 .login form {
   display: flex;
   flex-direction: column;
-  justify-self: start;
+  /* justify-self: start; */
   gap: 1rem;
 }
 
@@ -44,7 +44,8 @@
 
 .login form .email input,
 .login form .password input,
-.login form .btn {
+.login form .btn,
+.login form .error {
   width: 400px;
 }
 

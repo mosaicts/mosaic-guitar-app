@@ -140,6 +140,18 @@ pre {
   color: var(--color-emerald-400);
 }
 
+.strength.low {
+  color: #ebba09;
+}
+
+.strength.medium {
+  color: #0e21eb;
+}
+
+.strength.strong {
+  color: #20e859;
+}
+
 .progress,
 .progress:hover {
   opacity: 0.7;
