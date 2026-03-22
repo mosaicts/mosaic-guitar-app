@@ -1,10 +1,4 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  CreateDateColumn,
-  UpdateDateColumn
-} from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
 
 @Entity({ name: 'password_reset' })
 export class PasswordReset {
@@ -17,7 +11,7 @@ export class PasswordReset {
   @Column({ nullable: false })
   otp: string;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
 
   @Column({ default: false })
@@ -26,6 +20,6 @@ export class PasswordReset {
   @Column({ nullable: false })
   expiry: string;
 
-  @UpdateDateColumn()
+  @Column({ type: 'timestamptz', nullable: true })
   completedAt: Date;
 }

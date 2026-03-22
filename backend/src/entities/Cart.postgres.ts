@@ -3,6 +3,7 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  DeleteDateColumn,
   Column,
   ManyToOne,
   OneToMany
@@ -21,11 +22,14 @@ export class Cart {
   @ManyToOne(() => User, (user) => user.carts)
   user: User;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
+
+  @DeleteDateColumn({ type: 'timestamptz' })
+  deletedAt: Date;
 
   @OneToMany(() => CartToItem, (cartToItem) => cartToItem.cart, { cascade: true })
   cartToItems: CartToItem[];

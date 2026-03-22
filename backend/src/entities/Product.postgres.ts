@@ -4,7 +4,8 @@ import {
   Column,
   OneToMany,
   CreateDateColumn,
-  UpdateDateColumn
+  UpdateDateColumn,
+  DeleteDateColumn
 } from 'typeorm';
 import { OrderToItem } from './OrderToItem.postgres';
 import { CartToItem } from './CartToItem.postgres';
@@ -13,7 +14,7 @@ import { CartToItem } from './CartToItem.postgres';
 export class Product {
   @PrimaryGeneratedColumn('uuid')
   id: string;
-  xs;
+
   @Column({ nullable: false })
   name: string;
 
@@ -35,11 +36,14 @@ export class Product {
   @Column({ nullable: true })
   discount: number;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
+
+  @DeleteDateColumn({ type: 'timestamptz' })
+  deletedAt: Date;
 
   @OneToMany(() => OrderToItem, (orderItem) => orderItem.item)
   cartToItems: CartToItem[];

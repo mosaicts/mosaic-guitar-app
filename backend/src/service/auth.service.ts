@@ -108,7 +108,6 @@ export class AuthService {
             // Generate refresh token
             const refreshToken = uuidv4();
             user.refreshToken = sha256(refreshToken);
-            user.refreshTokenExpiresAt = new Date(Date.now() + REFRESH_TOKEN_COOKIE_MAX_AGE);
 
             setCookie(fingerprint, refreshToken, res);
             await this.userRepository.save(user);
@@ -316,13 +315,13 @@ export class AuthService {
       res.status(429).send('Too Many Requests');
     } else {
       try {
+        // otp matched
         if (pwResetRecord && pwResetRecord.otp == otp) {
           if (Date.now() > parseInt(pwResetRecord.expiry, 10)) {
             return res.status(400).json({ message: 'expired' });
           }
 
           pwResetRecord.verified = true;
-          pwResetRecord.completedAt = new Date(Date.now());
           await this.passwordResetRepository.save(pwResetRecord);
 
           // Reset on successful attempt
@@ -354,7 +353,12 @@ export class AuthService {
 
     let pwResetRecord = await this.passwordResetRepository.findOne({ where: { id } });
 
-    if (!pwResetRecord || !pwResetRecord.verified) {
+    if (
+      !pwResetRecord ||
+      !pwResetRecord.verified ||
+      // completed record is not allowed to update
+      pwResetRecord.completedAt
+    ) {
       return res.status(400).json({ message: 'Error resetting password' });
     }
 
@@ -363,9 +367,7 @@ export class AuthService {
     user.password = await hashPassword(password);
 
     try {
-      const updatedTime = new Date();
-      user.updatedAt = updatedTime;
-      pwResetRecord.completedAt = updatedTime;
+      pwResetRecord.completedAt = new Date(Date.now());
       await this.passwordResetRepository.save(pwResetRecord);
       await this.userRepository.save(user);
       res.status(200).json({ message: 'success' });
@@ -401,7 +403,6 @@ export class AuthService {
         // Generate refresh token
         const refreshToken = uuidv4();
         user.refreshToken = sha256(refreshToken);
-        user.refreshTokenExpiresAt = new Date(Date.now() + REFRESH_TOKEN_COOKIE_MAX_AGE);
 
         setCookie(fingerprint, refreshToken, res);
 

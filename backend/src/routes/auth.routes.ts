@@ -35,7 +35,6 @@ authRouter.get(
     // Generate refresh token
     const refreshToken = uuidv4();
     user.refreshToken = sha256(refreshToken);
-    user.refreshTokenExpiresAt = new Date(Date.now() + REFRESH_TOKEN_COOKIE_MAX_AGE);
     await userRepository.save(user);
     setCookie(fingerprint, refreshToken, res);
     res.redirect(envConfig.CLIENT_URL);
@@ -54,7 +53,6 @@ authRouter.get(
     // Generate refresh token
     const refreshToken = uuidv4();
     user.refreshToken = sha256(refreshToken);
-    user.refreshTokenExpiresAt = new Date(Date.now() + REFRESH_TOKEN_COOKIE_MAX_AGE);
     await userRepository.save(user);
     setCookie(fingerprint, refreshToken, res);
     res.redirect(envConfig.CLIENT_URL);

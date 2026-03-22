@@ -4,6 +4,7 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  DeleteDateColumn,
   OneToMany
 } from 'typeorm';
 import { Cart } from './Cart.postgres';
@@ -45,17 +46,17 @@ export class User {
   @Column({ nullable: true })
   secret: string;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
+
+  @DeleteDateColumn({ type: 'timestamptz' })
+  deletedAt: Date;
 
   @Column({ nullable: true })
   refreshToken: string;
-
-  @Column({ nullable: true })
-  refreshTokenExpiresAt: Date;
 
   @Column({ nullable: true })
   avatar: string;
