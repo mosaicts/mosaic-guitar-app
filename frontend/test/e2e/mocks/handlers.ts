@@ -10,9 +10,10 @@ export const MOSAIC_BASE_URL =
   process.env.VITE_PUBLIC_MOSAIC_BACKEND_URL || 'http://localhost:3000';
 export const MOSAIC_APP_URL = process.env.VITE_PUBLIC_MOSAIC_APP_URL || 'http://localhost:5173';
 
-console.log(MOSAIC_BASE_URL, MOSAIC_APP_URL);
+console.log({ MOSAIC_BASE_URL, MOSAIC_APP_URL });
 
 let isUserDataUpdated = false;
+let isOldJwtSent = false;
 
 /**
  * Mock Products
@@ -249,8 +250,19 @@ export const handlers = [
   }),
 
   // Refresh token
+  http.post(`${MOSAIC_BASE_URL}/auth/token`, async ({ request, cookies }) => {
+    console.log({ cookies });
+    console.log({ isOldJwtSent });
 
-  http.post(`${MOSAIC_BASE_URL}/auth/token`, async ({ request }) => {
-    return HttpResponse.json({ jwt: 'test.jwt' });
+    if (cookies.refreshToken && cookies.userFingerprint) {
+      if (isOldJwtSent) {
+        return HttpResponse.json({ jwt: 'test.newjwt' });
+      } else {
+        isOldJwtSent = true;
+        return HttpResponse.json({ jwt: 'test.jwt' });
+      }
+    }
+
+    return new HttpResponse(null, { status: 400 });
   })
 ];

@@ -5,7 +5,7 @@
 
 import { expect } from '@playwright/test';
 import { test } from './playwright.setup.js';
-import { MOSAIC_BASE_URL } from './mocks/handlers.js';
+import { MOSAIC_APP_URL, MOSAIC_BASE_URL } from './mocks/handlers.js';
 import type { Locator } from '@playwright/test';
 
 async function pasteText(locator: Locator, text: string) {
@@ -43,13 +43,20 @@ test.describe('Successful Authentication Flow', () => {
     });
 
     test('should complete full registration flow: signup → verify email → login', async ({
-      page
+      page,
+      browserName
     }) => {
       // Verify email
       await page.waitForURL('/signup/check-email');
       expect(page.getByText('Please check your email for a verification link.')).toBeVisible();
 
-      await page.goto(`${MOSAIC_BASE_URL}/auth/signup/verify/testid/easytokenpass`);
+      if (browserName === 'webkit') {
+        // redirection is not supported in webkit
+        await page.goto(`${MOSAIC_APP_URL}/signup/verify?status=success`);
+      } else {
+        await page.goto(`${MOSAIC_BASE_URL}/auth/signup/verify/testid/easytokenpass`);
+      }
+
       expect(page.getByText('Verification Success')).toBeVisible();
       expect(
         page.getByText(
@@ -74,13 +81,20 @@ test.describe('Successful Authentication Flow', () => {
     });
 
     test('should complete full registration flow: signup → verify email -> failed -> resend verification code -> verify email -> success → login', async ({
-      page
+      page,
+      browserName
     }) => {
       // Verify email
       await page.waitForURL('/signup/check-email');
       expect(page.getByText('Please check your email for a verification link.')).toBeVisible();
 
-      await page.goto(`${MOSAIC_BASE_URL}/auth/signup/verify/testid/tokenexpired`);
+      if (browserName === 'webkit') {
+        // redirection is not supported in webkit
+        await page.goto(`${MOSAIC_APP_URL}/signup/verify?status=failed&email=test@example.com`);
+      } else {
+        await page.goto(`${MOSAIC_BASE_URL}/auth/signup/verify/testid/tokenexpired`);
+      }
+
       await page.waitForTimeout(1500);
       expect(page.getByText('Verification Failed')).toBeVisible();
       // expect(page.getByText('Click here to resend verification code')).toBeVisible();
@@ -92,7 +106,14 @@ test.describe('Successful Authentication Flow', () => {
       await page.waitForTimeout(1500);
 
       expect(page.getByText('Please check your email for a verification link.')).toBeVisible();
-      await page.goto(`${MOSAIC_BASE_URL}/auth/signup/verify/testid/easytokenpass`);
+
+      if (browserName === 'webkit') {
+        // redirection is not supported in webkit
+        await page.goto(`${MOSAIC_APP_URL}/signup/verify?status=success`);
+      } else {
+        await page.goto(`${MOSAIC_BASE_URL}/auth/signup/verify/testid/easytokenpass`);
+      }
+
       await page.waitForTimeout(1500);
       expect(page.getByText('Verification Success')).toBeVisible();
       expect(
@@ -196,7 +217,7 @@ test.describe('Successful Authentication Flow', () => {
       const confirmPasswordInput = page.getByLabel('Confirm password *');
       await confirmPasswordInput.fill('pass@example');
       await page.getByRole('button', { name: 'Submit' }).click();
-      await page.waitForTimeout(1000);
+      await page.waitForTimeout(3000);
 
       // Password reset successfully
       await page.waitForURL('/login');

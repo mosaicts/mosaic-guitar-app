@@ -3,7 +3,7 @@
  * Tests the full checkout process from cart to order confirmation
  */
 
-import { expect, chromium } from '@playwright/test';
+import { expect } from '@playwright/test';
 import { test } from './playwright.setup.js';
 // import { test, expect } from './pages/setup';
 
@@ -13,23 +13,22 @@ test.describe('Sync User Data Across Tabs', () => {
   const lastName = 'User';
   const email = 'test@example.com';
 
-  test.beforeEach(async ({ page }) => {
-    const email = 'test@example.com';
-    const password = 'password123';
+  const domain = 'localhost';
+  const path = '/';
+  const cookieAttrs = { domain, path };
 
-    // Simulate logged in user
-    await page.goto('/login');
+  test.beforeEach(async ({ context, browserName }) => {
+    // TODO: solve to not skip for webkit
+    test.skip(
+      browserName === 'webkit',
+      'Webkit prevents cross-site tracking, hence cannot send cookies' // https://github.com/microsoft/playwright/issues/17368
+    );
 
-    const emailInput = page.getByLabel('Email');
-    const passwordInput = page.getByLabel('Password');
-    const loginBtn = page.getByRole('button', { name: 'Sign in' });
-
-    await emailInput.fill(email);
-    await passwordInput.fill(password);
-    await loginBtn.click();
-    await page.waitForTimeout(1500);
-
-    expect(page.getByText('Featured Guitars')).toBeVisible();
+    // simulate logged in user
+    await context.addCookies([
+      { name: 'userFingerprint', value: 'fgp', ...cookieAttrs },
+      { name: 'refreshToken', value: 'refreshtoken', ...cookieAttrs }
+    ]);
   });
 
   test('should update user data successfully', async ({ context, page }) => {
@@ -55,7 +54,7 @@ test.describe('Sync User Data Across Tabs', () => {
     expect(page.getByText(`First name: ${newFirstName}`)).toBeVisible();
     expect(page.getByRole('button', { name: 'NU' })).toBeVisible(); // avatar
 
-    // Refresh the page
+    // Refresh the page still keeps the latest data
     await page.reload();
     await page.waitForTimeout(3000);
     expect(page.getByText(`First name: ${newFirstName}`)).toBeVisible();
@@ -63,7 +62,7 @@ test.describe('Sync User Data Across Tabs', () => {
   });
 
   test('should update user data when another tab updates the data', async ({ context, page }) => {
-    await page.goto('http://localhost:5173/profile');
+    await page.goto('/profile');
     await page.waitForTimeout(3000);
 
     expect(page.getByRole('button', { name: 'TU' })).toBeVisible(); // avatar
@@ -72,16 +71,12 @@ test.describe('Sync User Data Across Tabs', () => {
     expect(page.getByText(`Last name: ${lastName}`)).toBeVisible();
     expect(page.getByText(`Email: ${email}`)).toBeVisible();
 
+    // uncomment if we want to differentiate between the 2 tabs
     // await page.getByRole('button', { name: 'Edit' }).click();
 
     // Create a new page inside context.
     const newPage = await context.newPage();
-    const url = 'http://localhost:5173';
-    await context.addCookies([
-      { name: '__User-Fgp', value: 'fgp', url },
-      { name: '__Refresh-Token', value: 'refreshtoken', url }
-    ]);
-    await newPage.goto('http://localhost:5173/profile');
+    await newPage.goto('/profile');
     await newPage.waitForTimeout(3000);
 
     expect(newPage.getByRole('button', { name: 'TU' })).toBeVisible(); // avatar
@@ -103,12 +98,64 @@ test.describe('Sync User Data Across Tabs', () => {
 
     // Get pages of a browser context
     const allTabs = context.pages();
-    console.log(allTabs.length);
-
     page = allTabs[0];
     await page.bringToFront();
     // await page.getByRole('button', { name: 'Cancel' }).click();
     expect(page.getByText(`First name: ${newFirstName}`)).toBeVisible();
     expect(page.getByRole('button', { name: 'NU' })).toBeVisible(); // avatar
+  });
+
+  test('should have the latest jwt synced across tabs when a tab refreshes and get new cookies', async ({
+    context,
+    page
+  }) => {
+    await page.goto('/profile');
+    await page.waitForTimeout(3000);
+    let storage = await page.evaluate(() => window.sessionStorage);
+    expect(storage.jwt).toEqual('test.jwt');
+
+    // Create a new page inside context.
+    const newPage = await context.newPage();
+    await newPage.goto('/profile');
+    await newPage.waitForTimeout(3000);
+
+    // Refresh the tab
+    await page.reload();
+    await page.waitForTimeout(3000);
+
+    storage = await newPage.evaluate(() => window.sessionStorage);
+    expect(storage.jwt).toEqual('test.newjwt');
+
+    // Grab the first tab
+    const allTabs = context.pages();
+    page = allTabs[0];
+    await page.bringToFront();
+    storage = await page.evaluate(() => window.sessionStorage);
+    expect(storage.jwt).toEqual('test.newjwt');
+  });
+
+  test('should have the latest jwt synced across tabs when a new tab opens and get new cookies', async ({
+    context,
+    page
+  }) => {
+    await page.goto('/profile');
+    await page.waitForTimeout(3000);
+    let storage = await page.evaluate(() => window.sessionStorage);
+    expect(storage.jwt).toEqual('test.jwt');
+
+    // Open a new tab
+    const newPage = await context.newPage();
+    await newPage.goto('/profile');
+    await newPage.waitForTimeout(3000);
+
+    storage = await newPage.evaluate(() => window.sessionStorage);
+    expect(storage.jwt).toEqual('test.newjwt');
+
+    // Grab the first tab
+    const allTabs = context.pages();
+    page = allTabs[0];
+    await page.bringToFront();
+    storage = await page.evaluate(() => window.sessionStorage);
+    expect(storage.jwt).toEqual('test.newjwt');
   });
 });
