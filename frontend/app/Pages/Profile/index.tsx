@@ -8,7 +8,7 @@ import { getJwt, getFingerprintHash, parseUser } from '@/lib/auth';
 import './index.css';
 
 export async function clientLoader() {
-  console.log('Run loader...');
+  console.log('Run profile loader...');
   const jwt = getJwt();
   const fingerprintHash = getFingerprintHash(jwt);
   axios.defaults.headers.common['Authorization'] = 'Bearer ' + jwt;

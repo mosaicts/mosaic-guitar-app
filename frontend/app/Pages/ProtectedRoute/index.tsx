@@ -7,7 +7,7 @@ import { storeJwt, getJwt } from '@/lib/auth';
 import { refreshTokenApi } from '@/utils/apis';
 
 export async function clientLoader() {
-  console.log('running client loader...');
+  console.log('Run protected page loader...');
 
   const oldJwt = getJwt();
   let newJwt;

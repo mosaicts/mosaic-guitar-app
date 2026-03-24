@@ -4,7 +4,7 @@ import type { Guitar } from '@/utils/models';
 import './index.css';
 
 export async function clientLoader() {
-  console.log('loading guitars...');
+  console.log('Run home loader...');
   try {
     const guitars = await fetchGuitars();
     console.log('guitars loaded');
