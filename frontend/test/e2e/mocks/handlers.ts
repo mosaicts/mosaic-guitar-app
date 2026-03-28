@@ -4,6 +4,8 @@
  */
 
 import { http, HttpResponse, delay } from 'msw';
+import * as cookie from 'cookie';
+// import { Headers } from 'headers-polyfill';
 import 'dotenv/config';
 
 export const MOSAIC_BASE_URL =
@@ -12,8 +14,14 @@ export const MOSAIC_APP_URL = process.env.VITE_PUBLIC_MOSAIC_APP_URL || 'http://
 
 console.log({ MOSAIC_BASE_URL, MOSAIC_APP_URL });
 
-let isUserDataUpdated = false;
-let isOldJwtSent = false;
+let user = {
+  id: 'cus_test_789',
+  firstName: 'Test',
+  lastName: 'User',
+  username: 'testusr789',
+  email: 'test@example.com',
+  avatar: null
+};
 
 /**
  * Mock Products
@@ -131,19 +139,32 @@ export const handlers = [
     const body = (await request.json()) as any;
 
     if (body.email === 'test@example.com') {
-      return HttpResponse.json({
-        message: 'User login successfully',
-        jwt: 'test.jwt',
-        refreshToken: 'testrefreshtoken',
-        user: {
-          id: 'cus_test_789',
-          firstName: 'Test',
-          lastName: 'User',
-          username: 'testusr789',
-          email: body.email,
-          profilePicUrl: 'http://test.jpg.com'
-        }
+      // const headers = new Headers();
+      // headers.append('Set-Cookie', 'userFingerprint=newfgp');
+      // headers.append('Set-Cookie', 'refreshToken=newrefreshtoken');
+
+      const cookieHeader = cookie.stringifyCookie({
+        refreshToken: 'test-token',
+        userFingerprint: 'test-fgp'
       });
+
+      return HttpResponse.json(
+        {
+          message: 'User login successfully',
+          jwt: 'test.jwt',
+          refreshToken: 'testrefreshtoken',
+          user: {
+            id: 'cus_test_789',
+            firstName: 'Test',
+            lastName: 'User',
+            username: 'testusr789',
+            email: body.email,
+            profilePicUrl: 'http://test.jpg.com'
+          }
+        },
+        // { headers }
+        { headers: { 'set-cookie': cookieHeader } }
+      );
     }
 
     return new HttpResponse(null, { status: 401 });
@@ -228,41 +249,61 @@ export const handlers = [
 
   // Profile
   http.post(`${MOSAIC_BASE_URL}/user/profile`, async ({ request }) => {
-    let user = {
-      id: 'cus_test_789',
-      firstName: 'Test',
-      lastName: 'User',
-      username: 'testusr789',
-      email: 'test@example.com',
-      avatar: null
-    };
-
-    if (isUserDataUpdated) {
-      user = { ...user, firstName: 'nottest' };
-    }
-
+    console.log({ user });
     return HttpResponse.json({ user });
   }),
 
   http.post(`${MOSAIC_BASE_URL}/user/update`, async ({ request }) => {
-    isUserDataUpdated = true;
+    const updateData = (await request.clone().json()) as object;
+    user = { ...user, ...updateData };
+    console.log({ user });
     return HttpResponse.json({ message: 'success' });
   }),
 
   // Refresh token
   http.post(`${MOSAIC_BASE_URL}/auth/token`, async ({ request, cookies }) => {
-    console.log({ cookies });
-    console.log({ isOldJwtSent });
+    let jwt, cookieHeader;
 
     if (cookies.refreshToken && cookies.userFingerprint) {
-      if (isOldJwtSent) {
-        return HttpResponse.json({ jwt: 'test.newjwt' });
-      } else {
-        isOldJwtSent = true;
-        return HttpResponse.json({ jwt: 'test.jwt' });
+      if (cookies.refreshToken === 'test-token' && cookies.userFingerprint === 'test-fgp') {
+        cookieHeader = cookie.stringifyCookie({
+          refreshToken: 'test-token-1',
+          userFingerprint: 'test-fgp-1'
+        });
+        jwt = 'test.jwt';
+      } else if (
+        cookies.refreshToken === 'test-token-1' ||
+        cookies.userFingerprint === 'test-fgp-1'
+      ) {
+        cookieHeader = cookie.stringifyCookie({
+          refreshToken: 'test-token-2',
+          userFingerprint: 'test-fgp-2'
+        });
+        // const headers = new Headers();
+        // headers.append('Set-Cookie', 'userFingerprint=newfgp');
+        // headers.append('Set-Cookie', 'refreshToken=newrefreshtoken');
+        // console.log({ cookieHeader: headers.get('Set-Cookie') });
+
+        jwt = 'test.newjwt';
       }
+      console.log({ jwt });
+      return HttpResponse.json(
+        { jwt },
+        {
+          headers: { 'set-cookie': cookieHeader as string }
+        }
+      );
     }
 
     return new HttpResponse(null, { status: 400 });
+  }),
+
+  // Logut
+  http.post(`${MOSAIC_BASE_URL}/auth/signout`, async ({ request }) => {
+    // const cookieHeader = cookie.stringifyCookie({
+    //   refreshToken: '',
+    //   userFingerprint: ''
+    // });
+    return HttpResponse.json({ message: 'success' });
   })
 ];

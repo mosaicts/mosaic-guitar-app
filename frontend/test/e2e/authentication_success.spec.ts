@@ -1,6 +1,6 @@
 /**
- * E2E Tests - Complete Checkout Flow
- * Tests the full checkout process from cart to order confirmation
+ * E2E Tests - Complete Authentication Flow
+ * Tests the full Authentication process from signup to signin and reset password
  */
 
 import { expect } from '@playwright/test';
@@ -64,7 +64,7 @@ test.describe('Successful Authentication Flow', () => {
         )
       ).toBeVisible();
       // await page.getByRole('link', { name: 'here' }).click();
-      await page.waitForTimeout(10000);
+      await page.waitForTimeout(11000);
       expect(page.getByRole('heading', { name: 'Sign in' })).toBeVisible();
 
       // Login
