@@ -45,6 +45,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="description" content="Buy your best guitars sold worldwide here" />
+        <meta content="mosaic.com" property="og:title" />
+        <meta property="og:type" content="website" />
+        {
+          <meta content="" property="og:image" /> // TODO
+        }
+        <meta property="og:url" content="https://www.mosaic.com" />
         <Meta />
         <Links />
       </head>

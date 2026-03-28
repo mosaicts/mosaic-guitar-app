@@ -37,10 +37,6 @@ export class LocalStorageManager<T> {
 }
 
 export function useDriver<T>(isSsr: boolean) {
-  // const isSsr = false;
-  // const driver = new LocalStorageManager<string>(isSsr);
-  // const userDriver = new LocalStorageManager<User>(isSsr);
-
   // TODO: optimize to prevent creating new object when re-rendering
   const driver = new LocalStorageManager<T>(isSsr);
   return driver;
@@ -77,7 +73,8 @@ export default function usePersistor<T>(
 
   useEffect(() => {
     console.log('set data to storage');
-    driver.set(key, storedData);
+    console.log({ storedData });
+    if (storedData) driver.set(key, storedData);
   }, [storedData]);
 
   useEffect(() => {

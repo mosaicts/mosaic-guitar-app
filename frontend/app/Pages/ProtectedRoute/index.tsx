@@ -1,6 +1,6 @@
 import type { Route } from './+types';
 import { Outlet, useNavigation, useNavigate } from 'react-router';
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { useAuth } from '@/Providers/authProvider';
 import Spinner from '@/Components/Spinner';
 import { storeJwt, getJwt } from '@/lib/auth';
@@ -59,7 +59,7 @@ export default function ProtectedRoute({ loaderData }: Route.ComponentProps) {
     }
   }, [newJwt, oldJwt, isLoggedIn]);
 
-  if (navigation.state === 'loading' && !isLoggedIn) {
+  if (navigation.state === 'loading' || !isLoggedIn) {
     return <Spinner />;
   }
 

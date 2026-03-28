@@ -115,9 +115,11 @@ export default function ResetVerify() {
             ) : (
               <>
                 Resend OTP in{' '}
-                <span className="timer">
-                  {new Date(remainingSecs * 1000).toISOString().slice(14, 19)}
-                </span>
+                {
+                  // <span className="timer">
+                  <time>{new Date(remainingSecs * 1000).toISOString().slice(14, 19)}</time>
+                  // </span>
+                }
               </>
             )}
           </button>
