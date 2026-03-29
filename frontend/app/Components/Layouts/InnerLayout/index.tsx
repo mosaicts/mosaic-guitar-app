@@ -23,9 +23,11 @@ export default function InnerLayout() {
           <Navbar
             navState={navState}
             onClickOutside={(event?: MouseEvent) => {
+              console.log({ event: event?.target });
               if (
                 isMobile &&
-                // click in the menu will not run this
+                // click in the menu icon to open the nav will not run this
+                // because toggleNav logic is already run in Header component
                 menuRef.current &&
                 !menuRef.current.contains(event?.target as HTMLElement)
               ) {

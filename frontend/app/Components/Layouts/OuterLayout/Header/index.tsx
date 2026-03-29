@@ -1,4 +1,3 @@
-import { NavLink } from 'react-router';
 import { useAuth } from '@/Providers/authProvider';
 import './index.css';
 import ProfileDropdown from '@/Components/ProfileDropdown';
@@ -6,16 +5,16 @@ import ProfileDropdown from '@/Components/ProfileDropdown';
 interface HeaderTypes {
   menuRef: React.RefObject<HTMLButtonElement | null>;
   isMobile: boolean;
-  toggleNavMenu: () => void;
+  toggleNav: () => void;
 }
 
-export default function Header({ menuRef, isMobile, toggleNavMenu }: HeaderTypes) {
+export default function Header({ menuRef, isMobile, toggleNav }: HeaderTypes) {
   const { user } = useAuth();
 
   return (
     <div className="header">
       {isMobile && (
-        <button className="menu" onClick={toggleNavMenu} ref={menuRef}>
+        <button className="menu" onClick={toggleNav} ref={menuRef}>
           <span className="material-symbols-outlined" id="menu-icon">
             menu
           </span>

@@ -29,7 +29,7 @@ export default function OuterLayout() {
       <Header
         menuRef={menuRef}
         isMobile={isMobile}
-        toggleNavMenu={() => {
+        toggleNav={() => {
           // user click then stop collapsing nav
           if (isNavCollapsed) {
             setNavCollapsed(false);

@@ -4,6 +4,7 @@ import { expect, describe, it } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Navbar from '.';
+import Orders from '@/Pages/Orders';
 
 const user = userEvent.setup();
 
@@ -96,7 +97,7 @@ describe('<Navbar />', () => {
     expect(screen.queryByRole('link', { name: 'orders Orders' })).not.toBeInTheDocument();
   });
 
-  it('should close navbar menu after clicking the button again', async () => {
+  it('should close navbar after clicking the button again', async () => {
     const Stub = createRoutesStub([
       {
         path: '/',
@@ -116,7 +117,7 @@ describe('<Navbar />', () => {
     expect(screen.queryByRole('link', { name: 'orders Orders' })).not.toBeInTheDocument();
   });
 
-  it('should keep dropdown menu open after clicking it', async () => {
+  it('should keep navbar open after clicking it', async () => {
     const Stub = createRoutesStub([
       {
         path: '/',
@@ -134,5 +135,28 @@ describe('<Navbar />', () => {
     expect(screen.getByRole('menu')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'home Home' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'orders Orders' })).toBeInTheDocument();
+  });
+
+  it('should navigate to Orders route when click in Orders text in the navbar', async () => {
+    const Stub = createRoutesStub([
+      {
+        path: '/',
+        Component: NavbarWrapperWithState
+      },
+      {
+        path: '/orders',
+        Component: Orders
+      }
+    ]);
+    // render the app stub at "/"
+    render(<Stub initialEntries={['/']} />);
+
+    await user.click(screen.getByRole('button', { name: 'Nav' }));
+
+    // simulate clicking the nav
+    await user.click(screen.getByRole('menu'));
+
+    await user.click(screen.getByRole('link', { name: 'orders Orders' }));
+    expect(screen.getByText("'s orders:")).toBeInTheDocument();
   });
 });
