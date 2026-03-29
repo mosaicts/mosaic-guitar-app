@@ -249,14 +249,12 @@ export const handlers = [
 
   // Profile
   http.post(`${MOSAIC_BASE_URL}/user/profile`, async ({ request }) => {
-    console.log({ user });
     return HttpResponse.json({ user });
   }),
 
   http.post(`${MOSAIC_BASE_URL}/user/update`, async ({ request }) => {
     const updateData = (await request.clone().json()) as object;
     user = { ...user, ...updateData };
-    console.log({ user });
     return HttpResponse.json({ message: 'success' });
   }),
 
@@ -286,7 +284,7 @@ export const handlers = [
 
         jwt = 'test.newjwt';
       }
-      console.log({ jwt });
+      // console.log({ jwt });
       return HttpResponse.json(
         { jwt },
         {

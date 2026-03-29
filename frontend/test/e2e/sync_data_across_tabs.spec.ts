@@ -39,13 +39,19 @@ test.describe('Syncing Data Across Tabs', () => {
     expect(page.getByText(`First name: ${firstName}`)).toBeVisible();
     expect(page.getByText(`Last name: ${lastName}`)).toBeVisible();
     expect(page.getByText(`Email: ${email}`)).toBeVisible();
-    await page.getByRole('button', { name: 'Edit' }).click();
+
+    // await page.getByRole('button', { name: 'Edit' }).click();
+    let editBtn = page.getByRole('button', { name: 'Edit' });
+    await editBtn.click();
 
     // Change first name
     let firstNameInput = page.getByRole('textbox', { name: 'First name:' });
     let newFirstName = 'notest';
     await firstNameInput.fill(newFirstName);
-    await page.getByRole('button', { name: 'Submit' }).click();
+
+    // await page.getByRole('button', { name: 'Submit' }).click();
+    let submitBtn = page.getByRole('button', { name: 'Submit' });
+    await submitBtn.click();
 
     expect(page.getByText(`First name: ${newFirstName}`)).toBeVisible();
     expect(page.getByRole('button', { name: 'NU' })).toBeVisible(); // avatar
@@ -57,12 +63,17 @@ test.describe('Syncing Data Across Tabs', () => {
     expect(page.getByRole('button', { name: 'NU' })).toBeVisible(); // avatar
 
     // Undo the update
-    await page.getByRole('button', { name: 'Edit' }).click();
+    // await page.getByRole('button', { name: 'Edit' }).click();
+    editBtn = page.getByRole('button', { name: 'Edit' });
+    await editBtn.click();
 
     firstNameInput = page.getByRole('textbox', { name: 'First name:' });
     newFirstName = 'Test';
     await firstNameInput.fill(newFirstName);
-    await page.getByRole('button', { name: 'Submit' }).click();
+
+    // await page.getByRole('button', { name: 'Submit' }).click();
+    submitBtn = page.getByRole('button', { name: 'Submit' });
+    await submitBtn.click();
 
     expect(page.getByText(`First name: ${newFirstName}`)).toBeVisible();
     expect(page.getByRole('button', { name: 'TU' })).toBeVisible(); // avatar
@@ -91,14 +102,21 @@ test.describe('Syncing Data Across Tabs', () => {
     expect(newPage.getByText(`First name: ${firstName}`)).toBeVisible();
     expect(newPage.getByText(`Last name: ${lastName}`)).toBeVisible();
     expect(newPage.getByText(`Email: ${email}`)).toBeVisible();
-    await newPage.getByRole('button', { name: 'Edit' }).click();
+
+    // await newPage.getByRole('button', { name: 'Edit' }).click();
+    let editBtn = newPage.getByRole('button', { name: 'Edit' });
+    await editBtn.click();
 
     // // Change first name
     let newFirstName = 'notest';
     let firstNameInput = newPage.getByRole('textbox', { name: 'First name:' });
     await firstNameInput.fill(newFirstName);
-    await newPage.getByRole('button', { name: 'Submit' }).click();
-    await newPage.waitForTimeout(1000);
+
+    // await newPage.getByRole('button', { name: 'Submit' }).click();
+    let submitBtn = newPage.getByRole('button', { name: 'Submit' });
+    await submitBtn.click();
+
+    // await newPage.waitForTimeout(1000);
 
     expect(newPage.getByText(`First name: ${newFirstName}`)).toBeVisible();
     expect(newPage.getByRole('button', { name: 'NU' })).toBeVisible(); // avatar
@@ -112,12 +130,17 @@ test.describe('Syncing Data Across Tabs', () => {
     expect(page.getByRole('button', { name: 'NU' })).toBeVisible(); // avatar
 
     // Undo the update
-    await page.getByRole('button', { name: 'Edit' }).click();
+    // await page.getByRole('button', { name: 'Edit' }).click();
+    editBtn = page.getByRole('button', { name: 'Edit' });
+    await editBtn.click();
 
     newFirstName = 'Test';
     firstNameInput = page.getByRole('textbox', { name: 'First name:' });
     await firstNameInput.fill(newFirstName);
-    await page.getByRole('button', { name: 'Submit' }).click();
+
+    // await page.getByRole('button', { name: 'Submit' }).click();
+    submitBtn = page.getByRole('button', { name: 'Submit' });
+    await submitBtn.click();
 
     expect(page.getByText(`First name: ${newFirstName}`)).toBeVisible();
     expect(page.getByRole('button', { name: 'TU' })).toBeVisible(); // avatar
@@ -178,16 +201,29 @@ test.describe('Syncing Data Across Tabs', () => {
   });
 
   test('should logout in all tabs when user logouts in a tab', async ({ context, page }) => {
-    await page.goto('/');
+    await page.goto('/profile');
     await page.waitForTimeout(2000);
     let storage = await page.evaluate(() => window.sessionStorage);
     expect(storage.jwt).toEqual('test.jwt');
+
+    // Change first name for consistent user data for a later operation
+    let editBtn = page.getByRole('button', { name: 'Edit' });
+    await editBtn.click();
+    let firstNameInput = page.getByRole('textbox', { name: 'First name:' });
+    let newFirstName = 'Test';
+    await firstNameInput.fill(newFirstName);
+
+    // await page.getByRole('button', { name: 'Submit' }).click();
+    let submitBtn = page.getByRole('button', { name: 'Submit' });
+    await submitBtn.click();
+    expect(page.getByRole('button', { name: 'TU' })).toBeVisible(); // avatar
 
     // Open a new tab
     const newPage = await context.newPage();
     await newPage.goto('/');
     await newPage.waitForTimeout(2000);
 
+    expect(newPage.getByRole('button', { name: 'TU' })).toBeVisible(); // avatar
     await newPage.getByRole('button', { name: 'TU' }).click();
     await newPage.getByRole('link', { name: 'Sign out' }).click();
 
