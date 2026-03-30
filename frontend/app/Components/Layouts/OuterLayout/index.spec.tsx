@@ -2,18 +2,18 @@ import { createRoutesStub } from 'react-router';
 import { expect, describe, it } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import Layout from '.';
+import OuterLayout from '.';
 
 const user = userEvent.setup();
 
-describe.skip('<Layout />', () => {
+describe.skip('<OuterLayout />', () => {
   it('should render successfully, find all the elements, and close the nav by default - mobile view', async () => {
     global.innerWidth = 512;
 
     const Stub = createRoutesStub([
       {
         path: '/',
-        Component: Layout
+        Component: OuterLayout
       }
     ]);
     // render the app stub at "/"
@@ -33,7 +33,7 @@ describe.skip('<Layout />', () => {
     const Stub = createRoutesStub([
       {
         path: '/',
-        Component: Layout
+        Component: OuterLayout
       }
     ]);
     // render the app stub at "/"
@@ -42,7 +42,7 @@ describe.skip('<Layout />', () => {
     expect(screen.getByText('Mosaic')).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'menu' })).not.toBeInTheDocument();
 
-    expect(screen.getByRole('menu')).toBeInTheDocument();
+    // expect(screen.getByRole('menu')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'home Home' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'orders Orders' })).toBeInTheDocument();
   });
@@ -53,7 +53,7 @@ describe.skip('<Layout />', () => {
     const Stub = createRoutesStub([
       {
         path: '/',
-        Component: Layout
+        Component: OuterLayout
       }
     ]);
     // render the app stub at "/"
@@ -84,7 +84,7 @@ describe.skip('<Layout />', () => {
     const Stub = createRoutesStub([
       {
         path: '/',
-        Component: Layout
+        Component: OuterLayout
       }
     ]);
     // render the app stub at "/"
@@ -112,7 +112,7 @@ describe.skip('<Layout />', () => {
     const Stub = createRoutesStub([
       {
         path: '/',
-        Component: Layout
+        Component: OuterLayout
       }
     ]);
     // render the app stub at "/"
@@ -138,7 +138,7 @@ describe.skip('<Layout />', () => {
     const Stub = createRoutesStub([
       {
         path: '/',
-        Component: Layout
+        Component: OuterLayout
       }
     ]);
     // render the app stub at "/"

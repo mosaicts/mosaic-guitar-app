@@ -85,7 +85,7 @@ describe('<Login />', () => {
         path: '/login',
         Component: Login,
         action: async () => {
-          await new Promise((resolve) => setTimeout(resolve, 50));
+          await new Promise((resolve) => setTimeout(resolve, 500));
           return {
             success: false,
             response: {
@@ -111,7 +111,7 @@ describe('<Login />', () => {
     await user.click(screen.getByRole('button', { name: 'Sign in' }));
 
     // immediately assert pending UI appears
-    let submitBtn = screen.getByRole('button', { name: 'Sign in...' });
+    let submitBtn = screen.queryByRole('button', { name: 'Sign in...' });
     expect(submitBtn).toBeInTheDocument();
     expect(submitBtn).toBeDisabled();
 
@@ -181,9 +181,9 @@ describe('<Login />', () => {
     await user.type(passwordInput, 'abcd');
 
     await user.click(screen.getByRole('button', { name: 'Sign in' }));
-    // await waitFor(() => {
-    expect(screen.getByText(ERROR_MESSAGE)).toBeInTheDocument();
-    // });
+    await waitFor(() => {
+      expect(screen.getByText(ERROR_MESSAGE)).toBeInTheDocument();
+    });
   });
 
   it('should navigate to the home route after logging in successfully', async () => {

@@ -272,7 +272,7 @@ describe('<Signup />', () => {
         path: '/signup',
         Component: Signup,
         action: async () => {
-          await new Promise((resolve) => setTimeout(resolve, 50));
+          await new Promise((resolve) => setTimeout(resolve, 500));
           return {
             success: false,
             response: {

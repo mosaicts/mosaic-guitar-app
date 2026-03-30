@@ -1,7 +1,7 @@
 // https://github.com/testing-library/user-event/issues/1115
 import { createRoutesStub } from 'react-router';
 import { expect, describe, it } from 'vitest';
-import { render, screen, waitFor, act, fireEvent } from '@testing-library/react';
+import { render, screen, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { redirect } from 'react-router';
 import ResetVerify from './index';

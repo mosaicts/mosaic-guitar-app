@@ -2,7 +2,7 @@ import { Outlet, useOutletContext } from 'react-router';
 import Navbar from './Navbar';
 import './index.css';
 
-type ContextType = {
+export type ContextType = {
   menuRef: React.RefObject<HTMLButtonElement | null>;
   navState: string;
   isMobile: boolean;
@@ -23,7 +23,7 @@ export default function InnerLayout() {
           <Navbar
             navState={navState}
             onClickOutside={(event?: MouseEvent) => {
-              console.log({ event: event?.target });
+              // console.log({ event: event?.target });
               if (
                 isMobile &&
                 // click in the menu icon to open the nav will not run this

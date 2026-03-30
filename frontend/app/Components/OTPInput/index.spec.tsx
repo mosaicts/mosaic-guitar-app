@@ -17,7 +17,7 @@ describe('<OTPInput />', () => {
         Component: OTPPinBlock
       }
     ]);
-    // render the app stub at "/login"
+    // render the app stub at "/password-reset/verify-otp"
     render(<Stub initialEntries={['/password-reset/verify-otp']} />);
   });
 
@@ -45,6 +45,7 @@ describe('<OTPInput />', () => {
     expect(pinInputs[1]).toHaveValue('2');
     expect(pinInputs[2]).toBe(document.activeElement);
 
+    // last input
     await user.type(pinInputs[5], '3');
     expect(pinInputs[5]).toHaveValue('3');
     expect(pinInputs[5]).toBe(document.activeElement);
