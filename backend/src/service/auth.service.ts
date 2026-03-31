@@ -253,7 +253,7 @@ export class AuthService {
     // user not exist
     if (!user) {
       return res.status(200).json({
-        message: 'Verification code resent successfully'
+        message: 'Verification code sent successfully'
       }); // consistent message to prevent user enumeration attack
     }
 
@@ -283,7 +283,7 @@ export class AuthService {
       await this.passwordResetRepository.save(pwResetRecord);
 
       return res.status(200).json({
-        message: 'Verification code resent successfully'
+        message: 'Verification code sent successfully'
       });
     } catch (err) {
       console.log('An error occurred while sending verification token:', err);
@@ -378,13 +378,16 @@ export class AuthService {
   }
 
   async updateToken(req: Request, res: Response) {
+    if (!req.cookies) {
+      return res.status(400).json({ message: 'Unable to refresh JWT token' });
+    }
+
     const refreshToken = req.cookies[REFRESH_TOKEN_COOKIE_NAME];
     const fingerprintCookie = req.cookies[FINGERPRINT_COOKIE_NAME];
 
     console.log({ refreshToken, fingerprintCookie });
 
     if (!fingerprintCookie || !refreshToken) {
-      console.log('Unable to refresh JWT token');
       return res.status(400).json({ message: 'Unable to refresh JWT token' });
     }
 
@@ -394,8 +397,6 @@ export class AuthService {
         if (!user) {
           return res.status(400).json({ message: 'User not found' });
         }
-
-        console.log({ user });
 
         // Generate a random string that will constitute the fingerprint for this user
         const fingerprint = crypto.randomBytes(50).toString('hex');

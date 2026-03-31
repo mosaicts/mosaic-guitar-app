@@ -3,11 +3,11 @@ import { TestFactory } from '../factory';
 describe('Verify OTP', () => {
   const factory: TestFactory = new TestFactory();
 
-  beforeEach(() => {
+  beforeAll(() => {
     return factory.init();
   });
 
-  afterEach(() => {
+  afterAll(() => {
     return factory.close();
   });
 

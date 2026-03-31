@@ -2,34 +2,22 @@ import { TestFactory } from '../factory';
 
 describe('Signup user', () => {
   const factory: TestFactory = new TestFactory();
+  const userInfoPartial = {
+    firstName: 'test',
+    lastName: 'example',
+    username: 'testexample1',
+    email: 'test1@example.com'
+  };
 
-  beforeEach(() => {
+  beforeAll(() => {
     return factory.init();
   });
 
-  afterEach(() => {
+  afterAll(() => {
     return factory.close();
   });
 
-  beforeEach(() => {
-    return factory.app.post('/auth/signup').set('content-type', 'application/json').send({
-      firstName: 'test',
-      lastName: 'example',
-      username: 'testexample',
-      email: 'test@example.com',
-      password: 'Abc@123456',
-      confirmPassword: 'Abc@123456'
-    });
-  });
-
   describe('Signup an user with wrong passwords', () => {
-    const userInfoPartial = {
-      firstName: 'test',
-      lastName: 'example',
-      username: 'testexample1',
-      email: 'test1@example.com'
-    };
-
     it('should return error about empty password ', async () => {
       const res = await factory.app
         .post('/auth/signup')
@@ -120,21 +108,19 @@ describe('Signup user', () => {
       expect(res.body.errors).toHaveProperty('email');
       expect(res.body.errors.email[0]).toBe('Please provide a valid email address');
     });
+  });
 
-    // it('should return error of invalid email ', async () => {
-    //   const res = await factory.app
-    //     .post('/auth/signup')
-    //     .set('content-type', 'application/json')
-    //     .send({
-    //       ...userInfoPartial,
-    //       email: 'abcdef@http.gmail.com'
-    //     });
-    //   expect(res.statusCode).toBe(400);
-    //   expect(res.body.message).toBe('Validation failed');
-    //   expect(res.body).toHaveProperty('errors');
-    //   expect(res.body.errors).toHaveProperty('email');
-    //   expect(res.body.errors.email[0]).toBe('Please provide a valid email address');
-    // });
+  describe('Signup with duplicate email or username', () => {
+    beforeAll(() => {
+      return factory.app.post('/auth/signup').set('content-type', 'application/json').send({
+        firstName: 'test',
+        lastName: 'example',
+        username: 'testexample',
+        email: 'test@example.com',
+        password: 'Abc@123456',
+        confirmPassword: 'Abc@123456'
+      });
+    });
 
     it('should return error of duplicate email ', async () => {
       const res = await factory.app
@@ -146,6 +132,18 @@ describe('Signup user', () => {
         });
       expect(res.statusCode).toBe(400);
       expect(res.body.errors.email[0]).toBe('Email already in use');
+    });
+
+    it('should return error about duplicate username', async () => {
+      const res = await factory.app
+        .post('/auth/signup')
+        .set('content-type', 'application/json')
+        .send({
+          ...userInfoPartial,
+          username: 'testexample'
+        });
+      expect(res.statusCode).toBe(400);
+      expect(res.body.errors.username[0]).toBe('Username already in use');
     });
   });
 
@@ -172,18 +170,6 @@ describe('Signup user', () => {
       expect(res.body.errors).toHaveProperty('username');
       expect(res.body.errors.username).toEqual(['Username is required']);
     });
-
-    it('should return error about duplicate username', async () => {
-      const res = await factory.app
-        .post('/auth/signup')
-        .set('content-type', 'application/json')
-        .send({
-          ...userInfoPartial,
-          username: 'testexample'
-        });
-      expect(res.statusCode).toBe(400);
-      expect(res.body.errors.username[0]).toBe('Username already in use');
-    });
   });
 
   describe('Signup an user successfully', () => {
@@ -202,22 +188,22 @@ describe('Signup user', () => {
       expect(res.statusCode).toBe(200);
       expect(res.body.message).toBe('Registration successful, please verify your email');
     });
-  });
 
-  it('should return no error given long password', async () => {
-    const res = await factory.app
-      .post('/auth/signup')
-      .set('content-type', 'application/json')
-      .send({
-        firstName: 'test',
-        lastName: 'example',
-        username: 'testexample1',
-        email: 'test1@example.com',
-        password: '184782u42ujmjfkjf9u2918ujfjjjsjkj29@fajjAgjkbjkjkjksjiu29@2i4uiGgjkjw022849j',
-        confirmPassword:
-          '184782u42ujmjfkjf9u2918ujfjjjsjkj29@fajjAgjkbjkjkjksjiu29@2i4uiGgjkjw022849j'
-      });
-    expect(res.statusCode).toBe(200);
-    expect(res.body.message).toBe('Registration successful, please verify your email');
+    it('should return no error given long password', async () => {
+      const res = await factory.app
+        .post('/auth/signup')
+        .set('content-type', 'application/json')
+        .send({
+          firstName: 'test',
+          lastName: 'example',
+          username: 'testexample2',
+          email: 'test2@example.com',
+          password: '184782u42ujmjfkjf9u2918ujfjjjsjkj29@fajjAgjkbjkjkjksjiu29@2i4uiGgjkjw022849j',
+          confirmPassword:
+            '184782u42ujmjfkjf9u2918ujfjjjsjkj29@fajjAgjkbjkjkjksjiu29@2i4uiGgjkjw022849j'
+        });
+      expect(res.statusCode).toBe(200);
+      expect(res.body.message).toBe('Registration successful, please verify your email');
+    });
   });
 });
