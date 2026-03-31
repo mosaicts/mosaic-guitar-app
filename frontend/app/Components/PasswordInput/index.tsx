@@ -10,6 +10,7 @@ const PasswordInput = ({ ...rest }) => {
           id="password-input"
           type={passwordVisibility ? 'text' : 'password'}
           required
+          aria-describedby="password-help"
           {...rest}
         />
         <button

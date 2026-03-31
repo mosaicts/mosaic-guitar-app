@@ -85,8 +85,12 @@ export default function Login() {
           {!errors.email && !errors.password && errorMsg && <p className="error">{errorMsg}</p>}
           <div className="email">
             <label htmlFor="email-input">Email</label>
-            <input id="email-input" required {...register('email')} />
-            {errors.email && <span className="err">{errors.email.message}</span>}
+            <input id="email-input" required aria-describedby="email-help" {...register('email')} />
+            {errors.email && (
+              <span id="email-help" className="err">
+                {errors.email.message}
+              </span>
+            )}
           </div>
           <div className="password">
             <div>
@@ -94,7 +98,11 @@ export default function Login() {
               <Link to="/forgot">Forgot password?</Link>
             </div>
             <PasswordInput required {...register('password')} />
-            {errors.password && <span className="error">{errors.password.message}</span>}
+            {errors.password && (
+              <span id="password-help" className="error">
+                {errors.password.message}
+              </span>
+            )}
           </div>
           <button
             type="submit"

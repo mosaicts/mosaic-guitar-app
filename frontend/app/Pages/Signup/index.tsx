@@ -113,36 +113,87 @@ export default function Signup() {
             <div className="names">
               <div id="first name">
                 <label htmlFor="first-name-input">
-                  First name <span className="required-asterisk">*</span>
+                  First name{' '}
+                  <span className="required-asterisk" aria-hidden="true">
+                    *
+                  </span>
                 </label>
-                <input id="first-name-input" required {...register('firstName')} />
-                {errors.firstName && <span className="error">{errors.firstName.message}</span>}
+                <input
+                  id="first-name-input"
+                  required
+                  aria-describedby="first-name-help"
+                  {...register('firstName')}
+                />
+                {errors.firstName && (
+                  <span id="first-name-help" className="error">
+                    {errors.firstName.message}
+                  </span>
+                )}
               </div>
               <div id="last name">
                 <label htmlFor="last-name-input">
-                  Last name <span className="required-asterisk">*</span>
+                  Last name{' '}
+                  <span className="required-asterisk" aria-hidden="true">
+                    *
+                  </span>
                 </label>
-                <input id="last-name-input" required {...register('lastName')} />
-                {errors.lastName && <span className="error">{errors.lastName.message}</span>}
+                <input
+                  id="last-name-input"
+                  required
+                  aria-describedby="last-name-help"
+                  {...register('lastName')}
+                />
+                {errors.lastName && (
+                  <span id="last-name-help" className="error">
+                    {errors.lastName.message}
+                  </span>
+                )}
               </div>
             </div>
             <div className="username">
               <label htmlFor="username-input">
-                Username <span className="required-asterisk">*</span>
+                Username{' '}
+                <span className="required-asterisk" aria-hidden="true">
+                  *
+                </span>
               </label>
-              <input id="username-input" required {...register('username')} />
-              {errors.username && <span className="error">{errors.username.message}</span>}
+              <input
+                id="username-input"
+                required
+                aria-describedby="username-help"
+                {...register('username')}
+              />
+              {errors.username && (
+                <span id="username-help" className="error">
+                  {errors.username.message}
+                </span>
+              )}
             </div>
             <div className="email">
               <label htmlFor="email-input">
-                Email <span className="required-asterisk">*</span>
+                Email{' '}
+                <span className="required-asterisk" aria-hidden="true">
+                  *
+                </span>
               </label>
-              <input id="email-input" required {...register('email')} />
-              {errors.email && <span className="error">{errors.email.message}</span>}
+              <input
+                id="email-input"
+                required
+                aria-describedby="email-help"
+                {...register('email')}
+              />
+              {errors.email && (
+                <span id="email-help" className="error">
+                  {errors.email.message}
+                </span>
+              )}
             </div>
             <div className="password">
               <label htmlFor="password-input">
-                Password <span className="required-asterisk">*</span>
+                Password{' '}
+                <span className="required-asterisk" aria-hidden="true">
+                  *
+                </span>
               </label>
               <PasswordInput
                 {...register('password', {
@@ -161,10 +212,12 @@ export default function Signup() {
                 })}
               />
               {errors.password ? (
-                <span className="error">{errors.password.message}</span>
+                <span id="password-help" className="error">
+                  {errors.password.message}
+                </span>
               ) : (
                 password.length > 0 && (
-                  <span className={`strength ${passwordStrength}`}>
+                  <span id="password-help" className={`strength ${passwordStrength}`}>
                     Strength: {passwordStrength}
                   </span>
                 )
@@ -172,12 +225,16 @@ export default function Signup() {
             </div>
             <div className="confirm-password">
               <label htmlFor="confirm-password-input">
-                Confirm password <span className="required-asterisk">*</span>
+                Confirm password{' '}
+                <span className="required-asterisk" aria-hidden="true">
+                  *
+                </span>
               </label>
               <input
                 id="confirm-password-input"
                 type="password"
                 required
+                aria-describedby="confirm-password-help"
                 {...register('confirmPassword', {
                   onBlur: (e: React.ChangeEvent<HTMLInputElement>) => {
                     e.target.reportValidity();
@@ -194,7 +251,9 @@ export default function Signup() {
                 })}
               />
               {errors.confirmPassword && (
-                <span className="error">{errors.confirmPassword.message}</span>
+                <span id="confirm-password-help" className="error">
+                  {errors.confirmPassword.message}
+                </span>
               )}
             </div>
             <button

@@ -28,7 +28,7 @@ export default function Home() {
               <Link to={`/guitars/${guitar.id.toString()}`}>
                 <div className="panel">
                   <div className="image">
-                    <img src={guitar.image} alt={guitar.name} className="guitar" />
+                    <img src={guitar.image} alt={guitar.shortDescription} className="guitar" />
                     <div className="lining"></div>
                   </div>
                   <div className="action">View Details</div>
