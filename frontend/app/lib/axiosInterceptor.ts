@@ -1,6 +1,5 @@
 import axios, { type AxiosError, type AxiosResponse } from 'axios';
-import { getJwt, parseJwt, getFingerprintHash } from './auth';
-import { refreshTokenApi } from '@/utils/apis';
+import { getJwt, getFingerprintHash } from './auth';
 
 export const axiosInstance = axios.create();
 
