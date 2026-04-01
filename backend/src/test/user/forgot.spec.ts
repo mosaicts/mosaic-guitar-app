@@ -1,6 +1,7 @@
 import { TestFactory } from '../factory';
+import { passwordResetRepository } from '../../repository';
 
-describe('Forgot password', () => {
+describe('POST /auth/forgot', () => {
   const factory: TestFactory = new TestFactory();
 
   beforeAll(() => {
@@ -22,7 +23,7 @@ describe('Forgot password', () => {
     });
   });
 
-  it('should return error of empty email ', async () => {
+  it('throws error when email is not provided ', async () => {
     const res = await factory.app
       .post('/auth/forgot')
       .set('content-type', 'application/json')
@@ -31,9 +32,11 @@ describe('Forgot password', () => {
       });
     expect(res.statusCode).toBe(400);
     expect(res.body.message).toBe('Validation failed');
+    const pwResetRecords = await passwordResetRepository.find();
+    expect(pwResetRecords).toHaveLength(0);
   });
 
-  it('should return no error when email does not exist', async () => {
+  it('throws no error when email provided does not exist for output consistency', async () => {
     const res = await factory.app
       .post('/auth/forgot')
       .set('content-type', 'application/json')
@@ -42,9 +45,11 @@ describe('Forgot password', () => {
       });
     expect(res.statusCode).toBe(200);
     expect(res.body.message).toBe('Verification code sent successfully');
+    const pwResetRecords = await passwordResetRepository.find();
+    expect(pwResetRecords).toHaveLength(0);
   });
 
-  it('should return error of invalid email when email input is not valid', async () => {
+  it('throws error when email input is invalid', async () => {
     const res = await factory.app
       .post('/auth/forgot')
       .set('content-type', 'application/json')
@@ -53,5 +58,20 @@ describe('Forgot password', () => {
       });
     expect(res.statusCode).toBe(400);
     expect(res.body.message).toBe('Validation failed');
+    const pwResetRecords = await passwordResetRepository.find();
+    expect(pwResetRecords).toHaveLength(0);
+  });
+
+  it('returns 200 when email input is valid and exists', async () => {
+    const res = await factory.app
+      .post('/auth/forgot')
+      .set('content-type', 'application/json')
+      .send({
+        email: 'test@example.com'
+      });
+    expect(res.statusCode).toBe(200);
+    expect(res.body.message).toBe('Verification code sent successfully');
+    const pwResetRecords = await passwordResetRepository.find();
+    expect(pwResetRecords).toHaveLength(1);
   });
 });

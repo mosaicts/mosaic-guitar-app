@@ -1,6 +1,6 @@
 import { TestFactory } from '../factory';
 
-describe('Reset password', () => {
+describe('POST /auth/reset', () => {
   const factory: TestFactory = new TestFactory();
 
   beforeAll(() => {
@@ -23,17 +23,17 @@ describe('Reset password', () => {
       });
     });
 
-    it('should return no errors for passwords', async () => {
+    it('throws no errors for passwords if passwords are matched', async () => {
       let res = await factory.app.post('/auth/reset').set('content-type', 'application/json').send({
         email: 'test@example.com',
         password: 'Q1@w2e3r4',
         confirmPassword: 'Q1@w2e3r4'
       });
       expect(res.statusCode).toBe(400);
-      expect(res.body.message).toBe('Error resetting password');
+      expect(res.body.message).toBe('Not verified');
     });
 
-    it('should return error about mismatched password and confirm password ', async () => {
+    it('throws error if password and confirm password provided are mismatched', async () => {
       let res = await factory.app.post('/auth/reset').set('content-type', 'application/json').send({
         email: 'test@example.com',
         password: 'Q1@w2e3r4',
@@ -45,17 +45,36 @@ describe('Reset password', () => {
       expect(res.body.errors).toHaveProperty('confirmPassword');
       expect(res.body.errors.confirmPassword[0]).toBe('Password and Confirm Password do not match');
     });
+
+    it('throws error if user is not verified', async () => {
+      let res = await factory.app
+        .post('/auth/forgot')
+        .set('content-type', 'application/json')
+        .send({
+          email: 'test@example.com'
+        });
+      expect(res.statusCode).toBe(200);
+      expect(res.body.message).toBe('Verification code sent successfully');
+
+      res = await factory.app.post('/auth/reset').set('content-type', 'application/json').send({
+        email: 'test@example.com',
+        password: 'Q1@w2e3r4',
+        confirmPassword: 'Q1@w2e3r4'
+      });
+      expect(res.statusCode).toBe(400);
+      expect(res.body.message).toBe('Not verified');
+    });
   });
 
   describe('Reset password for unregistered user', () => {
-    it('should return error', async () => {
+    it('throws error if user is not verified', async () => {
       let res = await factory.app.post('/auth/reset').set('content-type', 'application/json').send({
         email: 'test1@example.com',
         password: 'Q1@w2e3r4',
         confirmPassword: 'Q1@w2e3r4'
       });
       expect(res.statusCode).toBe(400);
-      expect(res.body.message).toBe('Error resetting password');
+      expect(res.body.message).toBe('Not verified');
     });
   });
 });

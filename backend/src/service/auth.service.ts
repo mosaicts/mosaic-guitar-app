@@ -5,12 +5,7 @@ import * as OTPAuth from 'otpauth';
 import envConfig from '../config/envConfig';
 
 import { checkPassword, hashPassword } from '../lib/password';
-import {
-  setCookie,
-  FINGERPRINT_COOKIE_NAME,
-  REFRESH_TOKEN_COOKIE_MAX_AGE,
-  REFRESH_TOKEN_COOKIE_NAME
-} from '../lib/cookie';
+import { setCookie, FINGERPRINT_COOKIE_NAME, REFRESH_TOKEN_COOKIE_NAME } from '../lib/cookie';
 import { generateJwt, sha256, verifyJwt } from '../lib/jwt';
 import { generateTOTP, uuidv4 } from '../lib/auth';
 import {
@@ -195,6 +190,10 @@ export class AuthService {
             `${envConfig.CLIENT_URL}/signup/verify?status=failed&email=${encodeURIComponent(user.email)}`
           );
 
+      if (!user) {
+        return res.status(400).json({ message: 'Error verifying' });
+      }
+
       if (user.verified) {
         return res.status(200).redirect(`${envConfig.CLIENT_URL}/signup/verify?status=success`);
       }
@@ -214,6 +213,7 @@ export class AuthService {
       return res.status(200).redirect(`${envConfig.CLIENT_URL}/signup/verify?status=success`);
     } catch (err) {
       console.log('An error occurred while verifying:', err);
+      return res.status(400).json({ message: 'Error verifying' });
     }
   }
 
@@ -353,12 +353,12 @@ export class AuthService {
 
     let pwResetRecord = await this.passwordResetRepository.findOne({ where: { id } });
 
-    if (
-      !pwResetRecord ||
-      !pwResetRecord.verified ||
-      // completed record is not allowed to update
-      pwResetRecord.completedAt
-    ) {
+    if (!pwResetRecord || !pwResetRecord.verified) {
+      return res.status(400).json({ message: 'Not verified' });
+    }
+
+    // completed record is not allowed to update
+    if (pwResetRecord.completedAt) {
       return res.status(400).json({ message: 'Error resetting password' });
     }
 

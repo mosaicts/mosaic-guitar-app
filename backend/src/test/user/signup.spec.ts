@@ -1,6 +1,7 @@
 import { TestFactory } from '../factory';
+import { userRepository } from '../../repository';
 
-describe('Signup user', () => {
+describe('POST /auth/signup', () => {
   const factory: TestFactory = new TestFactory();
   const userInfoPartial = {
     firstName: 'test',
@@ -18,7 +19,7 @@ describe('Signup user', () => {
   });
 
   describe('Signup an user with wrong passwords', () => {
-    it('should return error about empty password ', async () => {
+    it('throws error when no password is provided', async () => {
       const res = await factory.app
         .post('/auth/signup')
         .set('content-type', 'application/json')
@@ -34,9 +35,11 @@ describe('Signup user', () => {
       expect(res.body.errors.password[0]).toBe('Password must not be empty');
       expect(res.body.errors).toHaveProperty('confirmPassword');
       expect(res.body.errors.confirmPassword[0]).toBe('Confirm Password must not be empty');
+      const users = await userRepository.find();
+      expect(users).toHaveLength(0);
     });
 
-    it('should return error about empty confirm password ', async () => {
+    it('throws error when no confirm password is provided', async () => {
       const res = await factory.app
         .post('/auth/signup')
         .set('content-type', 'application/json')
@@ -51,9 +54,11 @@ describe('Signup user', () => {
       expect(res.body.errors).toHaveProperty('confirmPassword');
       expect(res.body.errors.confirmPassword[0]).toBe('Confirm Password must not be empty');
       expect(res.body.errors.confirmPassword[1]).toBe('Password and Confirm Password do not match');
+      const users = await userRepository.find();
+      expect(users).toHaveLength(0);
     });
 
-    it('should return error about mismatched password and confirm password ', async () => {
+    it('throws error when password and confirm password provided are mismatched', async () => {
       const res = await factory.app
         .post('/auth/signup')
         .set('content-type', 'application/json')
@@ -67,6 +72,8 @@ describe('Signup user', () => {
       expect(res.body).toHaveProperty('errors');
       expect(res.body.errors).toHaveProperty('confirmPassword');
       expect(res.body.errors.confirmPassword[0]).toBe('Password and Confirm Password do not match');
+      const users = await userRepository.find();
+      expect(users).toHaveLength(0);
     });
   });
 
@@ -79,7 +86,7 @@ describe('Signup user', () => {
       confirmPassword: 'Abc@12345678'
     };
 
-    it('should return error missing email ', async () => {
+    it('throws error when email is not provided', async () => {
       const res = await factory.app
         .post('/auth/signup')
         .set('content-type', 'application/json')
@@ -92,9 +99,11 @@ describe('Signup user', () => {
       expect(res.body).toHaveProperty('errors');
       expect(res.body.errors).toHaveProperty('email');
       expect(res.body.errors.email[0]).toBe('Email is required');
+      const users = await userRepository.find();
+      expect(users).toHaveLength(0);
     });
 
-    it('should return error of invalid email ', async () => {
+    it('throws error when email provided is invalid', async () => {
       const res = await factory.app
         .post('/auth/signup')
         .set('content-type', 'application/json')
@@ -107,6 +116,35 @@ describe('Signup user', () => {
       expect(res.body).toHaveProperty('errors');
       expect(res.body.errors).toHaveProperty('email');
       expect(res.body.errors.email[0]).toBe('Please provide a valid email address');
+      const users = await userRepository.find();
+      expect(users).toHaveLength(0);
+    });
+  });
+
+  describe('Signup an user with wrong usernames', () => {
+    const userInfoPartial = {
+      firstName: 'test',
+      lastName: 'example',
+      email: 'test1@example.com',
+      password: 'Abc@12345678',
+      confirmPassword: 'Abc@12345678'
+    };
+
+    it('throws error when no username is provided', async () => {
+      const res = await factory.app
+        .post('/auth/signup')
+        .set('content-type', 'application/json')
+        .send({
+          ...userInfoPartial,
+          username: ''
+        });
+      expect(res.statusCode).toBe(400);
+      expect(res.body.message).toBe('Validation failed');
+      expect(res.body).toHaveProperty('errors');
+      expect(res.body.errors).toHaveProperty('username');
+      expect(res.body.errors.username).toEqual(['Username is required']);
+      const users = await userRepository.find();
+      expect(users).toHaveLength(1);
     });
   });
 
@@ -122,7 +160,7 @@ describe('Signup user', () => {
       });
     });
 
-    it('should return error of duplicate email ', async () => {
+    it('throws error when email provided exists', async () => {
       const res = await factory.app
         .post('/auth/signup')
         .set('content-type', 'application/json')
@@ -132,9 +170,11 @@ describe('Signup user', () => {
         });
       expect(res.statusCode).toBe(400);
       expect(res.body.errors.email[0]).toBe('Email already in use');
+      const users = await userRepository.find();
+      expect(users).toHaveLength(1);
     });
 
-    it('should return error about duplicate username', async () => {
+    it('throws error when username provided exists', async () => {
       const res = await factory.app
         .post('/auth/signup')
         .set('content-type', 'application/json')
@@ -144,36 +184,13 @@ describe('Signup user', () => {
         });
       expect(res.statusCode).toBe(400);
       expect(res.body.errors.username[0]).toBe('Username already in use');
-    });
-  });
-
-  describe('Signup an user with wrong usernames', () => {
-    const userInfoPartial = {
-      firstName: 'test',
-      lastName: 'example',
-      email: 'test1@example.com',
-      password: 'Abc@12345678',
-      confirmPassword: 'Abc@12345678'
-    };
-
-    it('should return error about empty username', async () => {
-      const res = await factory.app
-        .post('/auth/signup')
-        .set('content-type', 'application/json')
-        .send({
-          ...userInfoPartial,
-          username: ''
-        });
-      expect(res.statusCode).toBe(400);
-      expect(res.body.message).toBe('Validation failed');
-      expect(res.body).toHaveProperty('errors');
-      expect(res.body.errors).toHaveProperty('username');
-      expect(res.body.errors.username).toEqual(['Username is required']);
+      const users = await userRepository.find();
+      expect(users).toHaveLength(1);
     });
   });
 
   describe('Signup an user successfully', () => {
-    it('should return no error', async () => {
+    it('reurns 200 if user data is valid', async () => {
       const res = await factory.app
         .post('/auth/signup')
         .set('content-type', 'application/json')
@@ -187,9 +204,12 @@ describe('Signup user', () => {
         });
       expect(res.statusCode).toBe(200);
       expect(res.body.message).toBe('Registration successful, please verify your email');
+
+      const users = await userRepository.find();
+      expect(users).toHaveLength(2);
     });
 
-    it('should return no error given long password', async () => {
+    it('returns 200 when a long password is provided', async () => {
       const res = await factory.app
         .post('/auth/signup')
         .set('content-type', 'application/json')
@@ -204,6 +224,9 @@ describe('Signup user', () => {
         });
       expect(res.statusCode).toBe(200);
       expect(res.body.message).toBe('Registration successful, please verify your email');
+
+      const users = await userRepository.find();
+      expect(users).toHaveLength(3);
     });
   });
 });

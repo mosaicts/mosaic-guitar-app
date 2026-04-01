@@ -1,6 +1,6 @@
 import { TestFactory } from '../factory';
 
-describe('Refresh token', () => {
+describe('POST /auth/token', () => {
   const factory: TestFactory = new TestFactory();
 
   beforeAll(() => {
@@ -22,7 +22,7 @@ describe('Refresh token', () => {
   //   });
   // });
 
-  it('should return error when sending with no cookies ', async () => {
+  it('throws error when sending with no cookies ', async () => {
     const res = await factory.app.post('/auth/token').set('content-type', 'application/json').send({
       fingerprintHash: ''
     });
@@ -30,7 +30,7 @@ describe('Refresh token', () => {
     expect(res.body.message).toBe('Unable to refresh JWT token');
   });
 
-  it('should return error when sending with no fingerprint ', async () => {
+  it('throws error when sending with no fingerprint ', async () => {
     const res = await factory.app.post('/auth/token').set('content-type', 'application/json').send({
       fingerprintHash: ''
     });
