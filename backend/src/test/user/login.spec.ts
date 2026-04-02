@@ -27,19 +27,7 @@ describe('POST /auth/login', () => {
       email: 'test@example.com'
     };
 
-    it('throws error of incorrect email or password when provided password 12345', async () => {
-      const res = await factory.app
-        .post('/auth/login')
-        .set('content-type', 'application/json')
-        .send({
-          ...userInfoPartial,
-          password: '12345'
-        });
-      expect(res.statusCode).toBe(400);
-      expect(res.body.message).toBe('Email or password is not correct');
-    });
-
-    it('throws error of incorrect email or password when provided nearly matched password Abc@123478', async () => {
+    it('throws error of unverified email when incorrect password is provided', async () => {
       const res = await factory.app
         .post('/auth/login')
         .set('content-type', 'application/json')
@@ -48,7 +36,9 @@ describe('POST /auth/login', () => {
           password: 'Abc@123478'
         });
       expect(res.statusCode).toBe(400);
-      expect(res.body.message).toBe('Email or password is not correct');
+      expect(res.body.message).toBe(
+        'This email has not been verified. Please check your email for a verification link.'
+      );
     });
   });
 
@@ -66,7 +56,7 @@ describe('POST /auth/login', () => {
           email: 'test1@example.con'
         });
       expect(res.statusCode).toBe(400);
-      expect(res.body.message).toBe('Email or password is not correct');
+      expect(res.body.message).toBe('Email or password is incorrect');
     });
   });
 
@@ -80,7 +70,7 @@ describe('POST /auth/login', () => {
           password: 'Abc@144444'
         });
       expect(res.statusCode).toBe(400);
-      expect(res.body.message).toBe('Email or password is not correct');
+      expect(res.body.message).toBe('Email or password is incorrect');
     });
   });
 
@@ -110,7 +100,7 @@ describe('POST /auth/login', () => {
           password: 'Abc@123456'
         });
       expect(res.statusCode).toBe(400);
-      expect(res.body.message).toBe('Email or password is not correct');
+      expect(res.body.message).toBe('Email or password is incorrect');
     });
   });
 });

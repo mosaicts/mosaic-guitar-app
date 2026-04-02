@@ -23,7 +23,7 @@ describe('POST /auth/forgot', () => {
     });
   });
 
-  it('throws error when email is not provided ', async () => {
+  it('throws error when email provided is empty', async () => {
     const res = await factory.app
       .post('/auth/forgot')
       .set('content-type', 'application/json')
@@ -36,7 +36,7 @@ describe('POST /auth/forgot', () => {
     expect(pwResetRecords).toHaveLength(0);
   });
 
-  it('throws no error when email provided does not exist for output consistency', async () => {
+  it('returns 200 when email provided does not exist for output consistency', async () => {
     const res = await factory.app
       .post('/auth/forgot')
       .set('content-type', 'application/json')

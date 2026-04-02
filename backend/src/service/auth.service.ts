@@ -10,9 +10,9 @@ import { generateJwt, sha256, verifyJwt } from '../lib/jwt';
 import { generateTOTP, uuidv4 } from '../lib/auth';
 import {
   maxConsecutiveLoginFailsByEmailAndIP,
-  maxWrongAttemptsByIPperDay,
-  maxWrongAttemptsByEmailPerDay,
-  maxWrongOTPVerifyAttemptsByEmailPerDay,
+  maxLoginFailsByIPperDay,
+  maxLoginFailsByEmailPerDay,
+  maxWrongOTPVerifyByEmailPerDay,
   limiterConsecutiveLoginFailsByEmailAndIP,
   limiterSlowBruteByIP,
   limiterSlowBruteByEmail,
@@ -55,7 +55,7 @@ export class AuthService {
     if (
       !isDeviceTrusted &&
       resSlowByIP !== null &&
-      resSlowByIP.consumedPoints > maxWrongAttemptsByIPperDay
+      resSlowByIP.consumedPoints > maxLoginFailsByIPperDay
     ) {
       retrySecs = Math.round(resSlowByIP.msBeforeNext / 1000) || 1;
     } else if (
@@ -66,7 +66,7 @@ export class AuthService {
     } else if (
       !isDeviceTrusted &&
       resSlowEmail !== null &&
-      resSlowEmail.consumedPoints > maxWrongAttemptsByEmailPerDay
+      resSlowEmail.consumedPoints > maxLoginFailsByEmailPerDay
     ) {
       retrySecs = Math.round(resSlowEmail.msBeforeNext / 1000) || 1;
     }
@@ -81,7 +81,7 @@ export class AuthService {
           if (!isDeviceTrusted) {
             await limiterSlowBruteByIP.consume(ipAddr);
           }
-          res.status(400).json({ message: 'Email or password is not correct' });
+          res.status(400).json({ message: 'Email or password is incorrect' });
         } else {
           if (!user.verified) {
             return res.status(400).json({
@@ -123,7 +123,7 @@ export class AuthService {
               limiterPromises.push(limiterSlowBruteByEmail.consume(email));
             }
             await Promise.all(limiterPromises);
-            res.status(400).json({ message: 'Email or password is not correct' });
+            res.status(400).json({ message: 'Email or password is incorrect' });
           }
         }
       } catch (err) {
@@ -165,13 +165,12 @@ export class AuthService {
       await sendVerificationLinkToMail(user, verificationUrl);
     } catch (err) {
       console.log(err);
-
       return res
         .status(400)
         .json({ message: 'An error occurred while sending verification code to email' });
     }
 
-    res.status(200).json({
+    return res.status(200).json({
       message: 'Registration successful, please verify your email'
     });
     // return res.status(200).redirect(`${envConfig.CLIENT_URL}/check-your-email`);
@@ -198,9 +197,10 @@ export class AuthService {
         return res.status(200).redirect(`${envConfig.CLIENT_URL}/signup/verify?status=success`);
       }
 
-      const err = verifyJwt(token);
+      const err = verifyJwt(token, user.id);
 
       if (err !== null) {
+        console.log(err);
         return res
           .status(400)
           .redirect(
@@ -212,7 +212,7 @@ export class AuthService {
       await this.userRepository.save(user);
       return res.status(200).redirect(`${envConfig.CLIENT_URL}/signup/verify?status=success`);
     } catch (err) {
-      console.log('An error occurred while verifying:', err);
+      // console.log('An error occurred while verifying:', err);
       return res.status(400).json({ message: 'Error verifying' });
     }
   }
@@ -287,6 +287,7 @@ export class AuthService {
       });
     } catch (err) {
       console.log('An error occurred while sending verification token:', err);
+      res.status(400).json({ message: 'Error sending verification token' });
     }
   }
 
@@ -299,14 +300,15 @@ export class AuthService {
       where: { email, verified: false }
     });
 
+    if (!pwResetRecord) {
+      return res.status(400).json({ message: 'Error verifying' });
+    }
+
     const resSlowEmail = await limiterSlowBruteOTPVerifyByEmail.get(email);
 
     let retrySecs = 0;
 
-    if (
-      resSlowEmail !== null &&
-      resSlowEmail.consumedPoints > maxWrongOTPVerifyAttemptsByEmailPerDay
-    ) {
+    if (resSlowEmail !== null && resSlowEmail.consumedPoints > maxWrongOTPVerifyByEmailPerDay) {
       retrySecs = Math.round(resSlowEmail.msBeforeNext / 1000) || 1;
     }
 
@@ -333,7 +335,7 @@ export class AuthService {
         } else {
           await limiterSlowBruteOTPVerifyByEmail.consume(email);
           return res.status(400).json({
-            message: `Wrong OTP. You have ${maxWrongOTPVerifyAttemptsByEmailPerDay - (resSlowEmail?.consumedPoints || 0) - 1} more tries.`
+            message: `Wrong OTP. You have ${maxWrongOTPVerifyByEmailPerDay - (resSlowEmail?.consumedPoints || 0) - 1} more tries.`
           });
         }
       } catch (err) {
@@ -445,7 +447,7 @@ export class AuthService {
   #generateVerificationToken(user: User) {
     return generateJwt({
       sub: user.id,
-      email: user.email,
+      // email: user.email,
       expiresIn: '5m'
     });
   }

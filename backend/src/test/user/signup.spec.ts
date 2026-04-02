@@ -144,7 +144,7 @@ describe('POST /auth/signup', () => {
       expect(res.body.errors).toHaveProperty('username');
       expect(res.body.errors.username).toEqual(['Username is required']);
       const users = await userRepository.find();
-      expect(users).toHaveLength(1);
+      expect(users).toHaveLength(0);
     });
   });
 

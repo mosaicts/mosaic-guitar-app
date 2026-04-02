@@ -1,9 +1,10 @@
 import { TestFactory } from '../factory';
 import { userRepository } from '../../repository';
+import { generateJwt } from '../../lib/jwt';
 
 describe('GET /signup/verify/:id/:token', () => {
   const factory: TestFactory = new TestFactory();
-  let userId;
+  let userId: string;
 
   beforeAll(() => {
     return factory.init();
@@ -41,11 +42,23 @@ describe('GET /signup/verify/:id/:token', () => {
     expect(res.body.message).toBe('Error verifying');
   });
 
-  it('redirects to a different url if id is correct but token is wrong', async () => {
+  it('redirects to a url with status=failed if id is correct but token is not a jwt', async () => {
     const res = await factory.app
       .get(`/auth/signup/verify/${userId}/testoken`)
       .set('content-type', 'application/json');
     expect(res.statusCode).toBe(302);
     expect(res.headers.location).toContain('/verify?status=failed&email=test%40example.com');
+  });
+
+  it('redirects to a url with status=success if id and token are correct', async () => {
+    const jwt = generateJwt({
+      sub: userId,
+      expiresIn: '5m'
+    });
+    const res = await factory.app
+      .get(`/auth/signup/verify/${userId}/${jwt}`)
+      .set('content-type', 'application/json');
+    expect(res.statusCode).toBe(302);
+    expect(res.headers.location).toContain('/verify?status=success');
   });
 });

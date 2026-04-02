@@ -29,7 +29,7 @@ export class UserService {
   }
 
   async updateUser(req: Request, res: Response) {
-    // await new Promise((resolve) => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     let user = req.user as User;
     user = { ...user, ...req.body };
     await this.userRepository.save(user);

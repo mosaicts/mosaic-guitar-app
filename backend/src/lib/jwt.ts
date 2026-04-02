@@ -1,4 +1,5 @@
 let crypto = require('crypto');
+import { jwtDecode } from 'jwt-decode';
 import * as jwt from 'jsonwebtoken';
 import envConfig from '../config/envConfig';
 import type { StringValue } from 'ms';
@@ -30,7 +31,11 @@ export const generateJwt = (params: GenerateJWTParams) => {
   });
 };
 
-export const verifyJwt = (token: string) => {
+export const verifyJwt = (token: string, userId: string) => {
+  const decoded = jwtDecode(token);
+  if (decoded.sub !== userId) {
+    return 'User ID does not match';
+  }
   return jwt.verify(token, envConfig.PUB_KEY, { algorithms: ['RS256'] }, (err) => {
     return err;
   });

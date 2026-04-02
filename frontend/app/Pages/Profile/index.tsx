@@ -1,6 +1,6 @@
 import type { Route } from './+types';
 import { axiosInstance as axios } from '@/lib/axiosInterceptor';
-import { useFetcher, redirect, useLoaderData, useActionData } from 'react-router';
+import { useFetcher, redirect, useLoaderData } from 'react-router';
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/Providers/authProvider';
 import { updateUser, getProfile } from '@/utils/apis';
