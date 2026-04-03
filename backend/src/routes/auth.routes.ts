@@ -74,14 +74,14 @@ authRouter.get('/signup/verify/:id/:token', UserController.signupVerify);
 authRouter.post('/signup/resend', UserController.signupResend);
 
 authRouter.post('/forgot', validateEmail, validate, UserController.postForgot);
+authRouter.post('/forgot/verify', validateEmail, validate, UserController.resetVerify);
 authRouter.post(
-  '/reset',
+  '/forgot/reset',
   validatePassword,
   validateConfirmPassword,
   validate,
   UserController.resetPassword
 );
-authRouter.post('/reset/verify', validateEmail, validate, UserController.resetVerify);
 authRouter.post('/token', UserController.updateToken);
 authRouter.get(
   '/protected',

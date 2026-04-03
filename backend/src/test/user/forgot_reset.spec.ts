@@ -2,7 +2,7 @@ import { TestFactory } from '../factory';
 import { uuidv4 } from '../../lib/auth';
 import { passwordResetRepository } from '../../repository';
 
-describe('POST /auth/reset', () => {
+describe('POST /auth/forgot/reset', () => {
   const factory: TestFactory = new TestFactory();
 
   beforeAll(() => {
@@ -26,18 +26,21 @@ describe('POST /auth/reset', () => {
     });
 
     it('throws no errors for passwords if passwords are matched', async () => {
-      let res = await factory.app.post('/auth/reset').set('content-type', 'application/json').send({
-        email: 'test@example.com',
-        password: 'Q1@w2e3r4',
-        confirmPassword: 'Q1@w2e3r4'
-      });
+      let res = await factory.app
+        .post('/auth/forgot/reset')
+        .set('content-type', 'application/json')
+        .send({
+          email: 'test@example.com',
+          password: 'Q1@w2e3r4',
+          confirmPassword: 'Q1@w2e3r4'
+        });
       expect(res.statusCode).toBe(400);
       expect(res.body.message).toBe('Not verified');
     });
 
     it('throws error if password and confirm password provided are mismatched', async () => {
       const res = await factory.app
-        .post('/auth/reset')
+        .post('/auth/forgot/reset')
         .set('content-type', 'application/json')
         .send({
           email: 'test@example.com',
@@ -53,7 +56,7 @@ describe('POST /auth/reset', () => {
 
     it('throws error if id is not provided', async () => {
       const res = await factory.app
-        .post('/auth/reset')
+        .post('/auth/forgot/reset')
         .set('content-type', 'application/json')
         .send({
           password: 'Q1@w2e3r4',
@@ -65,11 +68,14 @@ describe('POST /auth/reset', () => {
   });
 
   it('returns unverified error if id provided is incorrect', async () => {
-    let res = await factory.app.post('/auth/reset').set('content-type', 'application/json').send({
-      id: uuidv4(),
-      password: 'Q1@w2e3r4',
-      confirmPassword: 'Q1@w2e3r4'
-    });
+    let res = await factory.app
+      .post('/auth/forgot/reset')
+      .set('content-type', 'application/json')
+      .send({
+        id: uuidv4(),
+        password: 'Q1@w2e3r4',
+        confirmPassword: 'Q1@w2e3r4'
+      });
     expect(res.statusCode).toBe(400);
     expect(res.body.message).toBe('Not verified');
   });
@@ -83,11 +89,14 @@ describe('POST /auth/reset', () => {
     const pwResetRecords = await passwordResetRepository.find();
     const pwResetId = pwResetRecords[pwResetRecords.length - 1].id;
 
-    res = await factory.app.post('/auth/reset').set('content-type', 'application/json').send({
-      id: pwResetId,
-      password: 'Q1@w2e3r4',
-      confirmPassword: 'Q1@w2e3r4'
-    });
+    res = await factory.app
+      .post('/auth/forgot/reset')
+      .set('content-type', 'application/json')
+      .send({
+        id: pwResetId,
+        password: 'Q1@w2e3r4',
+        confirmPassword: 'Q1@w2e3r4'
+      });
     expect(res.statusCode).toBe(400);
     expect(res.body.message).toBe('Not verified');
   });

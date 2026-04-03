@@ -12,8 +12,8 @@ export const signupVerifyURL = baseURL + '/auth/signup/verify';
 export const signupResendURL = baseURL + '/auth/signup/resend';
 
 export const forgotPasswordURL = baseURL + '/auth/forgot';
-export const resetPasswordURL = baseURL + '/auth/reset';
-export const resetVerifyURL = baseURL + '/auth/reset/verify';
+export const resetVerifyURL = baseURL + '/auth/forgot/verify';
+export const resetPasswordURL = baseURL + '/auth/forgot/reset';
 
 export const refreshTokenURL = baseURL + '/auth/token';
 export const signoutURL = baseURL + '/auth/signout';

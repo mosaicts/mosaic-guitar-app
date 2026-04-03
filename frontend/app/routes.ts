@@ -23,7 +23,7 @@ export default [
   ]),
 
   ...prefix('forgot', [
-    index('Pages/PasswordReset/index.tsx'),
+    index('Pages/PasswordReset/Forgot/index.tsx'),
     route('verify', 'Pages/PasswordReset/Verify/index.tsx'),
     route('reset', 'Pages/PasswordReset/Reset/index.tsx')
   ])

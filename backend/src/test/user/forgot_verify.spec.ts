@@ -1,7 +1,6 @@
 import { TestFactory } from '../factory';
-import { passwordResetRepository } from '../../repository';
 
-describe('POST /auth/reset/verify', () => {
+describe('POST /auth/forgot/verify', () => {
   const factory: TestFactory = new TestFactory();
 
   beforeAll(() => {
@@ -26,7 +25,7 @@ describe('POST /auth/reset/verify', () => {
   describe('POST /auth/forgot was not made before', () => {
     it('throws error', async () => {
       let res = await factory.app
-        .post('/auth/reset/verify')
+        .post('/auth/forgot/verify')
         .set('content-type', 'application/json')
         .send({
           email: 'test@example.com',
@@ -46,7 +45,7 @@ describe('POST /auth/reset/verify', () => {
 
     it('throws error if email provided is empty', async () => {
       const res = await factory.app
-        .post('/auth/reset/verify')
+        .post('/auth/forgot/verify')
         .set('content-type', 'application/json')
         .send({
           email: ''
@@ -57,7 +56,7 @@ describe('POST /auth/reset/verify', () => {
 
     it('throws error if no email is provided', async () => {
       const res = await factory.app
-        .post('/auth/reset/verify')
+        .post('/auth/forgot/verify')
         .set('content-type', 'application/json')
         .send({});
       expect(res.statusCode).toBe(400);
@@ -66,7 +65,7 @@ describe('POST /auth/reset/verify', () => {
 
     it('throws error if no pin provided', async () => {
       const res = await factory.app
-        .post('/auth/reset/verify')
+        .post('/auth/forgot/verify')
         .set('content-type', 'application/json')
         .send({
           email: 'test1@example.com'
@@ -77,7 +76,7 @@ describe('POST /auth/reset/verify', () => {
 
     it('throws error if pin provided is empty', async () => {
       const res = await factory.app
-        .post('/auth/reset/verify')
+        .post('/auth/forgot/verify')
         .set('content-type', 'application/json')
         .send({
           email: 'test1@example.com',
@@ -89,7 +88,7 @@ describe('POST /auth/reset/verify', () => {
 
     it('throws error if email provided is invalid', async () => {
       const res = await factory.app
-        .post('/auth/reset/verify')
+        .post('/auth/forgot/verify')
         .set('content-type', 'application/json')
         .send({
           email: 'test123'
@@ -105,7 +104,7 @@ describe('POST /auth/reset/verify', () => {
         otp = 'xxxxxx'.replace(/[x]/g, () => Math.floor(Math.random() * 9) + ''); // random integer between 0 and 9
         // console.log({ otp });/
         let res = await factory.app
-          .post('/auth/reset/verify')
+          .post('/auth/forgot/verify')
           .set('content-type', 'application/json')
           .send({
             email: 'test@example.com',
@@ -114,7 +113,7 @@ describe('POST /auth/reset/verify', () => {
 
         if (i === 6) {
           expect(res.statusCode).toBe(429);
-          // expect(res.body).toBe('Too Many Requests');
+          expect(res.body.message).toBe('Too Many Requests');
         } else {
           expect(res.statusCode).toBe(400);
           expect(res.body.message).toBe(`Wrong OTP. You have ${5 - i} more tries.`);

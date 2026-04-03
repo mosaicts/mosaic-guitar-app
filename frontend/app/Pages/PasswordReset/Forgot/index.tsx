@@ -20,7 +20,7 @@ export async function clientAction({ request }: Route.ActionArgs) {
   }
 }
 
-export default function Forgot({ request }: Route.ClientActionArgs) {
+export default function Forgot() {
   return (
     <div className="forgot background">
       <div className="container">
@@ -51,14 +51,14 @@ const InputEmail = () => {
     }
   });
   const submit = useSubmit();
-  const data = useActionData();
+  const actionData = useActionData();
   const navigation = useNavigation();
-  const errorMsg = data && !data.success && data?.response.data.message;
+  const errorMsg = actionData && !actionData.success && actionData?.response.data.message;
   const isSubmitting = navigation.state === 'submitting';
   const isDisabled = isSubmitting; // Prevents double-submit
 
-  const onSubmit = (data) => {
-    submit(data, { method: 'post' });
+  const onSubmit = (data: object) => {
+    submit({ ...data }, { method: 'post' });
   };
 
   return (
