@@ -58,16 +58,19 @@ export default function Login() {
   const submit = useSubmit();
   const navigate = useNavigate();
   const navigation = useNavigation();
-  const data = useActionData();
+  const actionData = useActionData();
   const errorMsg =
-    data && !data.success && data.response !== undefined && data.response.data.message;
+    actionData &&
+    !actionData.success &&
+    actionData.response !== undefined &&
+    actionData.response.data.message;
 
   useEffect(() => {
-    if (data && data.success && data.response !== undefined) {
-      onLogin(data.response.data.jwt);
+    if (actionData && actionData.success && actionData.response !== undefined) {
+      onLogin(actionData.response.data.jwt);
       navigate('/');
     }
-  }, [data]);
+  }, [actionData]);
 
   const onSubmit = async (data: object) => {
     submit({ ...data, type: 'default' }, { method: 'post' });
@@ -82,7 +85,9 @@ export default function Login() {
       <div className="container">
         <h1>Sign in</h1>
         <Form method="post" onSubmit={handleSubmit(onSubmit)}>
-          {!errors.email && !errors.password && errorMsg && <p className="error">{errorMsg}</p>}
+          {!errors.email && !errors.password && errorMsg && (
+            <span className="error">{errorMsg}</span>
+          )}
           <div className="email">
             <label htmlFor="email-input">Email</label>
             <input id="email-input" required aria-describedby="email-help" {...register('email')} />

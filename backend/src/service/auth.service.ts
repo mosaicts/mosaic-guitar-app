@@ -73,7 +73,7 @@ export class AuthService {
 
     if (retrySecs > 0) {
       res.set('Retry-After', String(retrySecs));
-      res.status(429).send('Too Many Requests');
+      res.status(429).json({ message: 'Too Many Requests' });
     } else {
       try {
         let user = await this.userRepository.findOne({ where: { email } });
@@ -132,7 +132,7 @@ export class AuthService {
           res.status(400).json({ message: 'Error logging in' });
         } else {
           res.set('Retry-After', String(Math.round(err.msBeforeNext / 1000)) || '1');
-          res.status(429).send('Too Many Requests');
+          res.status(429).json({ message: 'Too Many Requests' });
         }
       }
     }
@@ -314,7 +314,7 @@ export class AuthService {
 
     if (retrySecs > 0) {
       res.set('Retry-After', String(retrySecs));
-      res.status(429).send('Too Many Requests');
+      res.status(429).json({ message: 'Too Many Requests' });
     } else {
       try {
         // otp matched
@@ -344,7 +344,7 @@ export class AuthService {
           res.status(400).json({ message: 'Error verifying' });
         } else {
           res.set('Retry-After', String(Math.round(err.msBeforeNext / 1000)) || '1');
-          res.status(429).send('Too Many Requests');
+          res.status(429).json({ message: 'Too Many Requests' });
         }
       }
     }

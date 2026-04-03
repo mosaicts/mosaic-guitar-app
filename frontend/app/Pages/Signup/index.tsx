@@ -42,7 +42,7 @@ export async function clientAction({ request }: Route.ActionArgs) {
   } catch (err: any) {
     return {
       success: false,
-      response: err.response.data
+      response: err.response
     };
   }
 }
@@ -67,25 +67,31 @@ export default function Signup() {
   });
   const submit = useSubmit();
   const navigation = useNavigation();
-  const data = useActionData();
+  const actionData = useActionData();
+  const errorMsg =
+    actionData &&
+    !actionData.success &&
+    actionData.response !== undefined &&
+    !actionData.response.data.errors &&
+    actionData.response.data.message;
 
   useEffect(() => {
     const setErrorsPostSubmit = () => {
-      if (data && !data.success && data.response) {
-        if (data.response.errors) {
-          Object.entries(data.response.errors).forEach((err: any) => {
+      if (actionData && !actionData.success && actionData.response.data) {
+        if (actionData.response.data.errors) {
+          Object.entries(actionData.response.data.errors).forEach((err: any) => {
             setError(err[0], { type: 'manual', message: err[1][0] });
           });
         } else {
-          console.log(data.response.message);
+          console.log(actionData.response.data.message);
         }
       }
     };
     setErrorsPostSubmit();
-  }, [data]);
+  }, [actionData]);
 
-  const onSubmit = async (data) => {
-    submit(data, { method: 'post' });
+  const onSubmit = async (data: object) => {
+    submit({ ...data }, { method: 'post' });
   };
 
   const password: string = useWatch({
@@ -110,6 +116,9 @@ export default function Signup() {
         <div className="container">
           <h1>Create an account</h1>
           <Form method="post" onSubmit={handleSubmit(onSubmit)}>
+            {!errors.email && !errors.password && errorMsg && (
+              <span className="error">{errorMsg}</span>
+            )}
             <div className="names">
               <div id="first name">
                 <label htmlFor="first-name-input">

@@ -151,16 +151,7 @@ export const handlers = [
       return HttpResponse.json(
         {
           message: 'User login successfully',
-          jwt: 'test.jwt',
-          refreshToken: 'testrefreshtoken',
-          user: {
-            id: 'cus_test_789',
-            firstName: 'Test',
-            lastName: 'User',
-            username: 'testusr789',
-            email: body.email,
-            profilePicUrl: 'http://test.jpg.com'
-          }
+          jwt: 'test.jwt'
         },
         // { headers }
         { headers: { 'set-cookie': cookieHeader } }
@@ -224,6 +215,15 @@ export const handlers = [
           message: 'success'
         });
       } else {
+        if (numberOfOTPTries === 0) {
+          return HttpResponse.json(
+            {
+              message: 'Too Many Requests'
+            },
+            { status: 429 }
+          );
+        }
+
         numberOfOTPTries -= 1;
         return HttpResponse.json(
           {

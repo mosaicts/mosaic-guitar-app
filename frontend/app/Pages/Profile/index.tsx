@@ -40,7 +40,7 @@ export default function Profile() {
   const fetcher = useFetcher();
   let { user, setUser } = useAuth();
   const [isEdit, setEdit] = useState<boolean>(false);
-  const data = useLoaderData();
+  const loaderData = useLoaderData();
 
   /**
   After form submit, re-render: fetcher.formData change (containing form data submitted)
@@ -52,7 +52,7 @@ export default function Profile() {
       newUser = { ...user, ...Object.fromEntries(fetcher.formData) };
       setEdit(false);
     } else {
-      newUser = data;
+      newUser = loaderData;
     }
     setUser(newUser);
   }, [fetcher.formData]);

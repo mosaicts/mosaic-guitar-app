@@ -202,8 +202,10 @@ describe('<Reset />', () => {
           return {
             success: false,
             response: {
-              errors: {
-                confirmPassword: ERROR_MESSAGE
+              data: {
+                errors: {
+                  confirmPassword: ERROR_MESSAGE
+                }
               }
             }
           };
@@ -234,6 +236,43 @@ describe('<Reset />', () => {
       submitBtn = screen.getByRole('button', { name: 'Submit' });
       expect(submitBtn).toBeInTheDocument();
       expect(submitBtn).not.toBeDisabled();
+    });
+  });
+
+  it('should display unexpected error after submitting with all valid inputs', async () => {
+    const ERROR_MESSAGE = 'Error resetting password';
+
+    const Stub = createRoutesStub([
+      {
+        path: '/reset',
+        Component: Reset,
+        action: async () => {
+          return {
+            success: false,
+            response: {
+              data: {
+                message: ERROR_MESSAGE
+              }
+            }
+          };
+        }
+      }
+    ]);
+    // render the app stub at "reset"
+    render(<Stub initialEntries={['/reset']} />);
+
+    // find the elements
+    let passwordInput = screen.getByLabelText('New password *') as HTMLInputElement;
+    const confirmPasswordInput = screen.getByLabelText('Confirm password *') as HTMLInputElement;
+
+    // simulate interactions
+    await user.type(passwordInput, 'abcdefgh');
+    await user.type(confirmPasswordInput, 'abcdefgh');
+
+    await user.click(screen.getByRole('button', { name: 'Submit' }));
+
+    await waitFor(() => {
+      expect(screen.getByText(ERROR_MESSAGE)).toBeInTheDocument();
     });
   });
 

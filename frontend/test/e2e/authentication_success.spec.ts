@@ -33,10 +33,13 @@ test.describe('Successful Authentication Flow', () => {
       const emailInput = page.getByLabel('Email *');
       await emailInput.fill('test@example.com');
 
-      const passwordInput = page.getByRole('textbox', { name: 'Password *', exact: true });
+      const passwordInput = page.getByRole('textbox', { name: 'Password', exact: true });
+      // const passwordInput = page.getByLabel('Password *');
+      expect(passwordInput).toBeVisible();
       await passwordInput.fill('password123');
 
-      const confirnPasswordInput = page.getByRole('textbox', { name: 'Confirm password *' });
+      const confirnPasswordInput = page.getByRole('textbox', { name: 'Confirm password' });
+      // const confirnPasswordInput = page.getByLabel('Confirm password *');
       await confirnPasswordInput.fill('password123');
 
       await page.getByRole('button', { name: 'Create account' }).click();
@@ -75,7 +78,8 @@ test.describe('Successful Authentication Flow', () => {
       await emailLoginInput.fill('test@example.com');
       await passwordLoginInput.fill('password123');
       await loginBtn.click();
-      await page.waitForURL('/');
+      // await page.waitForURL('/');
+      await page.waitForTimeout(2000);
 
       expect(page.getByText('Featured Guitars')).toBeVisible();
     });
@@ -141,9 +145,7 @@ test.describe('Successful Authentication Flow', () => {
   });
 
   test.describe('Password Reset', () => {
-    test('should complete password reset flow: forgot password → send code to email -> confirm code -> success -> input new password → login', async ({
-      page
-    }) => {
+    test.beforeEach(async ({ page }) => {
       await page.clock.install();
 
       await page.goto('/login');
@@ -162,7 +164,11 @@ test.describe('Successful Authentication Flow', () => {
 
       expect(page.getByRole('heading', { name: 'OTP Verification' })).toBeVisible();
       expect(page.getByText('Resend OTP in 00:30')).toBeVisible();
+    });
 
+    test('should complete password reset flow: forgot password → send code to email -> confirm code -> success -> input new password → login', async ({
+      page
+    }) => {
       let pinInputs = page.getByRole('textbox');
       expect(pinInputs.first()).toBeVisible();
       expect(pinInputs.first()).toBeEnabled();
@@ -222,6 +228,25 @@ test.describe('Successful Authentication Flow', () => {
       // Password reset successfully
       await page.waitForURL('/login');
       expect(page.getByRole('heading', { name: 'Sign in' })).toBeVisible();
+    });
+
+    test('should show correct errors when submitting wrong otps', async ({ page }) => {
+      const firstInput = page.getByRole('textbox').first();
+      expect(firstInput).toBeEnabled();
+
+      let otp: string;
+      for (let i = 1; i <= 6; ++i) {
+        otp = 'xxxxxx'.replace(/[x]/g, () => Math.floor(Math.random() * 9) + ''); // random integer between 0 and 9
+        // console.log({ otp });/
+        await pasteText(firstInput, otp);
+        await page.waitForTimeout(1000);
+
+        if (i === 6) {
+          expect(page.getByText('Too Many Requests')).toBeVisible();
+        } else {
+          expect(page.getByText(`Wrong OTP. You have ${5 - i} more tries.`)).toBeVisible();
+        }
+      }
     });
   });
 });

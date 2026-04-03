@@ -276,9 +276,11 @@ describe('<Signup />', () => {
           return {
             success: false,
             response: {
-              errors: {
-                email: [EMAIL_ERROR_MESSAGE],
-                username: [USERNAME_ERROR_MESSAGE]
+              data: {
+                errors: {
+                  email: [EMAIL_ERROR_MESSAGE],
+                  username: [USERNAME_ERROR_MESSAGE]
+                }
               }
             }
           };
@@ -332,9 +334,11 @@ describe('<Signup />', () => {
           return {
             success: false,
             response: {
-              errors: {
-                email: [EMAIL_ERROR_MESSAGE],
-                username: [USERNAME_ERROR_MESSAGE]
+              data: {
+                errors: {
+                  email: [EMAIL_ERROR_MESSAGE],
+                  username: [USERNAME_ERROR_MESSAGE]
+                }
               }
             }
           };
@@ -365,6 +369,51 @@ describe('<Signup />', () => {
     await waitFor(() => {
       expect(screen.getByText(EMAIL_ERROR_MESSAGE)).toBeInTheDocument();
       expect(screen.getByText(USERNAME_ERROR_MESSAGE)).toBeInTheDocument();
+    });
+  });
+
+  it('should display unexpected error after submitting with all valid inputs', async () => {
+    const ERROR_MESSAGE = 'Error signing up';
+
+    const Stub = createRoutesStub([
+      {
+        path: '/signup',
+        Component: Signup,
+        action() {
+          return {
+            success: false,
+            response: {
+              data: {
+                message: 'Error signing up'
+              }
+            }
+          };
+        }
+      }
+    ]);
+    // render the app stub at "/login"
+    render(<Stub initialEntries={['/signup']} />);
+
+    // find the elements
+    const firstNameInput = screen.getByLabelText('First name *');
+    const lastNameInput = screen.getByLabelText('Last name *');
+    const usernameInput = screen.getByLabelText('Username *');
+    const emailInput = screen.getByLabelText('Email *');
+    const passwordInput = screen.getByLabelText('Password *');
+    const confirmPasswordInput = screen.getByLabelText('Confirm password *');
+
+    // simulate interactions
+    await user.type(firstNameInput, 'test');
+    await user.type(lastNameInput, 'example');
+    await user.type(usernameInput, 'testusr');
+    await user.type(emailInput, 'example@gmail.com');
+    await user.type(passwordInput, 'abcdefgh');
+    await user.type(confirmPasswordInput, 'abcdefgh');
+
+    await user.click(screen.getByRole('button', { name: 'Create account' }));
+
+    await waitFor(() => {
+      expect(screen.getByText(ERROR_MESSAGE)).toBeInTheDocument();
     });
   });
 

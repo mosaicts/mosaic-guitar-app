@@ -156,7 +156,9 @@ describe('<ResetVerify />', () => {
           return {
             success: false,
             response: {
-              message: ERROR_MESSAGE
+              data: {
+                message: ERROR_MESSAGE
+              }
             }
           };
         }

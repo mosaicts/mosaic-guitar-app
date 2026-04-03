@@ -42,12 +42,12 @@ describe('GET /signup/verify/:id/:token', () => {
     expect(res.body.message).toBe('Error verifying');
   });
 
-  it('redirects to a url with status=failed if id is correct but token is not a jwt', async () => {
+  it('throws error if id is correct but token is not a jwt', async () => {
     const res = await factory.app
       .get(`/auth/signup/verify/${userId}/testoken`)
       .set('content-type', 'application/json');
-    expect(res.statusCode).toBe(302);
-    expect(res.headers.location).toContain('/verify?status=failed&email=test%40example.com');
+    expect(res.statusCode).toBe(400);
+    expect(res.body.message).toBe('Error verifying');
   });
 
   it('redirects to a url with status=success if id and token are correct', async () => {

@@ -25,7 +25,7 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
   } catch (err: any) {
     return {
       success: false,
-      response: err.response.data
+      response: err.response
     };
   }
 }
@@ -33,11 +33,15 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
 export default function ResetVerify() {
   const submit = useSubmit();
   const [searchParams] = useSearchParams();
-  const [error, setError] = useState(null);
-  const data = useActionData();
+  const actionData = useActionData();
   const [remainingSecs, setRemainingSecs] = useState(TOTP_SECS);
   const email = searchParams.get('email');
   const isResetEnabled = remainingSecs < 0;
+  const errorMsg =
+    actionData &&
+    !actionData.success &&
+    actionData.response !== undefined &&
+    actionData.response.data.message;
 
   useEffect(() => {
     if (!isResetEnabled) {
@@ -45,19 +49,6 @@ export default function ResetVerify() {
       return () => clearInterval(intervalID);
     }
   }, [isResetEnabled]);
-
-  useEffect(() => {
-    const setErrorsPostSubmit = () => {
-      if (data && !data.success && data.response) {
-        if (data.response.message) {
-          setError(data.response.message);
-        } else {
-          console.log(data.response.message);
-        }
-      }
-    };
-    setErrorsPostSubmit();
-  }, [data]);
 
   const handleResend = () => {
     submit(
@@ -103,8 +94,12 @@ export default function ResetVerify() {
         </div>
 
         <div className="otp container">
-          <OTPInput length={6} onComplete={handleComplete} />
-          <span className="err">{error}</span>
+          <OTPInput length={6} onComplete={handleComplete} aria-describedby="otp-help" />
+          {errorMsg && (
+            <span id="otp-help" className="error">
+              {errorMsg}
+            </span>
+          )}
           <button
             className={'resend btn' + (isResetEnabled ? ' enabled' : '')}
             onClick={handleResend}
@@ -115,11 +110,7 @@ export default function ResetVerify() {
             ) : (
               <>
                 Resend OTP in{' '}
-                {
-                  // <span className="timer">
-                  <time>{new Date(remainingSecs * 1000).toISOString().slice(14, 19)}</time>
-                  // </span>
-                }
+                <time>{new Date(remainingSecs * 1000).toISOString().slice(14, 19)}</time>
               </>
             )}
           </button>
