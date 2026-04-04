@@ -61,7 +61,9 @@ describe('<Guitar />', () => {
   it('should render successfully and find all the elements', async () => {
     await waitFor(() => {
       expect(screen.getByText('Dune Guitar')).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: 'Add to Cart' })).toBeInTheDocument();
+      const addBtn = screen.getByRole('button', { name: 'Add to Cart' });
+      expect(addBtn).toBeInTheDocument();
+      expect(addBtn).toBeEnabled();
       expect(screen.getByRole('link', { name: '← Back to all guitars' })).toBeInTheDocument();
       expect(screen.getByText('$599')).toBeInTheDocument();
     });

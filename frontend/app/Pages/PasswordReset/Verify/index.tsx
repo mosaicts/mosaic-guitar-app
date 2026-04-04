@@ -30,7 +30,7 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
   }
 }
 
-export default function ResetVerify() {
+export default function ForgotVerify() {
   const submit = useSubmit();
   const [searchParams] = useSearchParams();
   const actionData = useActionData();

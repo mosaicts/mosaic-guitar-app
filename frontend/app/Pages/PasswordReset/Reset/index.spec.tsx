@@ -2,9 +2,9 @@ import { createRoutesStub } from 'react-router';
 import { expect, describe, it } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import Reset from '.';
+import ForgotReset from '.';
 
-describe('<Reset />', () => {
+describe('<ForgotReset />', () => {
   const user = userEvent.setup();
   const fn = vi.fn();
 
@@ -12,7 +12,7 @@ describe('<Reset />', () => {
     const Stub = createRoutesStub([
       {
         path: '/reset',
-        Component: Reset
+        Component: ForgotReset
       }
     ]);
     // render the app stub at "reset"
@@ -22,21 +22,28 @@ describe('<Reset />', () => {
     const confirmPasswordInput = screen.getByLabelText('Confirm password *') as HTMLInputElement;
     expect(passwordInput).toBeInTheDocument();
     expect(passwordInput).toHaveAttribute('type', 'password');
+    expect(passwordInput.placeholder).toBe('Enter your password');
     expect(confirmPasswordInput).toBeInTheDocument();
     expect(confirmPasswordInput).toHaveAttribute('type', 'password');
+    expect(confirmPasswordInput.placeholder).toBe('Re-enter your password');
 
     expect(screen.queryByText('Strength: low')).not.toBeInTheDocument();
     expect(passwordInput).toHaveValue('');
     expect(confirmPasswordInput).toHaveValue('');
 
-    expect(screen.getByRole('button', { name: 'Submit' })).toBeInTheDocument();
+    const submitBtn = screen.getByRole('button', { name: 'Submit' });
+    expect(submitBtn).toBeInTheDocument();
+    expect(submitBtn).toBeEnabled();
+    const cancelBtn = screen.getByRole('button', { name: 'Cancel' });
+    expect(cancelBtn).toBeInTheDocument();
+    expect(cancelBtn).toBeEnabled();
   });
 
   it('should focus on the first empty field to display error message if clicking submit button', async () => {
     const Stub = createRoutesStub([
       {
         path: '/reset',
-        Component: Reset
+        Component: ForgotReset
       }
     ]);
     // render the app stub at "reset"
@@ -61,7 +68,7 @@ describe('<Reset />', () => {
     const Stub = createRoutesStub([
       {
         path: '/reset',
-        Component: Reset
+        Component: ForgotReset
       }
     ]);
     // render the app stub at "reset"
@@ -85,7 +92,7 @@ describe('<Reset />', () => {
     const Stub = createRoutesStub([
       {
         path: '/reset',
-        Component: Reset
+        Component: ForgotReset
       }
     ]);
     // render the app stub at "reset"
@@ -102,7 +109,7 @@ describe('<Reset />', () => {
     const Stub = createRoutesStub([
       {
         path: '/reset',
-        Component: Reset
+        Component: ForgotReset
       }
     ]);
     // render the app stub at "reset"
@@ -119,7 +126,7 @@ describe('<Reset />', () => {
     const Stub = createRoutesStub([
       {
         path: '/reset',
-        Component: Reset
+        Component: ForgotReset
       }
     ]);
     // render the app stub at "reset"
@@ -136,7 +143,7 @@ describe('<Reset />', () => {
     const Stub = createRoutesStub([
       {
         path: '/reset',
-        Component: Reset
+        Component: ForgotReset
       }
     ]);
     // render the app stub at "reset"
@@ -168,7 +175,7 @@ describe('<Reset />', () => {
     const Stub = createRoutesStub([
       {
         path: '/reset',
-        Component: Reset
+        Component: ForgotReset
       }
     ]);
     // render the app stub at "reset"
@@ -196,7 +203,7 @@ describe('<Reset />', () => {
     const Stub = createRoutesStub([
       {
         path: '/reset',
-        Component: Reset,
+        Component: ForgotReset,
         action: async () => {
           await new Promise((resolve) => setTimeout(resolve, 50));
           return {
@@ -239,13 +246,13 @@ describe('<Reset />', () => {
     });
   });
 
-  it('should display unexpected error after submitting with all valid inputs', async () => {
+  it('should display unexpected error if something goes wrong in the backend after submitting with all valid inputs', async () => {
     const ERROR_MESSAGE = 'Error resetting password';
 
     const Stub = createRoutesStub([
       {
         path: '/reset',
-        Component: Reset,
+        Component: ForgotReset,
         action: async () => {
           return {
             success: false,
@@ -282,7 +289,7 @@ describe('<Reset />', () => {
     const Stub = createRoutesStub([
       {
         path: '/reset',
-        Component: Reset,
+        Component: ForgotReset,
         action() {
           fn();
         }

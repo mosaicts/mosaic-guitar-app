@@ -8,6 +8,7 @@ import Signup from '../Signup';
 
 describe('<Login />', () => {
   const user = userEvent.setup();
+  const fn = vi.fn();
 
   it('should render successfully and find all the elements', async () => {
     const Stub = createRoutesStub([
@@ -21,7 +22,9 @@ describe('<Login />', () => {
 
     // find all the important elements
     expect(screen.getAllByText('Sign in')).toHaveLength(2);
-    expect(screen.getByRole('button', { name: 'Sign in' })).toBeInTheDocument();
+    const submitBtn = screen.getByRole('button', { name: 'Sign in' });
+    expect(submitBtn).toBeInTheDocument();
+    expect(submitBtn).toBeEnabled();
 
     const emailInput = screen.getByLabelText('Email') as HTMLInputElement;
     const passwordInput = screen.getByLabelText('Password') as HTMLInputElement;
@@ -34,6 +37,9 @@ describe('<Login />', () => {
     // check initial values
     expect(emailInput.value).toBe('');
     expect(passwordInput.value).toBe('');
+
+    expect(emailInput.placeholder).toBe('Enter your email');
+    expect(passwordInput.placeholder).toBe('Enter your password');
   });
 
   it('should navigate to the signup route after clicking the link at the end of the form', async () => {
@@ -124,30 +130,25 @@ describe('<Login />', () => {
     });
   });
 
-  it('should render with error of invalid email after submitting with invalid email', async () => {
-    const ERROR_MESSAGE = 'Please enter a valid email address';
-
+  it('should not be able to submit and display validation error if email is invalid', async () => {
+    const ERROR_MESSAGE = 'Constraints not satisfied';
     const Stub = createRoutesStub([
       {
         path: '/login',
-        Component: Login
+        Component: Login,
+        action() {
+          fn();
+        }
       }
     ]);
-    // render the app stub at "/login"
+    // render the app stub at "/signup"
     render(<Stub initialEntries={['/login']} />);
-
-    // find the elements
-    const emailInput = screen.getByLabelText('Email');
-    const passwordInput = screen.getByLabelText('Password');
-
-    // simulate interactions
-    await user.type(emailInput, 'abcd');
-    await user.type(passwordInput, 'abcd');
-
+    const emailInput = screen.getByLabelText('Email') as HTMLInputElement;
+    await user.type(emailInput, 'testexample');
     await user.click(screen.getByRole('button', { name: 'Sign in' }));
-    await waitFor(() => {
-      expect(screen.getByText(ERROR_MESSAGE)).toBeInTheDocument();
-    });
+
+    expect(emailInput.validationMessage).toBe(ERROR_MESSAGE);
+    expect(fn).not.toHaveBeenCalled();
   });
 
   it('should render with error of invalid email or password after submitting with correct email and incorrect password', async () => {

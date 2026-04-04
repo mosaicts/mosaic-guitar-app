@@ -9,6 +9,7 @@ const PasswordInput = ({ ...rest }) => {
         <input
           id="password-input"
           type={passwordVisibility ? 'text' : 'password'}
+          placeholder="Enter your password"
           required
           aria-describedby="password-help"
           {...rest}

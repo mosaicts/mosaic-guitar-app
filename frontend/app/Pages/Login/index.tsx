@@ -90,7 +90,14 @@ export default function Login() {
           )}
           <div className="email">
             <label htmlFor="email-input">Email</label>
-            <input id="email-input" required aria-describedby="email-help" {...register('email')} />
+            <input
+              id="email-input"
+              type="email"
+              placeholder="Enter your email"
+              required
+              aria-describedby="email-help"
+              {...register('email')}
+            />
             {errors.email && (
               <span id="email-help" className="err">
                 {errors.email.message}

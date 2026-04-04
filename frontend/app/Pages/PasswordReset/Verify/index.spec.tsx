@@ -4,11 +4,11 @@ import { expect, describe, it } from 'vitest';
 import { render, screen, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { redirect } from 'react-router';
-import ResetVerify from './index';
+import ForgotVerify from './index';
 import Login from '@/Pages/Login';
 import Reset from '../Reset';
 
-describe('<ResetVerify />', () => {
+describe('<ForgotVerify />', () => {
   const fn = vi.fn();
   const user = userEvent.setup({
     advanceTimers: vi.advanceTimersByTime
@@ -41,7 +41,7 @@ describe('<ResetVerify />', () => {
     const Stub = createRoutesStub([
       {
         path: '/forgot/verify',
-        Component: ResetVerify
+        Component: ForgotVerify
       }
     ]);
     render(<Stub initialEntries={['/forgot/verify']} />);
@@ -49,14 +49,16 @@ describe('<ResetVerify />', () => {
     expect(screen.getByText('OTP Verification')).toBeVisible();
     expect(screen.getAllByRole('textbox')).toHaveLength(6);
     expect(screen.getByRole('button', { name: 'Resend OTP in 00:30' })).toBeVisible();
-    expect(screen.getByRole('button', { name: 'Cancel' })).toBeVisible();
+    const cancelBtn = screen.getByRole('button', { name: 'Cancel' });
+    expect(cancelBtn).toBeVisible();
+    expect(cancelBtn).toBeEnabled();
   });
 
   it('should update remaining times to resend after some time passes accordingly', async () => {
     const Stub = createRoutesStub([
       {
         path: '/forgot/verify',
-        Component: ResetVerify
+        Component: ForgotVerify
       }
     ]);
     render(<Stub initialEntries={['/forgot/verify']} />);
@@ -80,7 +82,7 @@ describe('<ResetVerify />', () => {
     const Stub = createRoutesStub([
       {
         path: '/forgot/verify',
-        Component: ResetVerify,
+        Component: ForgotVerify,
         action() {
           fn();
         }
@@ -107,7 +109,7 @@ describe('<ResetVerify />', () => {
     const Stub = createRoutesStub([
       {
         path: '/forgot/verify',
-        Component: ResetVerify,
+        Component: ForgotVerify,
         action() {
           fn();
         }
@@ -132,7 +134,7 @@ describe('<ResetVerify />', () => {
       },
       {
         path: '/forgot/verify',
-        Component: ResetVerify,
+        Component: ForgotVerify,
         action() {
           return redirect('/login');
         }
@@ -150,7 +152,7 @@ describe('<ResetVerify />', () => {
     const Stub = createRoutesStub([
       {
         path: '/forgot/verify',
-        Component: ResetVerify,
+        Component: ForgotVerify,
         action() {
           fn();
           return {
@@ -186,7 +188,7 @@ describe('<ResetVerify />', () => {
       },
       {
         path: '/forgot/verify',
-        Component: ResetVerify,
+        Component: ForgotVerify,
         action() {
           fn();
           return redirect(`/reset`);

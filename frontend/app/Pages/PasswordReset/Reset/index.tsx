@@ -50,7 +50,7 @@ export async function clientAction({ request }: Route.ActionArgs) {
   }
 }
 
-export default function Reset() {
+export default function ForgotReset() {
   const {
     control,
     register,
@@ -161,6 +161,7 @@ export default function Reset() {
             <input
               id="confirm-password-input"
               type="password"
+              placeholder="Re-enter your password"
               required
               {...register('confirmPassword', {
                 onBlur: (e: React.ChangeEvent<HTMLInputElement>) => {

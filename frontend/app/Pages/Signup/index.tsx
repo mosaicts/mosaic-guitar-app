@@ -188,6 +188,7 @@ export default function Signup() {
               <input
                 id="email-input"
                 required
+                type="email"
                 aria-describedby="email-help"
                 {...register('email')}
               />

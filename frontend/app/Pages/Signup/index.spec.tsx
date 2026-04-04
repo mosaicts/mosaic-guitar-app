@@ -9,6 +9,7 @@ import CheckEmail from './CheckEmail';
 
 describe('<Signup />', () => {
   const user = userEvent.setup();
+  const fn = vi.fn();
 
   it('should render successfully and find all the elements', async () => {
     const Stub = createRoutesStub([
@@ -228,39 +229,25 @@ describe('<Signup />', () => {
     expect(confirmPasswordInput.validationMessage).toBe(ERROR_MESSAGE);
   });
 
-  it('should display error of invalid email after submitting', async () => {
-    const ERROR_MESSAGE = 'Please enter a valid email address';
-
+  it('should not be able to submit and display validation error if email is invalid', async () => {
+    const ERROR_MESSAGE = 'Constraints not satisfied';
     const Stub = createRoutesStub([
       {
         path: '/signup',
-        Component: Signup
+        Component: Signup,
+        action() {
+          fn();
+        }
       }
     ]);
     // render the app stub at "/signup"
     render(<Stub initialEntries={['/signup']} />);
-
-    // find the elements
-    const firstNameInput = screen.getByLabelText('First name *');
-    const lastNameInput = screen.getByLabelText('Last name *');
-    const usernameInput = screen.getByLabelText('Username *');
-    const emailInput = screen.getByLabelText('Email *');
-    const passwordInput = screen.getByLabelText('Password *');
-    const confirmPasswordInput = screen.getByLabelText('Confirm password *');
-
-    // simulate interactions
-    await user.type(firstNameInput, 'test');
-    await user.type(lastNameInput, 'example');
-    await user.type(usernameInput, 'testusr');
-    await user.type(emailInput, 'test2712002');
-    await user.type(passwordInput, 'abcdefgh');
-    await user.type(confirmPasswordInput, 'abcdefgh');
-
+    const emailInput = screen.getByLabelText('Email *') as HTMLInputElement;
+    await user.type(emailInput, 'testexample');
     await user.click(screen.getByRole('button', { name: 'Create account' }));
 
-    await waitFor(() => {
-      expect(screen.getByText(ERROR_MESSAGE)).toBeInTheDocument();
-    });
+    expect(emailInput.validationMessage).toBe(ERROR_MESSAGE);
+    expect(fn).not.toHaveBeenCalled();
   });
 
   it('should render the submit button with text "Create account..." after submitting the form', async () => {
@@ -372,7 +359,7 @@ describe('<Signup />', () => {
     });
   });
 
-  it('should display unexpected error after submitting with all valid inputs', async () => {
+  it('should display unexpected error if something goes wrong in backend after submitting with all valid inputs', async () => {
     const ERROR_MESSAGE = 'Error signing up';
 
     const Stub = createRoutesStub([

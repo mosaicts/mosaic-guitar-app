@@ -66,7 +66,13 @@ const InputEmail = () => {
       {!errors.email && errorMsg && <p className="err">{errorMsg}</p>}
       <div className="email">
         <label htmlFor="email-input">Email</label>
-        <input id="email-input" required {...register('email')} />
+        <input
+          id="email-input"
+          type="email"
+          required
+          placeholder="Enter your email"
+          {...register('email')}
+        />
         {errors.email && <span className="error">{errors.email.message}</span>}
       </div>
       <button
