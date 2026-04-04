@@ -1,5 +1,5 @@
 .outer.layout {
-  height: 100vh;
+  height: 100%;
   display: grid;
   grid-template-rows: 70px auto;
   grid-template-areas:

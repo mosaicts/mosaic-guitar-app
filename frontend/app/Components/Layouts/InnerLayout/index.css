@@ -3,6 +3,7 @@
   background-color: var(--color-main);
   height: 100%;
   overflow: hidden;
+  overflow-y: scroll;
   border-top-left-radius: 1em;
   border-top-right-radius: 1em;
 }

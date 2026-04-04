@@ -59,12 +59,12 @@ input:-webkit-autofill:active {
 
 html,
 body {
-  height: 100vh;
+  height: 100%;
   margin: 0;
   color: var(--color-foreground);
   background-color: var(--color-background);
   color-scheme: dark;
-  overflow-y: scroll;
+  overflow: hidden;
 }
 
 a {
