@@ -1,7 +1,7 @@
 import type { Route } from './+types';
-import { useEffect } from 'react';
-import { Form, Link, useSubmit, useActionData, useNavigation, redirect } from 'react-router';
+import { Form, Link, useSubmit, useNavigation, redirect } from 'react-router';
 import { useForm, useWatch } from 'react-hook-form';
+import { useErrorMessageForFields } from '@/Hooks/useErrorMessage';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 
@@ -67,28 +67,7 @@ export default function Signup() {
   });
   const submit = useSubmit();
   const navigation = useNavigation();
-  const actionData = useActionData();
-  const errorMsg =
-    actionData &&
-    !actionData.success &&
-    actionData.response !== undefined &&
-    !actionData.response.data.errors &&
-    actionData.response.data.message;
-
-  useEffect(() => {
-    const setErrorsPostSubmit = () => {
-      if (actionData && !actionData.success && actionData.response.data) {
-        if (actionData.response.data.errors) {
-          Object.entries(actionData.response.data.errors).forEach((err: any) => {
-            setError(err[0], { type: 'manual', message: err[1][0] });
-          });
-        } else {
-          console.log(actionData.response.data.message);
-        }
-      }
-    };
-    setErrorsPostSubmit();
-  }, [actionData]);
+  const { errorMsg } = useErrorMessageForFields<SignupUserSchemaType>(setError);
 
   const onSubmit = async (data: object) => {
     submit({ ...data }, { method: 'post' });

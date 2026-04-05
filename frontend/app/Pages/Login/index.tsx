@@ -1,8 +1,10 @@
 import type { Route } from './+types';
 import { useEffect } from 'react';
-import { Form, Link, useNavigate, useSubmit, useActionData, useNavigation } from 'react-router';
+import { Form, Link, useNavigate, useSubmit, useNavigation } from 'react-router';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import useErrorMessage from '@/Hooks/useErrorMessage';
+
 import { z } from 'zod';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGoogle } from '@fortawesome/free-brands-svg-icons';
@@ -58,12 +60,7 @@ export default function Login() {
   const submit = useSubmit();
   const navigate = useNavigate();
   const navigation = useNavigation();
-  const actionData = useActionData();
-  const errorMsg =
-    actionData &&
-    !actionData.success &&
-    actionData.response !== undefined &&
-    actionData.response.data.message;
+  const { errorMsg, actionData } = useErrorMessage();
 
   useEffect(() => {
     if (actionData && actionData.success && actionData.response !== undefined) {
@@ -77,7 +74,6 @@ export default function Login() {
   };
 
   const isSubmitting = navigation.state === 'submitting';
-  // TODO: add pending UI for this state
   const isDisabled = isSubmitting; // Prevents double-submit
 
   return (

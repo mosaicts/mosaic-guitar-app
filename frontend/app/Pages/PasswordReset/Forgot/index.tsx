@@ -1,6 +1,7 @@
 import type { Route } from './+types';
 import { Form, redirect, useActionData, useNavigation, useSubmit } from 'react-router';
 import { useForm } from 'react-hook-form';
+import useErrorMessage from '@/Hooks/useErrorMessage';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { postForgot } from '@/utils/apis';
@@ -51,9 +52,8 @@ const InputEmail = () => {
     }
   });
   const submit = useSubmit();
-  const actionData = useActionData();
   const navigation = useNavigation();
-  const errorMsg = actionData && !actionData.success && actionData?.response.data.message;
+  const { errorMsg } = useErrorMessage();
   const isSubmitting = navigation.state === 'submitting';
   const isDisabled = isSubmitting; // Prevents double-submit
 
@@ -63,7 +63,7 @@ const InputEmail = () => {
 
   return (
     <Form method="post" onSubmit={handleSubmit(onSubmit)}>
-      {!errors.email && errorMsg && <p className="err">{errorMsg}</p>}
+      {!errors.email && errorMsg && <span className="error">{errorMsg}</span>}
       <div className="email">
         <label htmlFor="email-input">Email</label>
         <input

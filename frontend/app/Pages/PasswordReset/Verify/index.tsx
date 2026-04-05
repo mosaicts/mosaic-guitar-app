@@ -1,5 +1,6 @@
 import type { Route } from './+types';
-import { redirect, useSearchParams, useSubmit, useActionData, useLoaderData } from 'react-router';
+import { redirect, useSearchParams, useSubmit } from 'react-router';
+import useErrorMessage from '@/Hooks/useErrorMessage';
 import { useState, useEffect } from 'react';
 import OTPInput from '@/Components/OTPInput';
 import { postForgot, resetVerify } from '@/utils/apis';
@@ -33,15 +34,10 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
 export default function ForgotVerify() {
   const submit = useSubmit();
   const [searchParams] = useSearchParams();
-  const actionData = useActionData();
   const [remainingSecs, setRemainingSecs] = useState(TOTP_SECS);
   const email = searchParams.get('email');
   const isResetEnabled = remainingSecs < 0;
-  const errorMsg =
-    actionData &&
-    !actionData.success &&
-    actionData.response !== undefined &&
-    actionData.response.data.message;
+  const { errorMsg } = useErrorMessage();
 
   useEffect(() => {
     if (!isResetEnabled) {

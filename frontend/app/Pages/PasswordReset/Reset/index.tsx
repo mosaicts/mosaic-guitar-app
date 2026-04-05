@@ -1,14 +1,8 @@
 import type { Route } from './+types';
 import { useEffect } from 'react';
-import {
-  Form,
-  useSearchParams,
-  useSubmit,
-  useActionData,
-  useNavigation,
-  redirect
-} from 'react-router';
+import { Form, useSearchParams, useSubmit, useNavigation, redirect } from 'react-router';
 import { useForm, useWatch } from 'react-hook-form';
+import { useErrorMessageForFields } from '@/Hooks/useErrorMessage';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 
@@ -66,29 +60,8 @@ export default function ForgotReset() {
   });
   const submit = useSubmit();
   const navigation = useNavigation();
-  const actionData = useActionData();
   const [searchParams] = useSearchParams();
-  const errorMsg =
-    actionData &&
-    !actionData.success &&
-    actionData.response !== undefined &&
-    !actionData.response.data.errors &&
-    actionData.response.data.message;
-
-  useEffect(() => {
-    const setErrorsPostSubmit = () => {
-      if (actionData && !actionData.success && actionData.response.data) {
-        if (actionData.response.errors) {
-          Object.entries(actionData.response.data.errors).forEach((err: any) => {
-            setError(err[0], { type: 'manual', message: err[1][0] });
-          });
-        } else {
-          console.log(actionData.response.data.message);
-        }
-      }
-    };
-    setErrorsPostSubmit();
-  }, [actionData]);
+  const { errorMsg } = useErrorMessageForFields<ResetSchemaType>(setError);
 
   const onSubmit = async (data: object) => {
     submit({ ...data, id: searchParams.get('id') }, { method: 'post' });
