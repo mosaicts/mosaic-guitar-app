@@ -20,20 +20,27 @@ describe('<ForgotReset />', () => {
 
     const passwordInput = screen.getByLabelText('New password *') as HTMLInputElement;
     const confirmPasswordInput = screen.getByLabelText('Confirm password *') as HTMLInputElement;
+
     expect(passwordInput).toBeInTheDocument();
+    expect(passwordInput).toBeEnabled();
+    expect(passwordInput).toBeRequired();
     expect(passwordInput).toHaveAttribute('type', 'password');
     expect(passwordInput.placeholder).toBe('Enter your password');
+    expect(passwordInput).toHaveValue('');
+
     expect(confirmPasswordInput).toBeInTheDocument();
+    expect(confirmPasswordInput).toBeEnabled();
+    expect(confirmPasswordInput).toBeRequired();
     expect(confirmPasswordInput).toHaveAttribute('type', 'password');
     expect(confirmPasswordInput.placeholder).toBe('Re-enter your password');
+    expect(confirmPasswordInput).toHaveValue('');
 
     expect(screen.queryByText('Strength: low')).not.toBeInTheDocument();
-    expect(passwordInput).toHaveValue('');
-    expect(confirmPasswordInput).toHaveValue('');
 
     const submitBtn = screen.getByRole('button', { name: 'Submit' });
     expect(submitBtn).toBeInTheDocument();
     expect(submitBtn).toBeEnabled();
+
     const cancelBtn = screen.getByRole('button', { name: 'Cancel' });
     expect(cancelBtn).toBeInTheDocument();
     expect(cancelBtn).toBeEnabled();

@@ -48,6 +48,9 @@ describe('<ForgotVerify />', () => {
 
     expect(screen.getByText('OTP Verification')).toBeVisible();
     expect(screen.getAllByRole('textbox')).toHaveLength(6);
+    screen.getAllByRole('textbox').forEach((textbox: any) => {
+      expect(textbox.value).toBe('');
+    });
     expect(screen.getByRole('button', { name: 'Resend OTP in 00:30' })).toBeVisible();
     const cancelBtn = screen.getByRole('button', { name: 'Cancel' });
     expect(cancelBtn).toBeVisible();

@@ -29,6 +29,9 @@ describe('<Forgot />', () => {
     expect(emailInput).toBeInTheDocument();
     expect(emailInput).toBeEnabled();
     expect(emailInput).toBeRequired();
+    // check initial values
+    expect(emailInput.value).toBe('');
+
     const submitBtn = screen.getByRole('button', { name: 'Send Verification Code' });
     expect(submitBtn).toBeInTheDocument();
     expect(submitBtn).toBeEnabled();

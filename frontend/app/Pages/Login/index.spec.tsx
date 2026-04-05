@@ -30,16 +30,21 @@ describe('<Login />', () => {
     const passwordInput = screen.getByLabelText('Password') as HTMLInputElement;
 
     expect(emailInput).toBeInTheDocument();
+    expect(emailInput).toBeEnabled();
+    expect(emailInput).toBeRequired();
     expect(passwordInput).toBeInTheDocument();
-    // expect(screen.getByRole('button', { name: 'Continue with Google' })).toBeInTheDocument();
-    expect(screen.getByText('Create an account')).toBeInTheDocument();
-
+    expect(passwordInput).toBeEnabled();
+    expect(passwordInput).toBeRequired();
     // check initial values
     expect(emailInput.value).toBe('');
     expect(passwordInput.value).toBe('');
 
     expect(emailInput.placeholder).toBe('Enter your email');
     expect(passwordInput.placeholder).toBe('Enter your password');
+
+    expect(screen.getByRole('link', { name: 'Continue with Google' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Continue with Facebook' })).toBeInTheDocument();
+    expect(screen.getByText('Create an account')).toBeInTheDocument();
   });
 
   it('should navigate to the signup route after clicking the link at the end of the form', async () => {

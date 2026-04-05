@@ -84,7 +84,36 @@ describe('<SignupVerify />', () => {
     expect(screen.getByRole('button', { name: 'Resend verification code' })).toBeVisible();
   });
 
-  it('should navigate to /check-email page after clicking the button for failed verification', async () => {
+  it('should display unexpected errors if something goes wrong in the backend after clicking the button successfully for failed verification', async () => {
+    const ERROR_MESSAGE = 'Error resending verification code';
+
+    const Stub = createRoutesStub([
+      {
+        path: '/signup/verify',
+        Component: SignupVerify,
+        action: () => {
+          fn();
+          return {
+            success: false,
+            response: {
+              data: {
+                message: ERROR_MESSAGE
+              }
+            }
+          };
+        }
+      }
+    ]);
+    render(<Stub initialEntries={['/signup/verify?status=failed']} />);
+    const submitBtn = screen.getByRole('button', { name: 'Resend verification code' });
+    await user.click(submitBtn);
+    await waitFor(() => {
+      expect(fn).toHaveBeenCalled();
+      expect(screen.getByText(ERROR_MESSAGE)).toBeVisible();
+    });
+  });
+
+  it('should navigate to /check-email page after clicking the button successfully for failed verification', async () => {
     const Stub = createRoutesStub([
       {
         path: '/signup/check-email',
@@ -94,13 +123,18 @@ describe('<SignupVerify />', () => {
         path: '/signup/verify',
         Component: SignupVerify,
         action: () => {
+          fn();
           return redirect('/signup/check-email');
         }
       }
     ]);
     render(<Stub initialEntries={['/signup/verify?status=failed']} />);
-    expect(screen.getByRole('button', { name: 'Resend verification code' })).toBeVisible();
-    await user.click(screen.getByRole('button', { name: 'Resend verification code' }));
+    const submitBtn = screen.getByRole('button', { name: 'Resend verification code' });
+    expect(submitBtn).toBeVisible();
+    expect(submitBtn).toBeEnabled();
+
+    await user.click(submitBtn);
+    expect(fn).toHaveBeenCalled();
     expect(screen.getByRole('button', { name: 'Resend verification code...' })).toBeVisible();
     await waitFor(() => {
       expect(
