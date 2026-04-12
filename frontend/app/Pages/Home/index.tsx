@@ -3,7 +3,7 @@ import { fetchGuitars } from '../../utils/apis';
 import type { Guitar } from '@/utils/models';
 import './index.css';
 
-export async function clientLoader() {
+export const clientLoader = async () => {
   console.log('Run home loader...');
   try {
     const guitars = await fetchGuitars();
@@ -12,7 +12,7 @@ export async function clientLoader() {
   } catch {
     return redirect('/login');
   }
-}
+};
 
 export default function Home() {
   const guitars = useLoaderData<typeof clientLoader>() as Guitar[];

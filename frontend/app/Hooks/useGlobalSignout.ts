@@ -1,13 +1,13 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 
 const useGlobalSignout = (onSingleSignout: () => void) => {
   const _channel = useRef(new BroadcastChannel('signout')).current;
 
-  const onSignout = () => {
+  const onSignout = useCallback(() => {
     onSingleSignout();
     _channel.postMessage({ message: 'SIGNOUT' });
     console.log('signout end');
-  };
+  }, [onSingleSignout]);
 
   useEffect(() => {
     function _listener(e: MessageEvent) {
@@ -24,7 +24,7 @@ const useGlobalSignout = (onSingleSignout: () => void) => {
     return () => {
       _channel.removeEventListener('message', _listener);
     };
-  }, []);
+  }, [onSingleSignout]);
 
   return onSignout;
 };

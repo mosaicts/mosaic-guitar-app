@@ -1,12 +1,12 @@
 import { axiosInstance as axios } from '@/lib/axiosInterceptor';
 import { useNavigate } from 'react-router';
-import { createContext, useContext, useEffect } from 'react';
+import { createContext, useContext, useEffect, useMemo, useCallback } from 'react';
 import { Role, type User } from '@/utils/models';
 import usePersistor, { useDriver } from '@/Hooks/usePersistor';
 import useGlobalSignout from '@/Hooks/useGlobalSignout';
 import useIsSsr from '@/Hooks/useIsSsr';
 import { getProfile } from '@/utils/apis';
-import { parseUserDataFromJwt, getFingerprintHash } from '@/lib/auth';
+import { getFingerprintHash } from '@/lib/auth';
 
 interface AuthContextType {
   user: User;
@@ -18,16 +18,18 @@ interface AuthContextType {
   onSignout: () => void;
 }
 
+const initialUserValues = {
+  id: '',
+  firstName: '',
+  lastName: '',
+  username: '',
+  email: '',
+  avatar: '',
+  role: Role.USER
+};
+
 const initialContextValues = {
-  user: {
-    id: '',
-    firstName: '',
-    lastName: '',
-    username: '',
-    email: '',
-    avatar: '',
-    role: Role.USER
-  },
+  user: initialUserValues,
   setUser: (data: User) => null,
   jwt: '',
   setJwt: () => null,
@@ -47,17 +49,18 @@ const AuthProvider = ({ children }: Props) => {
   const driver = useDriver<string>(isSsr);
   const userDriver = useDriver<User>(isSsr);
   const [jwt, setJwt] = usePersistor<string>('jwt', initialContextValues.jwt, driver, isSsr);
-  const [user, setUser] = usePersistor<User>('user', initialContextValues.user, userDriver, isSsr);
-  console.log({ user });
+  const [user, setUser] = usePersistor<User>('user', initialUserValues, userDriver, isSsr);
   const isLoggedIn = jwt !== initialContextValues.jwt;
   const navigate = useNavigate();
 
-  const onSignout = useGlobalSignout(() => {
+  const onSingleSignout = useCallback(() => {
     setJwt(initialContextValues.jwt);
-    setUser(initialContextValues.user);
+    setUser(initialUserValues);
     driver.remove('jwt');
     navigate('/login');
-  });
+  }, [setJwt, setUser, driver]);
+
+  const onSignout = useGlobalSignout(onSingleSignout);
 
   const onLogin = (token: string) => {
     setJwt(token);
@@ -76,9 +79,6 @@ const AuthProvider = ({ children }: Props) => {
   useEffect(() => {
     if (jwt) {
       console.log('set user to global state...');
-      // const userData = parseUserDataFromJwt(jwt, initialContextValues.user);
-      // console.log({ userData });
-      // setUser(userData);
 
       const fingerprintHash = getFingerprintHash(jwt);
       getProfile({ fingerprintHash })
@@ -98,6 +98,7 @@ const AuthProvider = ({ children }: Props) => {
 
   // Provide the authentication context to the children components
   return (
+    // <AuthContext value={contextValues}>
     <AuthContext value={{ user, setUser, jwt, setJwt, isLoggedIn, onLogin, onSignout }}>
       {children}
     </AuthContext>

@@ -125,6 +125,8 @@ test.describe('Syncing Data Across Tabs', () => {
     const allTabs = context.pages();
     page = allTabs[0];
     await page.bringToFront();
+    await page.waitForTimeout(2000);
+
     // await page.getByRole('button', { name: 'Cancel' }).click();
     expect(page.getByText(`First name: ${newFirstName}`)).toBeVisible();
     expect(page.getByRole('button', { name: 'NU' })).toBeVisible(); // avatar
@@ -141,6 +143,7 @@ test.describe('Syncing Data Across Tabs', () => {
     // await page.getByRole('button', { name: 'Submit' }).click();
     submitBtn = page.getByRole('button', { name: 'Submit' });
     await submitBtn.click();
+    await page.waitForTimeout(2000);
 
     expect(page.getByText(`First name: ${newFirstName}`)).toBeVisible();
     expect(page.getByRole('button', { name: 'TU' })).toBeVisible(); // avatar

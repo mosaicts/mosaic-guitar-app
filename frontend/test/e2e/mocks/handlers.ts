@@ -12,7 +12,7 @@ export const MOSAIC_BASE_URL =
   process.env.VITE_PUBLIC_MOSAIC_BACKEND_URL || 'http://localhost:3000';
 export const MOSAIC_APP_URL = process.env.VITE_PUBLIC_MOSAIC_APP_URL || 'http://localhost:5173';
 
-console.log({ MOSAIC_BASE_URL, MOSAIC_APP_URL });
+// console.log({ MOSAIC_BASE_URL, MOSAIC_APP_URL });
 
 let user = {
   id: 'cus_test_789',
@@ -202,7 +202,7 @@ export const handlers = [
     return new HttpResponse(null, { status: 401 });
   }),
 
-  http.post(`${MOSAIC_BASE_URL}/auth/reset/verify`, async ({ request }) => {
+  http.post(`${MOSAIC_BASE_URL}/auth/forgot/verify`, async ({ request }) => {
     const body = (await request.json()) as any;
 
     if (body.email === 'test@example.com') {
@@ -236,7 +236,7 @@ export const handlers = [
     return new HttpResponse(null, { status: 401 });
   }),
 
-  http.post(`${MOSAIC_BASE_URL}/auth/reset`, async ({ request }) => {
+  http.post(`${MOSAIC_BASE_URL}/auth/forgot/reset`, async ({ request }) => {
     const body = (await request.json()) as any;
 
     if (body.password === 'pass@example') {

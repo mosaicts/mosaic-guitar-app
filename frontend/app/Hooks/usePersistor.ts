@@ -1,5 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
-import { type User } from '@/utils/models';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 
 export class LocalStorageManager<T> {
   _storage;
@@ -37,8 +36,7 @@ export class LocalStorageManager<T> {
 }
 
 export function useDriver<T>(isSsr: boolean) {
-  // TODO: optimize to prevent creating new object when re-rendering
-  const driver = new LocalStorageManager<T>(isSsr);
+  const driver = useMemo(() => new LocalStorageManager<T>(isSsr), [isSsr]);
   return driver;
 }
 
@@ -51,31 +49,35 @@ export default function usePersistor<T>(
   const [storedData, _setStoredData] = useState<T>(() => initialData);
   const _channel = useRef(new BroadcastChannel(key)).current;
 
-  const _readValue = () => {
-    const value = driver.get(key);
-    return value ?? initialData;
-  };
-
-  const setValue = (data: T) => {
-    driver.set(key, data);
-    _setStoredData(data);
-    console.log('set data');
-    _channel.postMessage({ message: 'UPDATE', key, data });
-  };
+  const setValue = useCallback(
+    (data: T) => {
+      driver.set(key, data);
+      _setStoredData(data);
+      console.log('set data');
+      _channel.postMessage({ message: 'UPDATE', key, data });
+    },
+    [driver, key]
+  );
 
   useEffect(() => {
+    const _readValue = () => {
+      const value = driver.get(key);
+      return value ?? initialData;
+    };
+
     console.log(`get ${key} data`);
     const value = _readValue();
     console.log(`set ${key} data`);
     _setStoredData(value);
     _channel.postMessage({ message: 'UPDATE', key, data: value });
-  }, [isSsr]);
+  }, [isSsr, driver]);
 
   useEffect(() => {
+    // sync updated data, from another tab etc
     console.log('set data to storage');
     console.log({ storedData });
     if (storedData) driver.set(key, storedData);
-  }, [storedData]);
+  }, [storedData, driver]);
 
   useEffect(() => {
     function _listener(e: MessageEvent) {
