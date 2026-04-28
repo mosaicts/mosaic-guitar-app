@@ -46,7 +46,7 @@ export default function ProtectedRoute({ loaderData }: Route.ComponentProps) {
     Old jwt is loaded when refreshing page
     New jwt is loaded when opening a new tab
     or closing then opening the page
-    When there is an old jwt and new jwt then not navigating to /login
+    When there is either an old jwt or a new jwt then not navigating to /login
      */
     if (newJwt || oldJwt) {
       return;

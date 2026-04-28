@@ -5,6 +5,7 @@ import { Role, type User } from '@/utils/models';
 import usePersistor, { useDriver } from '@/Hooks/usePersistor';
 import useGlobalSignout from '@/Hooks/useGlobalSignout';
 import useIsSsr from '@/Hooks/useIsSsr';
+// import { parseUserDataFromJwt } from '@/lib/auth';
 import { getProfile } from '@/utils/apis';
 import { getFingerprintHash } from '@/lib/auth';
 
@@ -78,30 +79,43 @@ const AuthProvider = ({ children }: Props) => {
 
   useEffect(() => {
     if (jwt) {
-      console.log('set user to global state...');
+      let ignore = false;
 
+      /**
+      Have to fetch new user data instead of parsing from jwt
+      because the old jwt is still loaded when refreshing page
+       */
       const fingerprintHash = getFingerprintHash(jwt);
-      getProfile({ fingerprintHash })
-        .then((response) => {
+      const fetchUser = async () => {
+        try {
+          const response = await getProfile({ fingerprintHash });
           const userData = response.data.user;
-          if (user) {
+          if (user && !ignore) {
             setUser(userData);
             console.log('profile loaded');
           }
-        })
-        .catch((err) => {
+        } catch (err) {
           console.log(err);
           console.log('profile load failed');
-        });
+        }
+      };
+
+      fetchUser();
+      return () => {
+        ignore = false;
+      };
     }
   }, [jwt]);
+
+  const contextValues = useMemo(
+    () => ({ user, setUser, jwt, setJwt, isLoggedIn, onLogin, onSignout }),
+    [user, setUser, jwt, setJwt, isLoggedIn, onLogin, onSignout]
+  );
 
   // Provide the authentication context to the children components
   return (
     // <AuthContext value={contextValues}>
-    <AuthContext value={{ user, setUser, jwt, setJwt, isLoggedIn, onLogin, onSignout }}>
-      {children}
-    </AuthContext>
+    <AuthContext value={contextValues}>{children}</AuthContext>
   );
 };
 
