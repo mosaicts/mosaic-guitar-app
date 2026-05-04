@@ -1,6 +1,11 @@
 # Guitar-App
 An online store app for displaying and ordering guitar products.
 
+<p align="center">
+<img src="data/readme_pics/home_page.png"/>
+</p>
+
+
 ## Features
 - [x] Login
 - [x] Registration
