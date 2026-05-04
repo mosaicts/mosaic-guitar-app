@@ -10,6 +10,7 @@ An online store app for displaying and ordering guitar products.
 - [x] Login
 - [x] Registration
 - [x] Password Reset
+- [x] Browser session persistence
 - [x] Update profile
 - [x] Syncing data when openning a new tab
 - [x] Login with Google
